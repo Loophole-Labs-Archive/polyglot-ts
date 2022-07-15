@@ -68,3 +68,14 @@ export const encodeString = (buf: Uint8Array, value: string) => {
     v
   );
 };
+
+export const encodeError = (buf: Uint8Array, value: Error) => {
+  const v = new TextEncoder().encode(value.message);
+
+  return append(
+    buf,
+    Uint8Array.from([Kind.Error]),
+    encodeU32(new Uint8Array(), v.length),
+    v
+  );
+};

@@ -2,6 +2,7 @@ import { TextEncoder } from "util";
 import {
   encodeArray,
   encodeBytes,
+  encodeError,
   encodeMap,
   encodeNone,
   encodeString,
@@ -67,5 +68,17 @@ describe("Encoder", () => {
     expect(encoded.length).toBe(1 + 1 + 4 + v.length);
     expect(encoded[0]).toBe(Kind.String);
     expect(encoded.slice(6).buffer).toEqual(new TextEncoder().encode(v).buffer);
+  });
+
+  it("Can encode Error", () => {
+    const v = new Error("Test String");
+
+    const encoded = encodeError(new Uint8Array(), v);
+
+    expect(encoded.length).toBe(1 + 1 + 4 + v.message.length);
+    expect(encoded[0]).toBe(Kind.Error);
+    expect(encoded.slice(6).buffer).toEqual(
+      new TextEncoder().encode(v.message).buffer
+    );
   });
 });
