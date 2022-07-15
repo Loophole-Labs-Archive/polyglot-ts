@@ -20,14 +20,6 @@ const append = (s: Uint8Array, ...vs: Uint8Array[]) => {
   return c;
 };
 
-const numToU32BigEndian = (num: number) => {
-  const dataView = new DataView(Uint32Array.from([0]).buffer);
-
-  dataView.setUint32(0, num, false);
-
-  return new Uint8Array(dataView.buffer);
-};
-
 const numToU8BigEndian = (num: number) => {
   const dataView = new DataView(Uint8Array.from([0]).buffer);
 
@@ -40,6 +32,22 @@ const numToU16BigEndian = (num: number) => {
   const dataView = new DataView(Uint16Array.from([0]).buffer);
 
   dataView.setUint16(0, num, false);
+
+  return new Uint8Array(dataView.buffer);
+};
+
+const numToU32BigEndian = (num: number) => {
+  const dataView = new DataView(Uint32Array.from([0]).buffer);
+
+  dataView.setUint32(0, num, false);
+
+  return new Uint8Array(dataView.buffer);
+};
+
+const numToU64BigEndian = (num: bigint) => {
+  const dataView = new DataView(BigUint64Array.from([0n]).buffer);
+
+  dataView.setBigUint64(0, num, false);
 
   return new Uint8Array(dataView.buffer);
 };
@@ -107,3 +115,6 @@ export const encodeU8 = (buf: Uint8Array, value: number) =>
 
 export const encodeU16 = (buf: Uint8Array, value: number) =>
   append(buf, Uint8Array.from([Kind.U16]), numToU16BigEndian(value));
+
+export const encodeU64 = (buf: Uint8Array, value: bigint) =>
+  append(buf, Uint8Array.from([Kind.U64]), numToU64BigEndian(value));

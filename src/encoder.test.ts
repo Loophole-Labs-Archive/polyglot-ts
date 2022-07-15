@@ -9,9 +9,11 @@ import {
   encodeString,
   encodeU16,
   encodeU32,
+  encodeU64,
   encodeU8,
 } from "./encoder";
 import Kind from "./kind";
+import "jest";
 
 window.TextEncoder = TextEncoder;
 
@@ -21,17 +23,6 @@ describe("Encoder", () => {
 
     expect(encoded.length).toBe(1);
     expect(encoded[0]).toBe(Kind.None);
-  });
-
-  it("Can encode U32", () => {
-    const encoded = encodeU32(new Uint8Array(), 4294967290);
-
-    expect(encoded.length).toBe(5);
-    expect(encoded[0]).toBe(Kind.U32);
-    expect(encoded[1]).toBe(0xff);
-    expect(encoded[2]).toBe(0xff);
-    expect(encoded[3]).toBe(0xff);
-    expect(encoded[4]).toBe(0xfa);
   });
 
   it("Can encode Array", () => {
@@ -116,5 +107,31 @@ describe("Encoder", () => {
     expect(encoded[0]).toBe(Kind.U16);
     expect(encoded[1]).toBe(0x4);
     expect(encoded[2]).toBe(0x0);
+  });
+
+  it("Can encode U32", () => {
+    const encoded = encodeU32(new Uint8Array(), 4294967290);
+
+    expect(encoded.length).toBe(5);
+    expect(encoded[0]).toBe(Kind.U32);
+    expect(encoded[1]).toBe(0xff);
+    expect(encoded[2]).toBe(0xff);
+    expect(encoded[3]).toBe(0xff);
+    expect(encoded[4]).toBe(0xfa);
+  });
+
+  it("Can encode U64", () => {
+    const encoded = encodeU64(new Uint8Array(), 18446744073709551610n);
+
+    expect(encoded.length).toBe(9);
+    expect(encoded[0]).toBe(Kind.U64);
+    expect(encoded[1]).toBe(0xff);
+    expect(encoded[2]).toBe(0xff);
+    expect(encoded[3]).toBe(0xff);
+    expect(encoded[4]).toBe(0xff);
+    expect(encoded[5]).toBe(0xff);
+    expect(encoded[6]).toBe(0xff);
+    expect(encoded[7]).toBe(0xff);
+    expect(encoded[8]).toBe(0xfa);
   });
 });
