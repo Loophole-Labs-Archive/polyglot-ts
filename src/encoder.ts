@@ -57,3 +57,14 @@ export const encodeBytes = (buf: Uint8Array, value: Uint8Array) =>
     encodeU32(new Uint8Array(), value.length),
     value
   );
+
+export const encodeString = (buf: Uint8Array, value: string) => {
+  const v = new TextEncoder().encode(value);
+
+  return append(
+    buf,
+    Uint8Array.from([Kind.String]),
+    encodeU32(new Uint8Array(), v.length),
+    v
+  );
+};

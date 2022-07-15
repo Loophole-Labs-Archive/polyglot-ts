@@ -4,6 +4,7 @@ import {
   encodeBytes,
   encodeMap,
   encodeNone,
+  encodeString,
   encodeU32,
 } from "./encoder";
 import Kind from "./kind";
@@ -56,5 +57,15 @@ describe("Encoder", () => {
     expect(encoded.length).toBe(1 + 1 + 4 + v.length);
     expect(encoded[0]).toBe(Kind.Bytes);
     expect(encoded.slice(6).buffer).toEqual(v.buffer);
+  });
+
+  it("Can encode String", () => {
+    const v = "Test String";
+
+    const encoded = encodeString(new Uint8Array(), v);
+
+    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
+    expect(encoded[0]).toBe(Kind.String);
+    expect(encoded.slice(6).buffer).toEqual(new TextEncoder().encode(v).buffer);
   });
 });
