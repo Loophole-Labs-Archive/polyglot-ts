@@ -4,6 +4,8 @@ import {
   encodeBool,
   encodeBytes,
   encodeError,
+  encodeF32,
+  encodeF64,
   encodeI32,
   encodeI64,
   encodeMap,
@@ -160,5 +162,31 @@ describe("Encoder", () => {
     expect(encoded[6]).toBe(0x00);
     expect(encoded[7]).toBe(0x00);
     expect(encoded[8]).toBe(0x00);
+  });
+
+  it("Can encode F32", () => {
+    const encoded = encodeF32(new Uint8Array(), -214648.34432);
+
+    expect(encoded.length).toBe(5);
+    expect(encoded[0]).toBe(Kind.F32);
+    expect(encoded[1]).toBe(0xc8);
+    expect(encoded[2]).toBe(0x51);
+    expect(encoded[3]).toBe(0x9e);
+    expect(encoded[4]).toBe(0x16);
+  });
+
+  it("Can encode F64", () => {
+    const encoded = encodeF64(new Uint8Array(), -922337203685.2345);
+
+    expect(encoded.length).toBe(9);
+    expect(encoded[0]).toBe(Kind.F64);
+    expect(encoded[1]).toBe(0xc2);
+    expect(encoded[2]).toBe(0x6a);
+    expect(encoded[3]).toBe(0xd7);
+    expect(encoded[4]).toBe(0xf2);
+    expect(encoded[5]).toBe(0x9a);
+    expect(encoded[6]).toBe(0xbc);
+    expect(encoded[7]).toBe(0xa7);
+    expect(encoded[8]).toBe(0x81);
   });
 });

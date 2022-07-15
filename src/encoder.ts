@@ -68,6 +68,22 @@ const numToI64BigEndian = (num: bigint) => {
   return new Uint8Array(dataView.buffer);
 };
 
+const numToF32BigEndian = (num: number) => {
+  const dataView = new DataView(Float32Array.from([0]).buffer);
+
+  dataView.setFloat32(0, num, false);
+
+  return new Uint8Array(dataView.buffer);
+};
+
+const numToF64BigEndian = (num: number) => {
+  const dataView = new DataView(Float64Array.from([0]).buffer);
+
+  dataView.setFloat64(0, num, false);
+
+  return new Uint8Array(dataView.buffer);
+};
+
 export const encodeNone = (buf: Uint8Array) =>
   append(buf, Uint8Array.from([Kind.None]));
 
@@ -140,3 +156,9 @@ export const encodeI32 = (buf: Uint8Array, value: number) =>
 
 export const encodeI64 = (buf: Uint8Array, value: bigint) =>
   append(buf, Uint8Array.from([Kind.I64]), numToI64BigEndian(value));
+
+export const encodeF32 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.F32]), numToF32BigEndian(value));
+
+export const encodeF64 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.F64]), numToF64BigEndian(value));
