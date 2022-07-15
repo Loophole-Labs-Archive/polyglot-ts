@@ -4,6 +4,8 @@ import {
   encodeBool,
   encodeBytes,
   encodeError,
+  encodeI32,
+  encodeI64,
   encodeMap,
   encodeNone,
   encodeString,
@@ -13,7 +15,6 @@ import {
   encodeU8,
 } from "./encoder";
 import Kind from "./kind";
-import "jest";
 
 window.TextEncoder = TextEncoder;
 
@@ -133,5 +134,31 @@ describe("Encoder", () => {
     expect(encoded[6]).toBe(0xff);
     expect(encoded[7]).toBe(0xff);
     expect(encoded[8]).toBe(0xfa);
+  });
+
+  it("Can encode I32", () => {
+    const encoded = encodeI32(new Uint8Array(), -2147483648);
+
+    expect(encoded.length).toBe(5);
+    expect(encoded[0]).toBe(Kind.I32);
+    expect(encoded[1]).toBe(0x80);
+    expect(encoded[2]).toBe(0x00);
+    expect(encoded[3]).toBe(0x00);
+    expect(encoded[4]).toBe(0x00);
+  });
+
+  it("Can encode I64", () => {
+    const encoded = encodeI64(new Uint8Array(), -9223372036854775808n);
+
+    expect(encoded.length).toBe(9);
+    expect(encoded[0]).toBe(Kind.I64);
+    expect(encoded[1]).toBe(0x80);
+    expect(encoded[2]).toBe(0x00);
+    expect(encoded[3]).toBe(0x00);
+    expect(encoded[4]).toBe(0x00);
+    expect(encoded[5]).toBe(0x00);
+    expect(encoded[6]).toBe(0x00);
+    expect(encoded[7]).toBe(0x00);
+    expect(encoded[8]).toBe(0x00);
   });
 });
