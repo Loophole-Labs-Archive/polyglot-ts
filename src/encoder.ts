@@ -1,5 +1,8 @@
 import Kind from "./kind";
 
+const BOOL_FALSE = 0x00;
+const BOOL_TRUE = 0x01;
+
 const append = (s: Uint8Array, ...vs: Uint8Array[]) => {
   const c = new Uint8Array(
     s.length + vs.reduce((prev, curr) => prev + curr.length, 0)
@@ -79,3 +82,6 @@ export const encodeError = (buf: Uint8Array, value: Error) => {
     v
   );
 };
+
+export const encodeBool = (buf: Uint8Array, value: boolean) =>
+  append(buf, Uint8Array.from([Kind.Bool, value ? BOOL_TRUE : BOOL_FALSE]));

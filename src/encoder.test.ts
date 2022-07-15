@@ -1,6 +1,7 @@
 import { TextEncoder } from "util";
 import {
   encodeArray,
+  encodeBool,
   encodeBytes,
   encodeError,
   encodeMap,
@@ -80,5 +81,21 @@ describe("Encoder", () => {
     expect(encoded.slice(6).buffer).toEqual(
       new TextEncoder().encode(v.message).buffer
     );
+  });
+
+  it("Can encode true Bool", () => {
+    const encoded = encodeBool(new Uint8Array(), true);
+
+    expect(encoded.length).toBe(2);
+    expect(encoded[0]).toBe(Kind.Bool);
+    expect(encoded[1]).toBe(0x01);
+  });
+
+  it("Can encode false Bool", () => {
+    const encoded = encodeBool(new Uint8Array(), false);
+
+    expect(encoded.length).toBe(2);
+    expect(encoded[0]).toBe(Kind.Bool);
+    expect(encoded[1]).toBe(0x00);
   });
 });
