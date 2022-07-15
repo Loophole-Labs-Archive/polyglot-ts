@@ -1,5 +1,14 @@
-import { encodeArray, encodeMap, encodeNone, encodeU32 } from "./encoder";
+import { TextEncoder } from "util";
+import {
+  encodeArray,
+  encodeBytes,
+  encodeMap,
+  encodeNone,
+  encodeU32,
+} from "./encoder";
 import Kind from "./kind";
+
+window.TextEncoder = TextEncoder;
 
 describe("Encoder", () => {
   it("Can encode None", () => {
@@ -37,5 +46,15 @@ describe("Encoder", () => {
     expect(encoded[1]).toBe(Kind.String);
     expect(encoded[2]).toBe(Kind.U32);
     expect(encoded[3]).toBe(Kind.U32);
+  });
+
+  it("Can encode Bytes", () => {
+    const v = new TextEncoder().encode("Test String");
+
+    const encoded = encodeBytes(new Uint8Array(), v);
+
+    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
+    expect(encoded[0]).toBe(Kind.Bytes);
+    expect(encoded.slice(6).buffer).toEqual(v.buffer);
   });
 });
