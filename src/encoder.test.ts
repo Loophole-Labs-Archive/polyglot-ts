@@ -8,6 +8,7 @@ import {
   encodeNone,
   encodeString,
   encodeU32,
+  encodeU8,
 } from "./encoder";
 import Kind from "./kind";
 
@@ -97,5 +98,13 @@ describe("Encoder", () => {
     expect(encoded.length).toBe(2);
     expect(encoded[0]).toBe(Kind.Bool);
     expect(encoded[1]).toBe(0x00);
+  });
+
+  it("Can encode U8", () => {
+    const encoded = encodeU8(new Uint8Array(), 32);
+
+    expect(encoded.length).toBe(2);
+    expect(encoded[0]).toBe(Kind.U8);
+    expect(encoded[1]).toBe(32);
   });
 });
