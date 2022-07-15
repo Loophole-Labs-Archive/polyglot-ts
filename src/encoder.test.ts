@@ -7,6 +7,7 @@ import {
   encodeMap,
   encodeNone,
   encodeString,
+  encodeU16,
   encodeU32,
   encodeU8,
 } from "./encoder";
@@ -106,5 +107,14 @@ describe("Encoder", () => {
     expect(encoded.length).toBe(2);
     expect(encoded[0]).toBe(Kind.U8);
     expect(encoded[1]).toBe(32);
+  });
+
+  it("Can encode U16", () => {
+    const encoded = encodeU16(new Uint8Array(), 1024);
+
+    expect(encoded.length).toBe(3);
+    expect(encoded[0]).toBe(Kind.U16);
+    expect(encoded[1]).toBe(0x4);
+    expect(encoded[2]).toBe(0x0);
   });
 });

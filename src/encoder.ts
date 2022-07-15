@@ -36,6 +36,14 @@ const numToU8BigEndian = (num: number) => {
   return new Uint8Array(dataView.buffer);
 };
 
+const numToU16BigEndian = (num: number) => {
+  const dataView = new DataView(Uint16Array.from([0]).buffer);
+
+  dataView.setUint16(0, num, false);
+
+  return new Uint8Array(dataView.buffer);
+};
+
 export const encodeNone = (buf: Uint8Array) =>
   append(buf, Uint8Array.from([Kind.None]));
 
@@ -96,3 +104,6 @@ export const encodeBool = (buf: Uint8Array, value: boolean) =>
 
 export const encodeU8 = (buf: Uint8Array, value: number) =>
   append(buf, Uint8Array.from([Kind.U8]), numToU8BigEndian(value));
+
+export const encodeU16 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.U16]), numToU16BigEndian(value));
