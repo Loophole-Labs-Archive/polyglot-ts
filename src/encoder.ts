@@ -37,3 +37,15 @@ export const encodeArray = (buf: Uint8Array, size: number, valueKind: Kind) =>
     Uint8Array.from([Kind.Array, valueKind]),
     encodeU32(new Uint8Array(), size)
   );
+
+export const encodeMap = (
+  buf: Uint8Array,
+  size: number,
+  keyKind: Kind,
+  valueKind: Kind
+) =>
+  append(
+    buf,
+    Uint8Array.from([Kind.Map, keyKind, valueKind]),
+    encodeU32(new Uint8Array(), size)
+  );

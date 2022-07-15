@@ -1,4 +1,4 @@
-import { encodeArray, encodeNone, encodeU32 } from "./encoder";
+import { encodeArray, encodeMap, encodeNone, encodeU32 } from "./encoder";
 import Kind from "./kind";
 
 describe("Encoder", () => {
@@ -27,5 +27,15 @@ describe("Encoder", () => {
     expect(encoded[0]).toBe(Kind.Array);
     expect(encoded[1]).toBe(Kind.String);
     expect(encoded[2]).toBe(Kind.U32);
+  });
+
+  it("Can encode Map", () => {
+    const encoded = encodeMap(new Uint8Array(), 32, Kind.String, Kind.U32);
+
+    expect(encoded.length).toBe(1 + 1 + 1 + 1 + 4);
+    expect(encoded[0]).toBe(Kind.Map);
+    expect(encoded[1]).toBe(Kind.String);
+    expect(encoded[2]).toBe(Kind.U32);
+    expect(encoded[3]).toBe(Kind.U32);
   });
 });
