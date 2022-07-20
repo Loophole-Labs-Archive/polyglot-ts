@@ -28,57 +28,6 @@ describe("Encoder", () => {
     expect(encoded[0]).toBe(Kind.None);
   });
 
-  it("Can encode Array", () => {
-    const encoded = encodeArray(new Uint8Array(), 32, Kind.String);
-
-    expect(encoded.length).toBe(1 + 1 + 1 + 4);
-    expect(encoded[0]).toBe(Kind.Array);
-    expect(encoded[1]).toBe(Kind.String);
-    expect(encoded[2]).toBe(Kind.U32);
-  });
-
-  it("Can encode Map", () => {
-    const encoded = encodeMap(new Uint8Array(), 32, Kind.String, Kind.U32);
-
-    expect(encoded.length).toBe(1 + 1 + 1 + 1 + 4);
-    expect(encoded[0]).toBe(Kind.Map);
-    expect(encoded[1]).toBe(Kind.String);
-    expect(encoded[2]).toBe(Kind.U32);
-    expect(encoded[3]).toBe(Kind.U32);
-  });
-
-  it("Can encode Bytes", () => {
-    const v = new TextEncoder().encode("Test String");
-
-    const encoded = encodeBytes(new Uint8Array(), v);
-
-    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
-    expect(encoded[0]).toBe(Kind.Bytes);
-    expect(encoded.slice(6).buffer).toEqual(v.buffer);
-  });
-
-  it("Can encode String", () => {
-    const v = "Test String";
-
-    const encoded = encodeString(new Uint8Array(), v);
-
-    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
-    expect(encoded[0]).toBe(Kind.String);
-    expect(encoded.slice(6).buffer).toEqual(new TextEncoder().encode(v).buffer);
-  });
-
-  it("Can encode Error", () => {
-    const v = new Error("Test String");
-
-    const encoded = encodeError(new Uint8Array(), v);
-
-    expect(encoded.length).toBe(1 + 1 + 4 + v.message.length);
-    expect(encoded[0]).toBe(Kind.Error);
-    expect(encoded.slice(6).buffer).toEqual(
-      new TextEncoder().encode(v.message).buffer
-    );
-  });
-
   it("Can encode true Bool", () => {
     const encoded = encodeBool(new Uint8Array(), true);
 
@@ -188,5 +137,56 @@ describe("Encoder", () => {
     expect(encoded[6]).toBe(0xbc);
     expect(encoded[7]).toBe(0xa7);
     expect(encoded[8]).toBe(0x81);
+  });
+
+  it("Can encode Array", () => {
+    const encoded = encodeArray(new Uint8Array(), 32, Kind.String);
+
+    expect(encoded.length).toBe(1 + 1 + 1 + 4);
+    expect(encoded[0]).toBe(Kind.Array);
+    expect(encoded[1]).toBe(Kind.String);
+    expect(encoded[2]).toBe(Kind.U32);
+  });
+
+  it("Can encode Map", () => {
+    const encoded = encodeMap(new Uint8Array(), 32, Kind.String, Kind.U32);
+
+    expect(encoded.length).toBe(1 + 1 + 1 + 1 + 4);
+    expect(encoded[0]).toBe(Kind.Map);
+    expect(encoded[1]).toBe(Kind.String);
+    expect(encoded[2]).toBe(Kind.U32);
+    expect(encoded[3]).toBe(Kind.U32);
+  });
+
+  it("Can encode Bytes", () => {
+    const v = new TextEncoder().encode("Test String");
+
+    const encoded = encodeBytes(new Uint8Array(), v);
+
+    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
+    expect(encoded[0]).toBe(Kind.Bytes);
+    expect(encoded.slice(6).buffer).toEqual(v.buffer);
+  });
+
+  it("Can encode String", () => {
+    const v = "Test String";
+
+    const encoded = encodeString(new Uint8Array(), v);
+
+    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
+    expect(encoded[0]).toBe(Kind.String);
+    expect(encoded.slice(6).buffer).toEqual(new TextEncoder().encode(v).buffer);
+  });
+
+  it("Can encode Error", () => {
+    const v = new Error("Test String");
+
+    const encoded = encodeError(new Uint8Array(), v);
+
+    expect(encoded.length).toBe(1 + 1 + 4 + v.message.length);
+    expect(encoded[0]).toBe(Kind.Error);
+    expect(encoded.slice(6).buffer).toEqual(
+      new TextEncoder().encode(v.message).buffer
+    );
   });
 });

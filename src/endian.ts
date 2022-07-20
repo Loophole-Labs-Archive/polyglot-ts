@@ -61,3 +61,27 @@ export const numToF64BigEndian = (num: number) => {
 
   return new Uint8Array(dataView.buffer);
 };
+
+export const u8BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getUint8(0);
+};
+
+export const u16BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getUint16(0, false);
+};
+
+export const u32BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getUint32(0, false);
+};
+
+export const u64BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getBigUint64(0, false);
+};

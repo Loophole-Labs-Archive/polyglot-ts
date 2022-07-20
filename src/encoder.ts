@@ -33,8 +33,32 @@ const append = (s: Uint8Array, ...vs: Uint8Array[]) => {
 export const encodeNone = (buf: Uint8Array) =>
   append(buf, Uint8Array.from([Kind.None]));
 
+export const encodeBool = (buf: Uint8Array, value: boolean) =>
+  append(buf, Uint8Array.from([Kind.Bool, value ? BOOL_TRUE : BOOL_FALSE]));
+
+export const encodeU8 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.U8]), numToU8BigEndian(value));
+
+export const encodeU16 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.U16]), numToU16BigEndian(value));
+
 export const encodeU32 = (buf: Uint8Array, value: number) =>
   append(buf, Uint8Array.from([Kind.U32]), numToU32BigEndian(value));
+
+export const encodeU64 = (buf: Uint8Array, value: bigint) =>
+  append(buf, Uint8Array.from([Kind.U64]), numToU64BigEndian(value));
+
+export const encodeI32 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.I32]), numToI32BigEndian(value));
+
+export const encodeI64 = (buf: Uint8Array, value: bigint) =>
+  append(buf, Uint8Array.from([Kind.I64]), numToI64BigEndian(value));
+
+export const encodeF32 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.F32]), numToF32BigEndian(value));
+
+export const encodeF64 = (buf: Uint8Array, value: number) =>
+  append(buf, Uint8Array.from([Kind.F64]), numToF64BigEndian(value));
 
 export const encodeArray = (buf: Uint8Array, size: number, valueKind: Kind) =>
   append(
@@ -84,27 +108,3 @@ export const encodeError = (buf: Uint8Array, value: Error) => {
     v
   );
 };
-
-export const encodeBool = (buf: Uint8Array, value: boolean) =>
-  append(buf, Uint8Array.from([Kind.Bool, value ? BOOL_TRUE : BOOL_FALSE]));
-
-export const encodeU8 = (buf: Uint8Array, value: number) =>
-  append(buf, Uint8Array.from([Kind.U8]), numToU8BigEndian(value));
-
-export const encodeU16 = (buf: Uint8Array, value: number) =>
-  append(buf, Uint8Array.from([Kind.U16]), numToU16BigEndian(value));
-
-export const encodeU64 = (buf: Uint8Array, value: bigint) =>
-  append(buf, Uint8Array.from([Kind.U64]), numToU64BigEndian(value));
-
-export const encodeI32 = (buf: Uint8Array, value: number) =>
-  append(buf, Uint8Array.from([Kind.I32]), numToI32BigEndian(value));
-
-export const encodeI64 = (buf: Uint8Array, value: bigint) =>
-  append(buf, Uint8Array.from([Kind.I64]), numToI64BigEndian(value));
-
-export const encodeF32 = (buf: Uint8Array, value: number) =>
-  append(buf, Uint8Array.from([Kind.F32]), numToF32BigEndian(value));
-
-export const encodeF64 = (buf: Uint8Array, value: number) =>
-  append(buf, Uint8Array.from([Kind.F64]), numToF64BigEndian(value));
