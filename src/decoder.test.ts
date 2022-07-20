@@ -1,4 +1,4 @@
-import { TextEncoder } from "util";
+import { TextDecoder, TextEncoder } from "util";
 import {
   decodeArray,
   decodeBool,
@@ -7,15 +7,18 @@ import {
   decodeI32,
   decodeI64,
   decodeNone,
+  decodeString,
   decodeU16,
   decodeU32,
   decodeU64,
   decodeU8,
+  InvalidArrayError,
   InvalidBoolError,
   InvalidF32Error,
   InvalidF64Error,
   InvalidI32Error,
   InvalidI64Error,
+  InvalidStringError,
   InvalidU16Error,
   InvalidU32Error,
   InvalidU64Error,
@@ -38,6 +41,7 @@ import {
 import Kind from "./kind";
 
 window.TextEncoder = TextEncoder;
+window.TextDecoder = TextDecoder as typeof window["TextDecoder"];
 
 describe("Decoder", () => {
   it("Can decode None", () => {
@@ -190,21 +194,37 @@ describe("Decoder", () => {
       encoded = encodeString(encoded, el);
     });
 
-    const { size /* , buf */ } = decodeArray(encoded);
+    const { size, buf } = decodeArray(encoded);
 
     expect(size).toBe(expected.length);
 
-    // let remainingBuf = buf;
-    // for (let i = 0; i < size; i += 1) {
-    //   const { value, buf } = decodeString(remainingBuf);
+    let remainingBuf = buf;
+    for (let i = 0; i < size; i += 1) {
+      const { value, buf: newRemainingBuf } = decodeString(remainingBuf);
 
-    //   expected(value).toBe(expected[i]);
+      expect(value).toBe(expected[i]);
 
-    //   remainingBuf = buf;
-    // }
+      remainingBuf = newRemainingBuf;
+    }
 
-    // expect(remainingBuf.length).toBe(0);
+    expect(remainingBuf.length).toBe(0);
 
-    // expect(() => decodeF64(remainingBuf)).toThrowError(InvalidArrayError);
+    expect(() => decodeArray(remainingBuf)).toThrowError(InvalidArrayError);
+    expect(() =>
+      decodeArray(encodeArray(new Uint8Array(), 0, 999999))
+    ).toThrowError(InvalidArrayError);
+  });
+
+  it("Can decode String", () => {
+    const expected = "Test String";
+
+    const encoded = encodeString(new Uint8Array(), expected);
+
+    const { value, buf } = decodeString(encoded);
+
+    expect(value).toBe(expected);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeString(buf)).toThrowError(InvalidStringError);
   });
 });
