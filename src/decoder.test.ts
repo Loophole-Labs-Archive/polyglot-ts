@@ -1,15 +1,18 @@
 import {
+  decodeBool,
   decodeNone,
   decodeU16,
   decodeU32,
   decodeU64,
   decodeU8,
+  InvalidBoolError,
   InvalidU16Error,
   InvalidU32Error,
   InvalidU64Error,
   InvalidU8Error,
 } from "./decoder";
 import {
+  encodeBool,
   encodeNone,
   encodeU16,
   encodeU32,
@@ -28,6 +31,32 @@ describe("Decoder", () => {
 
     const decodedNext = decodeNone(buf);
     expect(decodedNext.value).toBe(false);
+  });
+
+  it("Can decode true Bool", () => {
+    const expected = true;
+
+    const encoded = encodeBool(new Uint8Array(), expected);
+
+    const { value, buf } = decodeBool(encoded);
+
+    expect(value).toBe(expected);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeBool(buf)).toThrowError(InvalidBoolError);
+  });
+
+  it("Can decode false Bool", () => {
+    const expected = false;
+
+    const encoded = encodeBool(new Uint8Array(), expected);
+
+    const { value, buf } = decodeBool(encoded);
+
+    expect(value).toBe(expected);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeBool(buf)).toThrowError(InvalidBoolError);
   });
 
   it("Can decode U8", () => {

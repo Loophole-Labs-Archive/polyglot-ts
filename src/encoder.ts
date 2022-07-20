@@ -10,8 +10,8 @@ import {
 } from "./endian";
 import Kind from "./kind";
 
-const BOOL_FALSE = 0x00;
-const BOOL_TRUE = 0x01;
+export const BOOL_FALSE = 0x00;
+export const BOOL_TRUE = 0x01;
 
 const append = (s: Uint8Array, ...vs: Uint8Array[]) => {
   const c = new Uint8Array(

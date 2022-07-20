@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import { BOOL_TRUE } from "./encoder";
 import {
   u16BigEndianToNum,
   u32BigEndianToNum,
@@ -6,6 +7,14 @@ import {
   u8BigEndianToNum,
 } from "./endian";
 import Kind from "./kind";
+
+export class InvalidBoolError extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidBoolError.prototype);
+  }
+}
 
 export class InvalidU8Error extends Error {
   constructor() {
@@ -43,6 +52,18 @@ export const decodeNone = (buf: Uint8Array) => ({
   value: buf[0] === Kind.None,
   buf: buf.slice(1),
 });
+
+export const decodeBool = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.Bool) {
+    throw new InvalidBoolError();
+  }
+
+  return {
+    value: buf[1] === BOOL_TRUE,
+    buf: buf.slice(2),
+  };
+};
 
 export const decodeU8 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
