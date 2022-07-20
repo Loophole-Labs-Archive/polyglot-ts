@@ -1,6 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { BOOL_TRUE } from "./encoder";
 import {
+  f32BigEndianToNum,
+  f64BigEndianToNum,
+  i32BigEndianToNum,
+  i64BigEndianToNum,
   u16BigEndianToNum,
   u32BigEndianToNum,
   u64BigEndianToNum,
@@ -45,6 +49,38 @@ export class InvalidU64Error extends Error {
     super();
 
     Object.setPrototypeOf(this, InvalidU64Error.prototype);
+  }
+}
+
+export class InvalidI32Error extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidI32Error.prototype);
+  }
+}
+
+export class InvalidI64Error extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidI64Error.prototype);
+  }
+}
+
+export class InvalidF32Error extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidF32Error.prototype);
+  }
+}
+
+export class InvalidF64Error extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidF64Error.prototype);
   }
 }
 
@@ -109,6 +145,54 @@ export const decodeU64 = (buf: Uint8Array) => {
 
   return {
     value: u64BigEndianToNum(buf.slice(1, 9)),
+    buf: buf.slice(9),
+  };
+};
+
+export const decodeI32 = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.I32) {
+    throw new InvalidI32Error();
+  }
+
+  return {
+    value: i32BigEndianToNum(buf.slice(1, 5)),
+    buf: buf.slice(5),
+  };
+};
+
+export const decodeI64 = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.I64) {
+    throw new InvalidI64Error();
+  }
+
+  return {
+    value: i64BigEndianToNum(buf.slice(1, 9)),
+    buf: buf.slice(9),
+  };
+};
+
+export const decodeF32 = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.F32) {
+    throw new InvalidF32Error();
+  }
+
+  return {
+    value: f32BigEndianToNum(buf.slice(1, 5)),
+    buf: buf.slice(5),
+  };
+};
+
+export const decodeF64 = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.F64) {
+    throw new InvalidF64Error();
+  }
+
+  return {
+    value: f64BigEndianToNum(buf.slice(1, 9)),
     buf: buf.slice(9),
   };
 };

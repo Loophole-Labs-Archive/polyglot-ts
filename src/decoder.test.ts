@@ -1,11 +1,19 @@
 import {
   decodeBool,
+  decodeF32,
+  decodeF64,
+  decodeI32,
+  decodeI64,
   decodeNone,
   decodeU16,
   decodeU32,
   decodeU64,
   decodeU8,
   InvalidBoolError,
+  InvalidF32Error,
+  InvalidF64Error,
+  InvalidI32Error,
+  InvalidI64Error,
   InvalidU16Error,
   InvalidU32Error,
   InvalidU64Error,
@@ -13,6 +21,10 @@ import {
 } from "./decoder";
 import {
   encodeBool,
+  encodeF32,
+  encodeF64,
+  encodeI32,
+  encodeI64,
   encodeNone,
   encodeU16,
   encodeU32,
@@ -109,5 +121,57 @@ describe("Decoder", () => {
     expect(buf.length).toBe(0);
 
     expect(() => decodeU64(buf)).toThrowError(InvalidU64Error);
+  });
+
+  it("Can decode I32", () => {
+    const expected = -2147483648;
+
+    const encoded = encodeI32(new Uint8Array(), expected);
+
+    const { value, buf } = decodeI32(encoded);
+
+    expect(value).toBe(expected);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeI32(buf)).toThrowError(InvalidI32Error);
+  });
+
+  it("Can decode I64", () => {
+    const expected = -9223372036854775808n;
+
+    const encoded = encodeI64(new Uint8Array(), expected);
+
+    const { value, buf } = decodeI64(encoded);
+
+    expect(value).toBe(expected);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeI64(buf)).toThrowError(InvalidI64Error);
+  });
+
+  it("Can decode F32", () => {
+    const expected = -214648.34432;
+
+    const encoded = encodeF32(new Uint8Array(), expected);
+
+    const { value, buf } = decodeF32(encoded);
+
+    expect(value).toBeCloseTo(expected, 2);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeF32(buf)).toThrowError(InvalidF32Error);
+  });
+
+  it("Can decode F64", () => {
+    const expected = -922337203685.2345;
+
+    const encoded = encodeF64(new Uint8Array(), expected);
+
+    const { value, buf } = decodeF64(encoded);
+
+    expect(value).toBeCloseTo(expected, 4);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeF64(buf)).toThrowError(InvalidF64Error);
   });
 });

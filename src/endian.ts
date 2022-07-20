@@ -85,3 +85,27 @@ export const u64BigEndianToNum = (buf: Uint8Array) => {
 
   return dataView.getBigUint64(0, false);
 };
+
+export const i32BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getInt32(0, false);
+};
+
+export const i64BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getBigInt64(0, false);
+};
+
+export const f32BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getFloat32(0, false);
+};
+
+export const f64BigEndianToNum = (buf: Uint8Array) => {
+  const dataView = new DataView(buf.buffer);
+
+  return dataView.getFloat64(0, false);
+};
