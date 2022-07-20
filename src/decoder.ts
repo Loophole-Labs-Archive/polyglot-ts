@@ -84,6 +84,14 @@ export class InvalidF64Error extends Error {
   }
 }
 
+export class InvalidArrayError extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidArrayError.prototype);
+  }
+}
+
 export const decodeNone = (buf: Uint8Array) => ({
   value: buf[0] === Kind.None,
   buf: buf.slice(1),
@@ -194,5 +202,24 @@ export const decodeF64 = (buf: Uint8Array) => {
   return {
     value: f64BigEndianToNum(buf.slice(1, 9)),
     buf: buf.slice(9),
+  };
+};
+
+export const decodeArray = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.Array) {
+    throw new InvalidArrayError();
+  }
+
+  const valueKind = buf[1] as Kind;
+  if (!(valueKind in Kind)) {
+    throw new InvalidArrayError();
+  }
+
+  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(2));
+
+  return {
+    size,
+    buf: remainingBuf,
   };
 };

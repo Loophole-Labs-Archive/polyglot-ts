@@ -1,4 +1,6 @@
+import { TextEncoder } from "util";
 import {
+  decodeArray,
   decodeBool,
   decodeF32,
   decodeF64,
@@ -20,17 +22,22 @@ import {
   InvalidU8Error,
 } from "./decoder";
 import {
+  encodeArray,
   encodeBool,
   encodeF32,
   encodeF64,
   encodeI32,
   encodeI64,
   encodeNone,
+  encodeString,
   encodeU16,
   encodeU32,
   encodeU64,
   encodeU8,
 } from "./encoder";
+import Kind from "./kind";
+
+window.TextEncoder = TextEncoder;
 
 describe("Decoder", () => {
   it("Can decode None", () => {
@@ -173,5 +180,31 @@ describe("Decoder", () => {
     expect(buf.length).toBe(0);
 
     expect(() => decodeF64(buf)).toThrowError(InvalidF64Error);
+  });
+
+  it("Can decode Array", () => {
+    const expected = ["1", "2", "3"];
+
+    let encoded = encodeArray(new Uint8Array(), expected.length, Kind.String);
+    expected.forEach((el) => {
+      encoded = encodeString(encoded, el);
+    });
+
+    const { size /* , buf */ } = decodeArray(encoded);
+
+    expect(size).toBe(expected.length);
+
+    // let remainingBuf = buf;
+    // for (let i = 0; i < size; i += 1) {
+    //   const { value, buf } = decodeString(remainingBuf);
+
+    //   expected(value).toBe(expected[i]);
+
+    //   remainingBuf = buf;
+    // }
+
+    // expect(remainingBuf.length).toBe(0);
+
+    // expect(() => decodeF64(remainingBuf)).toThrowError(InvalidArrayError);
   });
 });
