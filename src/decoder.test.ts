@@ -3,6 +3,7 @@ import {
   decodeArray,
   decodeBool,
   decodeBytes,
+  decodeError,
   decodeF32,
   decodeF64,
   decodeI32,
@@ -17,6 +18,7 @@ import {
   InvalidArrayError,
   InvalidBoolError,
   InvalidBytesError,
+  InvalidErrorError,
   InvalidF32Error,
   InvalidF64Error,
   InvalidI32Error,
@@ -32,6 +34,7 @@ import {
   encodeArray,
   encodeBool,
   encodeBytes,
+  encodeError,
   encodeF32,
   encodeF64,
   encodeI32,
@@ -289,5 +292,18 @@ describe("Decoder", () => {
     expect(buf.length).toBe(0);
 
     expect(() => decodeString(buf)).toThrowError(InvalidStringError);
+  });
+
+  it("Can decode Error", () => {
+    const expected = new Error("Test String");
+
+    const encoded = encodeError(new Uint8Array(), expected);
+
+    const { value, buf } = decodeError(encoded);
+
+    expect(value).toEqual(expected);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeError(buf)).toThrowError(InvalidErrorError);
   });
 });

@@ -116,6 +116,14 @@ export class InvalidStringError extends Error {
   }
 }
 
+export class InvalidErrorError extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidErrorError.prototype);
+  }
+}
+
 export const decodeNone = (buf: Uint8Array) => ({
   value: buf[0] === Kind.None,
   buf: buf.slice(1),
@@ -295,6 +303,24 @@ export const decodeString = (buf: Uint8Array) => {
   const { value: size, buf: remainingBuf } = decodeU32(buf.slice(1));
 
   const value = new TextDecoder().decode(remainingBuf.slice(0, size));
+
+  return {
+    value,
+    buf: remainingBuf.slice(size),
+  };
+};
+
+export const decodeError = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.Error) {
+    throw new InvalidErrorError();
+  }
+
+  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(1));
+
+  const value = new Error(
+    new TextDecoder().decode(remainingBuf.slice(0, size))
+  );
 
   return {
     value,
