@@ -21,7 +21,7 @@ jobs:
             node_modules
           key: npm
       - name: Install dependencies with npm
-        run: npm i
+        run: npm install --legacy-peer-deps
       - name: Run tests with npm
         run: npm run test
       - name: Build with npm
