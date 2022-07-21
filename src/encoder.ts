@@ -8,7 +8,7 @@ import {
   numToU64BigEndian,
   numToU8BigEndian,
 } from "./endian";
-import Kind from "./kind";
+import { Kind } from "./kind";
 
 export const BOOL_FALSE = 0x00;
 export const BOOL_TRUE = 0x01;

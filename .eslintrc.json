@@ -14,6 +14,8 @@
   "ignorePatterns": ["node_modules"],
   "rules": {
     "prettier/prettier": "error",
-    "import/export": 0
+    "import/export": "off",
+    "import/prefer-default-export": "off",
+    "max-classes-per-file": "off"
   }
 }

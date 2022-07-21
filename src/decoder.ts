@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { BOOL_TRUE } from "./encoder";
 import {
   f32BigEndianToNum,
@@ -10,7 +9,7 @@ import {
   u64BigEndianToNum,
   u8BigEndianToNum,
 } from "./endian";
-import Kind from "./kind";
+import { Kind } from "./kind";
 
 export class InvalidBoolError extends Error {
   constructor() {

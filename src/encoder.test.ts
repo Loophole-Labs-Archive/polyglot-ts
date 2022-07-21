@@ -16,7 +16,7 @@ import {
   encodeU64,
   encodeU8,
 } from "./encoder";
-import Kind from "./kind";
+import { Kind } from "./kind";
 
 window.TextEncoder = TextEncoder;
 

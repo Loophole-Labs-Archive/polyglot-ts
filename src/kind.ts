@@ -1,4 +1,4 @@
-enum Kind {
+export enum Kind {
   None = 0x00,
   Array = 0x01,
   Map = 0x02,
@@ -16,5 +16,3 @@ enum Kind {
   F32 = 0x0e,
   F64 = 0x0f,
 }
-
-export default Kind;
