@@ -2,6 +2,7 @@ import { TextDecoder, TextEncoder } from "util";
 import {
   decodeArray,
   decodeBool,
+  decodeBytes,
   decodeF32,
   decodeF64,
   decodeI32,
@@ -15,6 +16,7 @@ import {
   decodeU8,
   InvalidArrayError,
   InvalidBoolError,
+  InvalidBytesError,
   InvalidF32Error,
   InvalidF64Error,
   InvalidI32Error,
@@ -29,6 +31,7 @@ import {
 import {
   encodeArray,
   encodeBool,
+  encodeBytes,
   encodeF32,
   encodeF64,
   encodeI32,
@@ -260,6 +263,19 @@ describe("Decoder", () => {
     expect(() =>
       decodeMap(encodeMap(new Uint8Array(), 0, 999999, 999999))
     ).toThrowError(InvalidMapError);
+  });
+
+  it("Can decode Bytes", () => {
+    const expected = new TextEncoder().encode("Test String");
+
+    const encoded = encodeBytes(new Uint8Array(), expected);
+
+    const { value, buf } = decodeBytes(encoded);
+
+    expect(value.buffer).toEqual(expected.buffer);
+    expect(buf.length).toBe(0);
+
+    expect(() => decodeBytes(buf)).toThrowError(InvalidBytesError);
   });
 
   it("Can decode String", () => {

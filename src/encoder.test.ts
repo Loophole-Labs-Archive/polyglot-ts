@@ -159,34 +159,36 @@ describe("Encoder", () => {
   });
 
   it("Can encode Bytes", () => {
-    const v = new TextEncoder().encode("Test String");
+    const expected = new TextEncoder().encode("Test String");
 
-    const encoded = encodeBytes(new Uint8Array(), v);
+    const encoded = encodeBytes(new Uint8Array(), expected);
 
-    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
+    expect(encoded.length).toBe(1 + 1 + 4 + expected.length);
     expect(encoded[0]).toBe(Kind.Bytes);
-    expect(encoded.slice(6).buffer).toEqual(v.buffer);
+    expect(encoded.slice(6).buffer).toEqual(expected.buffer);
   });
 
   it("Can encode String", () => {
-    const v = "Test String";
+    const expected = "Test String";
 
-    const encoded = encodeString(new Uint8Array(), v);
+    const encoded = encodeString(new Uint8Array(), expected);
 
-    expect(encoded.length).toBe(1 + 1 + 4 + v.length);
+    expect(encoded.length).toBe(1 + 1 + 4 + expected.length);
     expect(encoded[0]).toBe(Kind.String);
-    expect(encoded.slice(6).buffer).toEqual(new TextEncoder().encode(v).buffer);
+    expect(encoded.slice(6).buffer).toEqual(
+      new TextEncoder().encode(expected).buffer
+    );
   });
 
   it("Can encode Error", () => {
-    const v = new Error("Test String");
+    const expected = new Error("Test String");
 
-    const encoded = encodeError(new Uint8Array(), v);
+    const encoded = encodeError(new Uint8Array(), expected);
 
-    expect(encoded.length).toBe(1 + 1 + 4 + v.message.length);
+    expect(encoded.length).toBe(1 + 1 + 4 + expected.message.length);
     expect(encoded[0]).toBe(Kind.Error);
     expect(encoded.slice(6).buffer).toEqual(
-      new TextEncoder().encode(v.message).buffer
+      new TextEncoder().encode(expected.message).buffer
     );
   });
 });

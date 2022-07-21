@@ -100,6 +100,14 @@ export class InvalidMapError extends Error {
   }
 }
 
+export class InvalidBytesError extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidBytesError.prototype);
+  }
+}
+
 export class InvalidStringError extends Error {
   constructor() {
     super();
@@ -261,6 +269,20 @@ export const decodeMap = (buf: Uint8Array) => {
   return {
     size,
     buf: remainingBuf,
+  };
+};
+
+export const decodeBytes = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.Bytes) {
+    throw new InvalidBytesError();
+  }
+
+  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(1));
+
+  return {
+    value: remainingBuf.slice(0, size),
+    buf: remainingBuf.slice(size),
   };
 };
 
