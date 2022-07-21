@@ -92,6 +92,14 @@ export class InvalidArrayError extends Error {
   }
 }
 
+export class InvalidMapError extends Error {
+  constructor() {
+    super();
+
+    Object.setPrototypeOf(this, InvalidMapError.prototype);
+  }
+}
+
 export class InvalidStringError extends Error {
   constructor() {
     super();
@@ -225,6 +233,30 @@ export const decodeArray = (buf: Uint8Array) => {
   }
 
   const { value: size, buf: remainingBuf } = decodeU32(buf.slice(2));
+
+  return {
+    size,
+    buf: remainingBuf,
+  };
+};
+
+export const decodeMap = (buf: Uint8Array) => {
+  const kind = buf[0] as Kind;
+  if (kind !== Kind.Map) {
+    throw new InvalidMapError();
+  }
+
+  const keyKind = buf[1] as Kind;
+  if (!(keyKind in Kind)) {
+    throw new InvalidMapError();
+  }
+
+  const valueKind = buf[2] as Kind;
+  if (!(valueKind in Kind)) {
+    throw new InvalidMapError();
+  }
+
+  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(3));
 
   return {
     size,

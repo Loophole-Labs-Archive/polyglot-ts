@@ -6,6 +6,7 @@ import {
   decodeF64,
   decodeI32,
   decodeI64,
+  decodeMap,
   decodeNone,
   decodeString,
   decodeU16,
@@ -18,6 +19,7 @@ import {
   InvalidF64Error,
   InvalidI32Error,
   InvalidI64Error,
+  InvalidMapError,
   InvalidStringError,
   InvalidU16Error,
   InvalidU32Error,
@@ -31,6 +33,7 @@ import {
   encodeF64,
   encodeI32,
   encodeI64,
+  encodeMap,
   encodeNone,
   encodeString,
   encodeU16,
@@ -213,6 +216,50 @@ describe("Decoder", () => {
     expect(() =>
       decodeArray(encodeArray(new Uint8Array(), 0, 999999))
     ).toThrowError(InvalidArrayError);
+  });
+
+  it("Can decode Map", () => {
+    const expected = new Map<string, number>();
+    expected.set("1", 1);
+    expected.set("2", 2);
+    expected.set("3", 3);
+
+    let encoded = encodeMap(
+      new Uint8Array(),
+      expected.size,
+      Kind.String,
+      Kind.U32
+    );
+    expected.forEach((value, key) => {
+      encoded = encodeU32(encodeString(encoded, key), value);
+    });
+
+    const { size, buf } = decodeMap(encoded);
+
+    expect(size).toBe(expected.size);
+
+    let remainingBuf = buf;
+    for (let i = 0; i < size; i += 1) {
+      const { value: key, buf: keyBuf } = decodeString(remainingBuf);
+      const { value, buf: valueBuf } = decodeU32(keyBuf);
+
+      expect(expected.get(key.toString())).toBe(value);
+
+      remainingBuf = valueBuf;
+    }
+
+    expect(remainingBuf.length).toBe(0);
+
+    expect(() => decodeMap(remainingBuf)).toThrowError(InvalidMapError);
+    expect(() =>
+      decodeMap(encodeMap(new Uint8Array(), 0, 999999, Kind.String))
+    ).toThrowError(InvalidMapError);
+    expect(() =>
+      decodeMap(encodeMap(new Uint8Array(), 0, Kind.String, 999999))
+    ).toThrowError(InvalidMapError);
+    expect(() =>
+      decodeMap(encodeMap(new Uint8Array(), 0, 999999, 999999))
+    ).toThrowError(InvalidMapError);
   });
 
   it("Can decode String", () => {
