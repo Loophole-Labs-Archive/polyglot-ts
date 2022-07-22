@@ -17,51 +17,51 @@
 import { TextDecoder, TextEncoder } from "util";
 import {
   decodeArray,
-  decodeBool,
-  decodeBytes,
+  decodeBoolean,
   decodeError,
-  decodeF32,
-  decodeF64,
-  decodeI32,
-  decodeI64,
+  decodeFloat32,
+  decodeFloat64,
+  decodeInt32,
+  decodeInt64,
   decodeMap,
-  decodeNone,
+  decodeNull,
   decodeString,
-  decodeU16,
-  decodeU32,
-  decodeU64,
-  decodeU8,
+  decodeUint16,
+  decodeUint32,
+  decodeUint64,
+  decodeUint8,
+  decodeUint8Array,
   InvalidArrayError,
-  InvalidBoolError,
-  InvalidBytesError,
+  InvalidBooleanError,
   InvalidErrorError,
-  InvalidF32Error,
-  InvalidF64Error,
-  InvalidI32Error,
-  InvalidI64Error,
+  InvalidFloat32Error,
+  InvalidFloat64Error,
+  InvalidInt32Error,
+  InvalidInt64Error,
   InvalidMapError,
   InvalidStringError,
-  InvalidU16Error,
-  InvalidU32Error,
-  InvalidU64Error,
-  InvalidU8Error,
+  InvalidUint16Error,
+  InvalidUint32Error,
+  InvalidUint64Error,
+  InvalidUint8ArrayError,
+  InvalidUint8Error,
 } from "./decoder";
 import {
   encodeArray,
   encodeBool,
-  encodeBytes,
   encodeError,
-  encodeF32,
-  encodeF64,
-  encodeI32,
-  encodeI64,
+  encodeFloat32,
+  encodeFloat64,
+  encodeInt32,
+  encodeInt64,
   encodeMap,
-  encodeNone,
+  encodeNull,
   encodeString,
-  encodeU16,
-  encodeU32,
-  encodeU64,
-  encodeU8,
+  encodeUint16,
+  encodeUint32,
+  encodeUint64,
+  encodeUint8,
+  encodeUint8Array,
 } from "./encoder";
 import { Kind } from "./kind";
 
@@ -69,146 +69,146 @@ window.TextEncoder = TextEncoder;
 window.TextDecoder = TextDecoder as typeof window["TextDecoder"];
 
 describe("Decoder", () => {
-  it("Can decode None", () => {
-    const encoded = encodeNone(new Uint8Array());
+  it("Can decode Null", () => {
+    const encoded = encodeNull(new Uint8Array());
 
-    const { value, buf } = decodeNone(encoded);
+    const { value, buf } = decodeNull(encoded);
 
     expect(value).toBe(true);
     expect(buf.length).toBe(0);
 
-    const decodedNext = decodeNone(buf);
+    const decodedNext = decodeNull(buf);
     expect(decodedNext.value).toBe(false);
   });
 
-  it("Can decode true Bool", () => {
+  it("Can decode true Boolean", () => {
     const expected = true;
 
     const encoded = encodeBool(new Uint8Array(), expected);
 
-    const { value, buf } = decodeBool(encoded);
+    const { value, buf } = decodeBoolean(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeBool(buf)).toThrowError(InvalidBoolError);
+    expect(() => decodeBoolean(buf)).toThrowError(InvalidBooleanError);
   });
 
-  it("Can decode false Bool", () => {
+  it("Can decode false Boolean", () => {
     const expected = false;
 
     const encoded = encodeBool(new Uint8Array(), expected);
 
-    const { value, buf } = decodeBool(encoded);
+    const { value, buf } = decodeBoolean(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeBool(buf)).toThrowError(InvalidBoolError);
+    expect(() => decodeBoolean(buf)).toThrowError(InvalidBooleanError);
   });
 
-  it("Can decode U8", () => {
+  it("Can decode Uint8", () => {
     const expected = 32;
 
-    const encoded = encodeU8(new Uint8Array(), expected);
+    const encoded = encodeUint8(new Uint8Array(), expected);
 
-    const { value, buf } = decodeU8(encoded);
+    const { value, buf } = decodeUint8(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeU8(buf)).toThrowError(InvalidU8Error);
+    expect(() => decodeUint8(buf)).toThrowError(InvalidUint8Error);
   });
 
-  it("Can decode U16", () => {
+  it("Can decode Uint16", () => {
     const expected = 1024;
 
-    const encoded = encodeU16(new Uint8Array(), expected);
+    const encoded = encodeUint16(new Uint8Array(), expected);
 
-    const { value, buf } = decodeU16(encoded);
+    const { value, buf } = decodeUint16(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeU16(buf)).toThrowError(InvalidU16Error);
+    expect(() => decodeUint16(buf)).toThrowError(InvalidUint16Error);
   });
 
-  it("Can decode U32", () => {
+  it("Can decode Uint32", () => {
     const expected = 4294967290;
 
-    const encoded = encodeU32(new Uint8Array(), expected);
+    const encoded = encodeUint32(new Uint8Array(), expected);
 
-    const { value, buf } = decodeU32(encoded);
+    const { value, buf } = decodeUint32(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeU32(buf)).toThrowError(InvalidU32Error);
+    expect(() => decodeUint32(buf)).toThrowError(InvalidUint32Error);
   });
 
-  it("Can decode U64", () => {
+  it("Can decode Uint64", () => {
     const expected = 18446744073709551610n;
 
-    const encoded = encodeU64(new Uint8Array(), expected);
+    const encoded = encodeUint64(new Uint8Array(), expected);
 
-    const { value, buf } = decodeU64(encoded);
+    const { value, buf } = decodeUint64(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeU64(buf)).toThrowError(InvalidU64Error);
+    expect(() => decodeUint64(buf)).toThrowError(InvalidUint64Error);
   });
 
-  it("Can decode I32", () => {
+  it("Can decode Int32", () => {
     const expected = -2147483648;
 
-    const encoded = encodeI32(new Uint8Array(), expected);
+    const encoded = encodeInt32(new Uint8Array(), expected);
 
-    const { value, buf } = decodeI32(encoded);
+    const { value, buf } = decodeInt32(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeI32(buf)).toThrowError(InvalidI32Error);
+    expect(() => decodeInt32(buf)).toThrowError(InvalidInt32Error);
   });
 
-  it("Can decode I64", () => {
+  it("Can decode Int64", () => {
     const expected = -9223372036854775808n;
 
-    const encoded = encodeI64(new Uint8Array(), expected);
+    const encoded = encodeInt64(new Uint8Array(), expected);
 
-    const { value, buf } = decodeI64(encoded);
+    const { value, buf } = decodeInt64(encoded);
 
     expect(value).toBe(expected);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeI64(buf)).toThrowError(InvalidI64Error);
+    expect(() => decodeInt64(buf)).toThrowError(InvalidInt64Error);
   });
 
-  it("Can decode F32", () => {
+  it("Can decode Float32", () => {
     const expected = -214648.34432;
 
-    const encoded = encodeF32(new Uint8Array(), expected);
+    const encoded = encodeFloat32(new Uint8Array(), expected);
 
-    const { value, buf } = decodeF32(encoded);
+    const { value, buf } = decodeFloat32(encoded);
 
     expect(value).toBeCloseTo(expected, 2);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeF32(buf)).toThrowError(InvalidF32Error);
+    expect(() => decodeFloat32(buf)).toThrowError(InvalidFloat32Error);
   });
 
-  it("Can decode F64", () => {
+  it("Can decode Float64", () => {
     const expected = -922337203685.2345;
 
-    const encoded = encodeF64(new Uint8Array(), expected);
+    const encoded = encodeFloat64(new Uint8Array(), expected);
 
-    const { value, buf } = decodeF64(encoded);
+    const { value, buf } = decodeFloat64(encoded);
 
     expect(value).toBeCloseTo(expected, 4);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeF64(buf)).toThrowError(InvalidF64Error);
+    expect(() => decodeFloat64(buf)).toThrowError(InvalidFloat64Error);
   });
 
   it("Can decode Array", () => {
@@ -250,10 +250,10 @@ describe("Decoder", () => {
       new Uint8Array(),
       expected.size,
       Kind.String,
-      Kind.U32
+      Kind.Uint32
     );
     expected.forEach((value, key) => {
-      encoded = encodeU32(encodeString(encoded, key), value);
+      encoded = encodeUint32(encodeString(encoded, key), value);
     });
 
     const { size, buf } = decodeMap(encoded);
@@ -263,7 +263,7 @@ describe("Decoder", () => {
     let remainingBuf = buf;
     for (let i = 0; i < size; i += 1) {
       const { value: key, buf: keyBuf } = decodeString(remainingBuf);
-      const { value, buf: valueBuf } = decodeU32(keyBuf);
+      const { value, buf: valueBuf } = decodeUint32(keyBuf);
 
       expect(expected.get(key.toString())).toBe(value);
 
@@ -284,17 +284,17 @@ describe("Decoder", () => {
     ).toThrowError(InvalidMapError);
   });
 
-  it("Can decode Bytes", () => {
+  it("Can decode Uint8Array", () => {
     const expected = new TextEncoder().encode("Test String");
 
-    const encoded = encodeBytes(new Uint8Array(), expected);
+    const encoded = encodeUint8Array(new Uint8Array(), expected);
 
-    const { value, buf } = decodeBytes(encoded);
+    const { value, buf } = decodeUint8Array(encoded);
 
     expect(value.buffer).toEqual(expected.buffer);
     expect(buf.length).toBe(0);
 
-    expect(() => decodeBytes(buf)).toThrowError(InvalidBytesError);
+    expect(() => decodeUint8Array(buf)).toThrowError(InvalidUint8ArrayError);
   });
 
   it("Can decode String", () => {

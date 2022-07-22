@@ -40,5 +40,5 @@ Everyone interacting in the Polyglot project’s codebases, issue trackers, chat
 
 [license]: http://www.apache.org/licenses/LICENSE-2.0
 [docs]: https://loopholelabs.github.io/polyglot-ts
-[gitrepo]: https://github.com/loopholelabs/polyglot-go
+[gitrepo]: https://github.com/loopholelabs/polyglot-ts
 [loopholelabs]: https://cdn.loopholelabs.io/loopholelabs/LoopholeLabsLogo.svg

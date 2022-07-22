@@ -16,86 +16,86 @@
 
 import { BOOL_TRUE } from "./encoder";
 import {
-  f32BigEndianToNum,
-  f64BigEndianToNum,
-  i32BigEndianToNum,
-  i64BigEndianToNum,
-  u16BigEndianToNum,
-  u32BigEndianToNum,
-  u64BigEndianToNum,
-  u8BigEndianToNum,
+  float32BigEndianToNum,
+  float64BigEndianToNum,
+  int32BigEndianToNum,
+  int64BigEndianToNum,
+  uint16BigEndianToNum,
+  uint32BigEndianToNum,
+  uint64BigEndianToNum,
+  uint8BigEndianToNum,
 } from "./endian";
 import { Kind } from "./kind";
 
-export class InvalidBoolError extends Error {
+export class InvalidBooleanError extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidBoolError.prototype);
+    Object.setPrototypeOf(this, InvalidBooleanError.prototype);
   }
 }
 
-export class InvalidU8Error extends Error {
+export class InvalidUint8Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidU8Error.prototype);
+    Object.setPrototypeOf(this, InvalidUint8Error.prototype);
   }
 }
 
-export class InvalidU16Error extends Error {
+export class InvalidUint16Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidU16Error.prototype);
+    Object.setPrototypeOf(this, InvalidUint16Error.prototype);
   }
 }
 
-export class InvalidU32Error extends Error {
+export class InvalidUint32Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidU32Error.prototype);
+    Object.setPrototypeOf(this, InvalidUint32Error.prototype);
   }
 }
 
-export class InvalidU64Error extends Error {
+export class InvalidUint64Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidU64Error.prototype);
+    Object.setPrototypeOf(this, InvalidUint64Error.prototype);
   }
 }
 
-export class InvalidI32Error extends Error {
+export class InvalidInt32Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidI32Error.prototype);
+    Object.setPrototypeOf(this, InvalidInt32Error.prototype);
   }
 }
 
-export class InvalidI64Error extends Error {
+export class InvalidInt64Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidI64Error.prototype);
+    Object.setPrototypeOf(this, InvalidInt64Error.prototype);
   }
 }
 
-export class InvalidF32Error extends Error {
+export class InvalidFloat32Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidF32Error.prototype);
+    Object.setPrototypeOf(this, InvalidFloat32Error.prototype);
   }
 }
 
-export class InvalidF64Error extends Error {
+export class InvalidFloat64Error extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidF64Error.prototype);
+    Object.setPrototypeOf(this, InvalidFloat64Error.prototype);
   }
 }
 
@@ -115,11 +115,11 @@ export class InvalidMapError extends Error {
   }
 }
 
-export class InvalidBytesError extends Error {
+export class InvalidUint8ArrayError extends Error {
   constructor() {
     super();
 
-    Object.setPrototypeOf(this, InvalidBytesError.prototype);
+    Object.setPrototypeOf(this, InvalidUint8ArrayError.prototype);
   }
 }
 
@@ -139,15 +139,15 @@ export class InvalidErrorError extends Error {
   }
 }
 
-export const decodeNone = (buf: Uint8Array) => ({
-  value: buf[0] === Kind.None,
+export const decodeNull = (buf: Uint8Array) => ({
+  value: buf[0] === Kind.Null,
   buf: buf.slice(1),
 });
 
-export const decodeBool = (buf: Uint8Array) => {
+export const decodeBoolean = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.Bool) {
-    throw new InvalidBoolError();
+  if (kind !== Kind.Boolean) {
+    throw new InvalidBooleanError();
   }
 
   return {
@@ -156,98 +156,98 @@ export const decodeBool = (buf: Uint8Array) => {
   };
 };
 
-export const decodeU8 = (buf: Uint8Array) => {
+export const decodeUint8 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.U8) {
-    throw new InvalidU8Error();
+  if (kind !== Kind.Uint8) {
+    throw new InvalidUint8Error();
   }
 
   return {
-    value: u8BigEndianToNum(buf.slice(1, 3)),
+    value: uint8BigEndianToNum(buf.slice(1, 3)),
     buf: buf.slice(3),
   };
 };
 
-export const decodeU16 = (buf: Uint8Array) => {
+export const decodeUint16 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.U16) {
-    throw new InvalidU16Error();
+  if (kind !== Kind.Uint16) {
+    throw new InvalidUint16Error();
   }
 
   return {
-    value: u16BigEndianToNum(buf.slice(1, 4)),
+    value: uint16BigEndianToNum(buf.slice(1, 4)),
     buf: buf.slice(4),
   };
 };
 
-export const decodeU32 = (buf: Uint8Array) => {
+export const decodeUint32 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.U32) {
-    throw new InvalidU32Error();
+  if (kind !== Kind.Uint32) {
+    throw new InvalidUint32Error();
   }
 
   return {
-    value: u32BigEndianToNum(buf.slice(1, 5)),
+    value: uint32BigEndianToNum(buf.slice(1, 5)),
     buf: buf.slice(5),
   };
 };
 
-export const decodeU64 = (buf: Uint8Array) => {
+export const decodeUint64 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.U64) {
-    throw new InvalidU64Error();
+  if (kind !== Kind.Uint64) {
+    throw new InvalidUint64Error();
   }
 
   return {
-    value: u64BigEndianToNum(buf.slice(1, 9)),
+    value: uint64BigEndianToNum(buf.slice(1, 9)),
     buf: buf.slice(9),
   };
 };
 
-export const decodeI32 = (buf: Uint8Array) => {
+export const decodeInt32 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.I32) {
-    throw new InvalidI32Error();
+  if (kind !== Kind.Int32) {
+    throw new InvalidInt32Error();
   }
 
   return {
-    value: i32BigEndianToNum(buf.slice(1, 5)),
+    value: int32BigEndianToNum(buf.slice(1, 5)),
     buf: buf.slice(5),
   };
 };
 
-export const decodeI64 = (buf: Uint8Array) => {
+export const decodeInt64 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.I64) {
-    throw new InvalidI64Error();
+  if (kind !== Kind.Int64) {
+    throw new InvalidInt64Error();
   }
 
   return {
-    value: i64BigEndianToNum(buf.slice(1, 9)),
+    value: int64BigEndianToNum(buf.slice(1, 9)),
     buf: buf.slice(9),
   };
 };
 
-export const decodeF32 = (buf: Uint8Array) => {
+export const decodeFloat32 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.F32) {
-    throw new InvalidF32Error();
+  if (kind !== Kind.Float32) {
+    throw new InvalidFloat32Error();
   }
 
   return {
-    value: f32BigEndianToNum(buf.slice(1, 5)),
+    value: float32BigEndianToNum(buf.slice(1, 5)),
     buf: buf.slice(5),
   };
 };
 
-export const decodeF64 = (buf: Uint8Array) => {
+export const decodeFloat64 = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.F64) {
-    throw new InvalidF64Error();
+  if (kind !== Kind.Float64) {
+    throw new InvalidFloat64Error();
   }
 
   return {
-    value: f64BigEndianToNum(buf.slice(1, 9)),
+    value: float64BigEndianToNum(buf.slice(1, 9)),
     buf: buf.slice(9),
   };
 };
@@ -263,7 +263,7 @@ export const decodeArray = (buf: Uint8Array) => {
     throw new InvalidArrayError();
   }
 
-  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(2));
+  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(2));
 
   return {
     size,
@@ -287,7 +287,7 @@ export const decodeMap = (buf: Uint8Array) => {
     throw new InvalidMapError();
   }
 
-  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(3));
+  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(3));
 
   return {
     size,
@@ -295,13 +295,13 @@ export const decodeMap = (buf: Uint8Array) => {
   };
 };
 
-export const decodeBytes = (buf: Uint8Array) => {
+export const decodeUint8Array = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
-  if (kind !== Kind.Bytes) {
-    throw new InvalidBytesError();
+  if (kind !== Kind.Uint8Array) {
+    throw new InvalidUint8ArrayError();
   }
 
-  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(1));
+  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(1));
 
   return {
     value: remainingBuf.slice(0, size),
@@ -315,7 +315,7 @@ export const decodeString = (buf: Uint8Array) => {
     throw new InvalidStringError();
   }
 
-  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(1));
+  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(1));
 
   const value = new TextDecoder().decode(remainingBuf.slice(0, size));
 
@@ -331,7 +331,7 @@ export const decodeError = (buf: Uint8Array) => {
     throw new InvalidErrorError();
   }
 
-  const { value: size, buf: remainingBuf } = decodeU32(buf.slice(1));
+  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(1));
 
   const value = new Error(
     new TextDecoder().decode(remainingBuf.slice(0, size))

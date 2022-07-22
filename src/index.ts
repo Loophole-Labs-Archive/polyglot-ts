@@ -14,6 +14,6 @@
 	limitations under the License.
 */
 
-export * from "./kind";
-export * from "./encoder";
 export * from "./decoder";
+export * from "./encoder";
+export * from "./kind";
