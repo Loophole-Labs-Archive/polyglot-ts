@@ -14,9 +14,29 @@
 	limitations under the License.
 */
 
+import JSONBigint from "json-bigint";
 import fetch from "node-fetch";
-import { decodeBoolean, decodeNull } from "./decoder";
+import { TextDecoder } from "util";
+import {
+  decodeArray,
+  decodeBoolean,
+  decodeError,
+  decodeFloat32,
+  decodeFloat64,
+  decodeInt32,
+  decodeInt64,
+  decodeMap,
+  decodeNull,
+  decodeString,
+  decodeUint16,
+  decodeUint32,
+  decodeUint64,
+  decodeUint8,
+  decodeUint8Array,
+} from "./decoder";
 import { Kind } from "./kind";
+
+window.TextDecoder = TextDecoder as typeof window["TextDecoder"];
 
 // TODO: Use release version here once test data has been released
 const TEST_DATA_URL =
@@ -29,14 +49,24 @@ interface ITestData {
   encodedValue: Uint8Array;
 }
 
+const base64ToUint8Array = (base64: string) => {
+  const buf = Buffer.from(base64, "base64");
+
+  return new Uint8Array(
+    buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)
+  );
+};
+
 describe("Integration test", () => {
   let testData: ITestData[] = [];
 
   beforeAll(async () => {
-    const rawTestData = await (await fetch(TEST_DATA_URL)).json();
+    const rawTestData = JSONBigint.parse(
+      await (await fetch(TEST_DATA_URL)).text()
+    );
 
     testData = (rawTestData as any[]).map((el: any) => {
-      el.encodedValue = Buffer.from(el.encodedValue, "base64");
+      el.encodedValue = base64ToUint8Array(el.encodedValue);
 
       return el;
     });
@@ -64,6 +94,134 @@ describe("Integration test", () => {
 
           return;
         }
+
+        case Kind.Uint8: {
+          const decoded = decodeUint8(v.encodedValue);
+
+          expect(decoded.value).toBe(v.decodedValue);
+
+          return;
+        }
+
+        case Kind.Uint16: {
+          const decoded = decodeUint16(v.encodedValue);
+
+          expect(decoded.value).toBe(v.decodedValue);
+
+          return;
+        }
+
+        case Kind.Uint32: {
+          const decoded = decodeUint32(v.encodedValue);
+
+          expect(decoded.value).toBe(v.decodedValue);
+
+          return;
+        }
+
+        case Kind.Uint64: {
+          const decoded = decodeUint64(v.encodedValue);
+
+          expect(decoded.value).toBe(BigInt(v.decodedValue));
+
+          return;
+        }
+
+        case Kind.Int32: {
+          const decoded = decodeInt32(v.encodedValue);
+
+          expect(decoded.value).toBe(v.decodedValue);
+
+          return;
+        }
+
+        case Kind.Int64: {
+          const decoded = decodeInt64(v.encodedValue);
+
+          expect(decoded.value).toBe(BigInt(v.decodedValue));
+
+          return;
+        }
+
+        case Kind.Float32: {
+          const decoded = decodeFloat32(v.encodedValue);
+
+          expect(decoded.value).toBeCloseTo(v.decodedValue, 2);
+
+          return;
+        }
+
+        case Kind.Float64: {
+          const decoded = decodeFloat64(v.encodedValue);
+
+          expect(decoded.value).toBe(parseFloat(v.decodedValue));
+
+          return;
+        }
+
+        case Kind.Array: {
+          const { size, buf } = decodeArray(v.encodedValue);
+
+          expect(size).toBe(v.decodedValue.length);
+
+          let remainingBuf = buf;
+          for (let i = 0; i < size; i += 1) {
+            const { value, buf: newRemainingBuf } = decodeString(remainingBuf);
+
+            expect(value).toBe(v.decodedValue[i]);
+
+            remainingBuf = newRemainingBuf;
+          }
+
+          return;
+        }
+
+        case Kind.Map: {
+          const { size, buf } = decodeMap(v.encodedValue);
+
+          expect(size).toBe(Object.keys(v.decodedValue).length);
+
+          let remainingBuf = buf;
+          for (let i = 0; i < size; i += 1) {
+            const { value: key, buf: keyBuf } = decodeString(remainingBuf);
+            const { value, buf: valueBuf } = decodeUint32(keyBuf);
+
+            expect(v.decodedValue[key.toString()]).toBe(value);
+
+            remainingBuf = valueBuf;
+          }
+
+          return;
+        }
+
+        case Kind.Uint8Array: {
+          const decoded = decodeUint8Array(v.encodedValue);
+
+          expect(decoded.value).toEqual(base64ToUint8Array(v.decodedValue));
+
+          return;
+        }
+
+        case Kind.String: {
+          const decoded = decodeString(v.encodedValue);
+
+          expect(decoded.value).toBe(v.decodedValue);
+
+          return;
+        }
+
+        case Kind.Error: {
+          const decoded = decodeError(v.encodedValue);
+
+          expect(decoded.value).toEqual(new Error(v.decodedValue));
+
+          return;
+        }
+
+        default:
+          throw new Error(
+            "Unimplemented kind " + v.kind + " for test " + v.name
+          );
       }
     });
   });
