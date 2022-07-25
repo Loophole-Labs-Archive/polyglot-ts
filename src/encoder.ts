@@ -119,7 +119,7 @@ export const encodeError = (buf: Uint8Array, value: Error) => {
 
   return append(
     buf,
-    Uint8Array.from([Kind.Error]),
+    Uint8Array.from([Kind.Error, Kind.String]),
     encodeUint32(new Uint8Array(), v.length),
     v
   );

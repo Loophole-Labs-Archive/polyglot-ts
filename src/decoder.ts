@@ -331,7 +331,12 @@ export const decodeError = (buf: Uint8Array) => {
     throw new InvalidErrorError();
   }
 
-  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(1));
+  const nestedType = buf[1] as Kind;
+  if (nestedType !== Kind.String) {
+    throw new InvalidErrorError();
+  }
+
+  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(2));
 
   const value = new Error(
     new TextDecoder().decode(remainingBuf.slice(0, size))

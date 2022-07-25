@@ -201,7 +201,7 @@ describe("Encoder", () => {
 
     const encoded = encodeError(new Uint8Array(), expected);
 
-    expect(encoded.length).toBe(1 + 1 + 4 + expected.message.length);
+    expect(encoded.length).toBe(1 + 1 + 1 + 4 + expected.message.length);
     expect(encoded[0]).toBe(Kind.Error);
     expect(encoded.slice(6).buffer).toEqual(
       new TextEncoder().encode(expected.message).buffer
