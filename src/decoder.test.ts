@@ -321,5 +321,15 @@ describe("Decoder", () => {
     expect(buf.length).toBe(0);
 
     expect(() => decodeError(buf)).toThrowError(InvalidErrorError);
+    expect(() => {
+      const encodedWithMissingStringKind = encodeError(
+        new Uint8Array(),
+        expected
+      );
+
+      encodedWithMissingStringKind[1] = 999999;
+
+      decodeError(encodedWithMissingStringKind);
+    }).toThrowError(InvalidErrorError);
   });
 });

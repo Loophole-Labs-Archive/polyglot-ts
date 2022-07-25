@@ -16,7 +16,7 @@
 
 import JSONBigint from "json-bigint";
 import fetch from "node-fetch";
-import { TextDecoder } from "util";
+import { TextDecoder, TextEncoder } from "util";
 import {
   decodeArray,
   decodeBoolean,
@@ -34,8 +34,26 @@ import {
   decodeUint8,
   decodeUint8Array,
 } from "./decoder";
+import {
+  encodeArray,
+  encodeBool,
+  encodeError,
+  encodeFloat32,
+  encodeFloat64,
+  encodeInt32,
+  encodeInt64,
+  encodeMap,
+  encodeNull,
+  encodeString,
+  encodeUint16,
+  encodeUint32,
+  encodeUint64,
+  encodeUint8,
+  encodeUint8Array,
+} from "./encoder";
 import { Kind } from "./kind";
 
+window.TextEncoder = TextEncoder;
 window.TextDecoder = TextDecoder as typeof window["TextDecoder"];
 
 // TODO: Use release version here once test data has been released
@@ -220,7 +238,162 @@ describe("Integration test", () => {
 
         default:
           throw new Error(
-            "Unimplemented kind " + v.kind + " for test " + v.name
+            "Unimplemented decoder for  kind " + v.kind + " and test " + v.name
+          );
+      }
+    });
+  });
+
+  it("Can run the encode tests from the test data", () => {
+    testData.forEach((v) => {
+      switch (v.kind) {
+        case Kind.Null: {
+          const encoded = encodeNull(new Uint8Array());
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Boolean: {
+          const encoded = encodeBool(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Uint8: {
+          const encoded = encodeUint8(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Uint16: {
+          const encoded = encodeUint16(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Uint32: {
+          const encoded = encodeUint32(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Uint64: {
+          const encoded = encodeUint64(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Int32: {
+          const encoded = encodeInt32(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Int64: {
+          const encoded = encodeInt64(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Float32: {
+          const encoded = encodeFloat32(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Float64: {
+          const encoded = encodeFloat64(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Array: {
+          let encoded = encodeArray(
+            new Uint8Array(),
+            v.decodedValue.length,
+            Kind.String
+          );
+          v.decodedValue.forEach((el: string) => {
+            encoded = encodeString(encoded, el);
+          });
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Map: {
+          let encoded = encodeMap(
+            new Uint8Array(),
+            Object.keys(v.decodedValue).length,
+            Kind.String,
+            Kind.Uint32
+          );
+          Object.entries(v.decodedValue)
+            .sort(([prevKey], [currKey]) => prevKey.localeCompare(currKey))
+            .forEach(([key, value]: any[]) => {
+              encoded = encodeString(encoded, key);
+              encoded = encodeUint32(encoded, value);
+            });
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Uint8Array: {
+          const encoded = encodeUint8Array(
+            new Uint8Array(),
+            base64ToUint8Array(v.decodedValue)
+          );
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.String: {
+          const encoded = encodeString(new Uint8Array(), v.decodedValue);
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        case Kind.Error: {
+          const encoded = encodeError(
+            new Uint8Array(),
+            new Error(v.decodedValue)
+          );
+
+          expect(encoded).toEqual(v.encodedValue);
+
+          return;
+        }
+
+        default:
+          throw new Error(
+            "Unimplemented encoder for  kind " + v.kind + " and test " + v.name
           );
       }
     });
