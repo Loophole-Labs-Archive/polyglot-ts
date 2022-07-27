@@ -18,3 +18,5 @@ Frisbee uses GitHub to manage reviews of pull requests.
   Environments](http://peter.bourgon.org/go-in-production/#formatting-and-style).
 
 - Be sure to sign off on the [DCO](https://github.com/probot/dco#how-it-works)
+
+- To update the integration test data, run `npm run update-test-data`

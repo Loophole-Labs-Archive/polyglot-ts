@@ -15,7 +15,6 @@
 */
 
 import JSONBigint from "json-bigint";
-import fetch from "node-fetch";
 import { TextDecoder, TextEncoder } from "util";
 import {
   decodeArray,
@@ -52,13 +51,11 @@ import {
   encodeUint8Array,
 } from "./encoder";
 import { Kind } from "./kind";
+import fs from "fs/promises";
+import path from "path";
 
 window.TextEncoder = TextEncoder;
 window.TextDecoder = TextDecoder as typeof window["TextDecoder"];
-
-// TODO: Use release version here once test data has been released
-const TEST_DATA_URL =
-  "https://github.com/loopholelabs/polyglot-test-data/releases/download/unstable/polyglot-test-data.json";
 
 interface ITestData {
   name: string;
@@ -80,7 +77,10 @@ describe("Integration test", () => {
 
   beforeAll(async () => {
     const rawTestData = JSONBigint.parse(
-      await (await fetch(TEST_DATA_URL)).text()
+      await fs.readFile(
+        path.join(__dirname, "..", "data", "polyglot-test-data.json"),
+        "utf8"
+      )
     );
 
     testData = (rawTestData as any[]).map((el: any) => {
@@ -238,7 +238,7 @@ describe("Integration test", () => {
 
         default:
           throw new Error(
-            "Unimplemented decoder for  kind " + v.kind + " and test " + v.name
+            "Unimplemented decoder for kind " + v.kind + " and test " + v.name
           );
       }
     });
@@ -393,7 +393,7 @@ describe("Integration test", () => {
 
         default:
           throw new Error(
-            "Unimplemented encoder for  kind " + v.kind + " and test " + v.name
+            "Unimplemented encoder for kind " + v.kind + " and test " + v.name
           );
       }
     });
