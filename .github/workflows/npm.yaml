@@ -35,6 +35,7 @@ jobs:
           publish_command: "npm"
           publish_args: "--access public"
           create_tag: "false"
+          commit_pattern: ".*"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
