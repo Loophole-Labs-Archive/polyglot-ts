@@ -50,5 +50,8 @@
     "ts-jest": "^28.0.6",
     "typedoc": "^0.23.8",
     "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "protobufjs": "^7.0.0"
   }
 }
