@@ -35,7 +35,7 @@ import {
 } from "./decoder";
 import {
   encodeArray,
-  encodeBool,
+  encodeBoolean,
   encodeError,
   encodeFloat32,
   encodeFloat64,
@@ -256,7 +256,7 @@ describe("Integration test", () => {
         }
 
         case Kind.Boolean: {
-          const encoded = encodeBool(new Uint8Array(), v.decodedValue);
+          const encoded = encodeBoolean(new Uint8Array(), v.decodedValue);
 
           expect(encoded).toEqual(v.encodedValue);
 

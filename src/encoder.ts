@@ -26,8 +26,8 @@ import {
 } from "./endian";
 import { Kind } from "./kind";
 
-export const BOOL_FALSE = 0x00;
-export const BOOL_TRUE = 0x01;
+export const BOOLEAN_FALSE = 0x00;
+export const BOOLEAN_TRUE = 0x01;
 
 const append = (s: Uint8Array, ...vs: Uint8Array[]) => {
   const c = new Uint8Array(
@@ -49,8 +49,11 @@ const append = (s: Uint8Array, ...vs: Uint8Array[]) => {
 export const encodeNull = (buf: Uint8Array) =>
   append(buf, Uint8Array.from([Kind.Null]));
 
-export const encodeBool = (buf: Uint8Array, value: boolean) =>
-  append(buf, Uint8Array.from([Kind.Boolean, value ? BOOL_TRUE : BOOL_FALSE]));
+export const encodeBoolean = (buf: Uint8Array, value: boolean) =>
+  append(
+    buf,
+    Uint8Array.from([Kind.Boolean, value ? BOOLEAN_TRUE : BOOLEAN_FALSE])
+  );
 
 export const encodeUint8 = (buf: Uint8Array, value: number) =>
   append(buf, Uint8Array.from([Kind.Uint8]), numToUint8BigEndian(value));

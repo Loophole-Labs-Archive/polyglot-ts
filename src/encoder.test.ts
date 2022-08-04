@@ -17,8 +17,7 @@
 import { TextEncoder } from "util";
 import {
   encodeArray,
-  encodeBool,
-  encodeUint8Array,
+  encodeBoolean,
   encodeError,
   encodeFloat32,
   encodeFloat64,
@@ -31,6 +30,7 @@ import {
   encodeUint32,
   encodeUint64,
   encodeUint8,
+  encodeUint8Array,
 } from "./encoder";
 import { Kind } from "./kind";
 
@@ -45,7 +45,7 @@ describe("Encoder", () => {
   });
 
   it("Can encode true Boolean", () => {
-    const encoded = encodeBool(new Uint8Array(), true);
+    const encoded = encodeBoolean(new Uint8Array(), true);
 
     expect(encoded.length).toBe(2);
     expect(encoded[0]).toBe(Kind.Boolean);
@@ -53,7 +53,7 @@ describe("Encoder", () => {
   });
 
   it("Can encode false Boolean", () => {
-    const encoded = encodeBool(new Uint8Array(), false);
+    const encoded = encodeBoolean(new Uint8Array(), false);
 
     expect(encoded.length).toBe(2);
     expect(encoded[0]).toBe(Kind.Boolean);

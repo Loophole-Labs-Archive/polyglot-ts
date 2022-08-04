@@ -14,7 +14,7 @@
 	limitations under the License.
 */
 
-import { BOOL_TRUE } from "./encoder";
+import { BOOLEAN_TRUE } from "./encoder";
 import {
   float32BigEndianToNum,
   float64BigEndianToNum,
@@ -151,7 +151,7 @@ export const decodeBoolean = (buf: Uint8Array) => {
   }
 
   return {
-    value: buf[1] === BOOL_TRUE,
+    value: buf[1] === BOOLEAN_TRUE,
     buf: buf.slice(2),
   };
 };

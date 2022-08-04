@@ -48,7 +48,7 @@ import {
 } from "./decoder";
 import {
   encodeArray,
-  encodeBool,
+  encodeBoolean,
   encodeError,
   encodeFloat32,
   encodeFloat64,
@@ -84,7 +84,7 @@ describe("Decoder", () => {
   it("Can decode true Boolean", () => {
     const expected = true;
 
-    const encoded = encodeBool(new Uint8Array(), expected);
+    const encoded = encodeBoolean(new Uint8Array(), expected);
 
     const { value, buf } = decodeBoolean(encoded);
 
@@ -97,7 +97,7 @@ describe("Decoder", () => {
   it("Can decode false Boolean", () => {
     const expected = false;
 
-    const encoded = encodeBool(new Uint8Array(), expected);
+    const encoded = encodeBoolean(new Uint8Array(), expected);
 
     const { value, buf } = decodeBoolean(encoded);
 
