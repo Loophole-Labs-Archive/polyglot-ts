@@ -42,6 +42,7 @@ const isProtoTypeComposite = (protoTypeName: string) => {
   switch (protoTypeName) {
     case "double":
     case "float":
+    case "int":
     case "int32":
     case "uint32":
     case "sint32":
@@ -62,15 +63,23 @@ const isProtoTypeComposite = (protoTypeName: string) => {
   }
 };
 
-const getTypeScriptTypeFromProtoType = (protoTypeName: string) => {
+const getTypeScriptTypeFromProtoType = (
+  protoTypeName: string,
+  isArray: boolean
+) => {
   switch (protoTypeName) {
     case "double":
     case "float":
+    case "int":
     case "int32":
     case "uint32":
     case "sint32":
     case "fixed32":
     case "sfixed32":
+      if (isArray) {
+        return "number[]";
+      }
+
       return "number";
 
     case "int64":
@@ -78,19 +87,82 @@ const getTypeScriptTypeFromProtoType = (protoTypeName: string) => {
     case "sint64":
     case "fixed64":
     case "sfixed64":
+      if (isArray) {
+        return "bigint[]";
+      }
+
       return "bigint";
 
     case "bool":
+      if (isArray) {
+        return "boolean[]";
+      }
+
       return "boolean";
 
     case "string":
+      if (isArray) {
+        return "string[]";
+      }
+
       return "string";
+
+    case "bytes":
+      if (isArray) {
+        return "Uint8Array[]";
+      }
+
+      return "Uint8Array";
+
+    default:
+      return protoTypeName; // Is reference of other type
+  }
+};
+
+const getPolyglotKindFromProtoType = (
+  protoTypeName: string,
+  fieldName: string
+) => {
+  switch (protoTypeName) {
+    case "double":
+      return "Float64";
+    case "float":
+      return "Float32";
+    case "int":
+      return "Int32";
+    case "int32":
+      return "Int32";
+    case "uint32":
+      return "Uint32";
+    case "sint32":
+      return "Uint32";
+    case "fixed32":
+      return "Int32";
+    case "sfixed32":
+      return "Int32";
+
+    case "int64":
+      return "Int64";
+    case "uint64":
+      return "Uint64";
+    case "sint64":
+      return "Uint64";
+    case "fixed64":
+      return "Int64";
+    case "sfixed64":
+      return "Int64";
+
+    case "bool":
+      return "Boolean";
+
+    case "string":
+      return "String";
 
     case "bytes":
       return "Uint8Array";
 
     default:
-      return protoTypeName; // Is reference of other type
+      return fieldName; // Is reference of other type
   }
 };
 
@@ -100,60 +172,38 @@ const getPolyglotEncoderFromProtoType = (
 ) => {
   switch (protoTypeName) {
     case "double":
-      return "encodeFloat64";
     case "float":
-      return "encodeFloat32";
+    case "int":
     case "int32":
-      return "encodeInt32";
     case "uint32":
-      return "encodeUint32";
     case "sint32":
-      return "encodeUint32";
     case "fixed32":
-      return "encodeInt32";
     case "sfixed32":
-      return "encodeInt32";
-
     case "int64":
-      return "encodeInt64";
     case "uint64":
-      return "encodeUint64";
     case "sint64":
-      return "encodeUint64";
     case "fixed64":
-      return "encodeInt64";
     case "sfixed64":
-      return "encodeInt64";
-
     case "bool":
-      return "encodeBoolean";
-
     case "string":
-      return "encodeString";
-
     case "bytes":
-      return "encodeUint8Array";
+      return `encode${getPolyglotKindFromProtoType(protoTypeName, fieldName)}`;
 
     default:
-      return `${fieldName}.encode`; // Is reference of other type
+      return `${getPolyglotKindFromProtoType(protoTypeName, fieldName)}.encode`; // Is reference of other type
   }
 };
 
-const fieldTypes = new Map<string, null>();
+const namedImports = new Map<string, null>();
 types.forEach((type) =>
   type.fields.forEach((field) => {
     if (isProtoTypeComposite(field.typeName)) {
       return;
     }
 
-    fieldTypes.set(getPolyglotEncoderFromProtoType(field.typeName, ""), null);
+    namedImports.set(getPolyglotEncoderFromProtoType(field.typeName, ""), null);
   })
 );
-
-sourceFile.addImportDeclaration({
-  moduleSpecifier: "polyglot-ts",
-  namedImports: Array.from(fieldTypes.keys()),
-});
 
 types.forEach((type) => {
   const classDeclaration = rootNamespace.addClass({
@@ -163,7 +213,10 @@ types.forEach((type) => {
 
   classDeclaration.addConstructor({
     parameters: type.fields.map((field) => {
-      const typescriptType = getTypeScriptTypeFromProtoType(field.typeName);
+      const typescriptType = getTypeScriptTypeFromProtoType(
+        field.typeName,
+        field.isArray
+      );
 
       return {
         name: field.fieldName,
@@ -176,7 +229,10 @@ types.forEach((type) => {
   });
 
   type.fields.forEach((field) => {
-    const typescriptType = getTypeScriptTypeFromProtoType(field.typeName);
+    const typescriptType = getTypeScriptTypeFromProtoType(
+      field.typeName,
+      field.isArray
+    );
 
     classDeclaration.addProperty({
       name: `private _${field.fieldName}`,
@@ -212,22 +268,53 @@ types.forEach((type) => {
     ],
     statements: [
       `let encoded = buf`,
-      ...type.fields.map((field) => {
-        if (isProtoTypeComposite(field.typeName)) {
-          return `encoded = ${getPolyglotEncoderFromProtoType(
-            field.typeName,
-            `this._${field.fieldName}`
-          )}(encoded)`;
-        }
+      ...type.fields
+        .map((field) => {
+          if (isProtoTypeComposite(field.typeName)) {
+            return [
+              `encoded = ${getPolyglotEncoderFromProtoType(
+                field.typeName,
+                `this._${field.fieldName}`
+              )}(encoded)`,
+            ];
+          }
 
-        return `encoded = ${getPolyglotEncoderFromProtoType(
-          field.typeName,
-          `this._${field.fieldName}`
-        )}(encoded, this._${field.fieldName})`;
-      }),
+          if (field.isArray) {
+            namedImports.set("encodeArray", null);
+            namedImports.set("Kind", null);
+
+            return [
+              `encoded = encodeArray(encoded, this._${
+                field.fieldName
+              }.length, Kind.${getPolyglotKindFromProtoType(
+                field.typeName,
+                field.fieldName
+              )})`,
+              `this._${field.fieldName}.forEach(field => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `field`
+                  )}(encoded, field);
+                })`,
+            ];
+          }
+
+          return [
+            `encoded = ${getPolyglotEncoderFromProtoType(
+              field.typeName,
+              `this._${field.fieldName}`
+            )}(encoded, this._${field.fieldName})`,
+          ];
+        })
+        .reduce((prev, curr) => [...prev, ...curr], []),
       `return encoded`,
     ],
   });
+});
+
+sourceFile.addImportDeclaration({
+  moduleSpecifier: "polyglot-ts",
+  namedImports: Array.from(namedImports.keys()),
 });
 
 sourceFile.insertStatements(

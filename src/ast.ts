@@ -27,6 +27,7 @@ interface ISrcType {
 interface ISrcField {
   type: string;
   id: number;
+  rule: string;
 }
 
 interface IDstType {
@@ -37,6 +38,7 @@ interface IDstType {
 interface IDstField {
   fieldName: string;
   typeName: string;
+  isArray: boolean;
 }
 
 export const getTypes = (root: ISrcTypes): IDstType[] =>
@@ -50,11 +52,13 @@ export const getTypes = (root: ISrcTypes): IDstType[] =>
           fieldName,
           typeName: srcTypeFields[fieldName].type,
           index: srcTypeFields[fieldName].id,
+          isArray: srcTypeFields[fieldName].rule === "repeated",
         }))
         .sort((curr, prev) => curr.index - prev.index)
         .map((field) => ({
           fieldName: field.fieldName,
           typeName: field.typeName,
+          isArray: field.isArray,
         })),
     };
   });

@@ -6,63 +6,103 @@ Array [
     "fields": Array [
       Object {
         "fieldName": "a",
+        "isArray": false,
         "typeName": "double",
       },
       Object {
         "fieldName": "b",
+        "isArray": false,
         "typeName": "float",
       },
       Object {
         "fieldName": "c",
+        "isArray": false,
         "typeName": "int32",
       },
       Object {
         "fieldName": "d",
+        "isArray": false,
         "typeName": "int64",
       },
       Object {
         "fieldName": "e",
+        "isArray": false,
         "typeName": "uint32",
       },
       Object {
         "fieldName": "f",
+        "isArray": false,
         "typeName": "uint64",
       },
       Object {
         "fieldName": "g",
+        "isArray": false,
         "typeName": "sint32",
       },
       Object {
         "fieldName": "h",
+        "isArray": false,
         "typeName": "sint64",
       },
       Object {
         "fieldName": "i",
+        "isArray": false,
         "typeName": "fixed32",
       },
       Object {
         "fieldName": "j",
+        "isArray": false,
         "typeName": "fixed64",
       },
       Object {
         "fieldName": "k",
+        "isArray": false,
         "typeName": "sfixed32",
       },
       Object {
         "fieldName": "l",
+        "isArray": false,
         "typeName": "sfixed64",
       },
       Object {
         "fieldName": "m",
+        "isArray": false,
         "typeName": "bool",
       },
       Object {
         "fieldName": "n",
+        "isArray": false,
         "typeName": "string",
       },
       Object {
         "fieldName": "o",
+        "isArray": false,
         "typeName": "bytes",
+      },
+    ],
+    "typeName": "ExampleMessage",
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with array 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "name",
+        "isArray": false,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "addresses",
+        "isArray": true,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "balances",
+        "isArray": true,
+        "typeName": "int",
       },
     ],
     "typeName": "ExampleMessage",
@@ -76,14 +116,17 @@ Array [
     "fields": Array [
       Object {
         "fieldName": "name",
+        "isArray": false,
         "typeName": "string",
       },
       Object {
         "fieldName": "age",
+        "isArray": false,
         "typeName": "int32",
       },
       Object {
         "fieldName": "department",
+        "isArray": false,
         "typeName": "Department",
       },
     ],
@@ -93,6 +136,7 @@ Array [
     "fields": Array [
       Object {
         "fieldName": "name",
+        "isArray": false,
         "typeName": "string",
       },
     ],

@@ -75,4 +75,15 @@ describe("AST", () => {
 
     expect(types).toMatchSnapshot();
   });
+
+  it("Can get AST from protobuf with array", () => {
+    const proto = protobuf
+      .loadSync(path.join(__dirname, "..", "data", "array.proto"))
+      .toJSON().nested!;
+
+    const { root } = getRootAndNamespace(proto);
+    const types = getTypes(root);
+
+    expect(types).toMatchSnapshot();
+  });
 });
