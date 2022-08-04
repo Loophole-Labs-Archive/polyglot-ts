@@ -16,6 +16,7 @@
     "prettier/prettier": "error",
     "import/export": "off",
     "import/prefer-default-export": "off",
-    "max-classes-per-file": "off"
+    "max-classes-per-file": "off",
+    "no-underscore-dangle": "off"
   }
 }
