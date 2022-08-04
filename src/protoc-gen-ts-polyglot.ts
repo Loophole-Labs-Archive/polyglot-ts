@@ -135,9 +135,9 @@ const getPolyglotKindFromProtoType = (
     case "uint32":
       return "Uint32";
     case "sint32":
-      return "Uint32";
-    case "fixed32":
       return "Int32";
+    case "fixed32":
+      return "Uint32";
     case "sfixed32":
       return "Int32";
 
@@ -146,9 +146,9 @@ const getPolyglotKindFromProtoType = (
     case "uint64":
       return "Uint64";
     case "sint64":
-      return "Uint64";
-    case "fixed64":
       return "Int64";
+    case "fixed64":
+      return "Uint64";
     case "sfixed64":
       return "Int64";
 
