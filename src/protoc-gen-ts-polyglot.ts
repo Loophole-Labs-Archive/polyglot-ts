@@ -65,7 +65,9 @@ const isProtoTypeComposite = (protoTypeName: string) => {
 
 const getTypeScriptTypeFromProtoType = (
   protoTypeName: string,
-  isArray: boolean
+  protoKeyTypeName: string,
+  isArray: boolean,
+  isMap: boolean
 ) => {
   switch (protoTypeName) {
     case "double":
@@ -80,6 +82,10 @@ const getTypeScriptTypeFromProtoType = (
         return "number[]";
       }
 
+      if (isMap) {
+        return `Map<${protoKeyTypeName}, number>`;
+      }
+
       return "number";
 
     case "int64":
@@ -91,11 +97,19 @@ const getTypeScriptTypeFromProtoType = (
         return "bigint[]";
       }
 
+      if (isMap) {
+        return `Map<${protoKeyTypeName}, bigint>`;
+      }
+
       return "bigint";
 
     case "bool":
       if (isArray) {
         return "boolean[]";
+      }
+
+      if (isMap) {
+        return `Map<${protoKeyTypeName}, boolean>`;
       }
 
       return "boolean";
@@ -105,11 +119,19 @@ const getTypeScriptTypeFromProtoType = (
         return "string[]";
       }
 
+      if (isMap) {
+        return `Map<${protoKeyTypeName}, string>`;
+      }
+
       return "string";
 
     case "bytes":
       if (isArray) {
         return "Uint8Array[]";
+      }
+
+      if (isMap) {
+        return `Map<${protoKeyTypeName}, Uint8Array>`;
       }
 
       return "Uint8Array";
@@ -197,11 +219,19 @@ const getPolyglotEncoderFromProtoType = (
 const namedImports = new Map<string, null>();
 types.forEach((type) =>
   type.fields.forEach((field) => {
-    if (isProtoTypeComposite(field.typeName)) {
-      return;
+    if (!isProtoTypeComposite(field.typeName)) {
+      namedImports.set(
+        getPolyglotEncoderFromProtoType(field.typeName, ""),
+        null
+      );
     }
 
-    namedImports.set(getPolyglotEncoderFromProtoType(field.typeName, ""), null);
+    if (!isProtoTypeComposite(field.keyTypeName)) {
+      namedImports.set(
+        getPolyglotEncoderFromProtoType(field.keyTypeName, ""),
+        null
+      );
+    }
   })
 );
 
@@ -215,7 +245,9 @@ types.forEach((type) => {
     parameters: type.fields.map((field) => {
       const typescriptType = getTypeScriptTypeFromProtoType(
         field.typeName,
-        field.isArray
+        field.keyTypeName,
+        field.isArray,
+        field.isMap
       );
 
       return {
@@ -231,7 +263,9 @@ types.forEach((type) => {
   type.fields.forEach((field) => {
     const typescriptType = getTypeScriptTypeFromProtoType(
       field.typeName,
-      field.isArray
+      field.keyTypeName,
+      field.isArray,
+      field.isMap
     );
 
     classDeclaration.addProperty({
@@ -295,6 +329,33 @@ types.forEach((type) => {
                     field.typeName,
                     `field`
                   )}(encoded, field);
+                })`,
+            ];
+          }
+
+          if (field.isMap) {
+            namedImports.set("encodeMap", null);
+            namedImports.set("Kind", null);
+
+            return [
+              `encoded = encodeMap(encoded, this._${field.fieldName}.size,
+              Kind.${getPolyglotKindFromProtoType(
+                field.keyTypeName,
+                field.fieldName
+              )},
+              Kind.${getPolyglotKindFromProtoType(
+                field.typeName,
+                field.fieldName
+              )})`,
+              `this._${field.fieldName}.forEach((value, key) => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.keyTypeName,
+                    `key`
+                  )}(encoded, key);
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `value`
+                  )}(encoded, value);
                 })`,
             ];
           }
