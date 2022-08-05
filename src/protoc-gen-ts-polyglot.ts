@@ -18,12 +18,13 @@ import fs from "fs";
 import protobuf from "protobufjs";
 import { ModuleDeclaration, Project } from "ts-morph";
 import { version } from "../package.json";
-import { getRootAndNamespace, getTypes } from "./ast";
+import { getEnums, getRootAndNamespace, getTypes } from "./ast";
 
 const proto = protobuf.parse(fs.readFileSync(0, "utf8")).root.toJSON().nested!;
 
 const { root, namespace } = getRootAndNamespace(proto);
 const types = getTypes(root);
+const enums = getEnums(root);
 
 const project = new Project();
 
@@ -235,6 +236,16 @@ types.forEach((type) =>
   })
 );
 
+enums.forEach((e) => {
+  rootNamespace.addEnum({
+    name: e.enumName,
+    members: e.values.map((v, i) => ({
+      name: v,
+      value: i,
+    })),
+  });
+});
+
 types.forEach((type) => {
   const classDeclaration = rootNamespace.addClass({
     name: type.typeName,
@@ -305,6 +316,14 @@ types.forEach((type) => {
       ...type.fields
         .map((field) => {
           if (isProtoTypeComposite(field.typeName)) {
+            if (enums.find((e) => e.enumName === field.typeName)) {
+              namedImports.set("encodeUint8", null);
+
+              return [
+                `encoded = encodeUint8(encoded, this._${field.fieldName} as number)`,
+              ];
+            }
+
             return [
               `encoded = ${getPolyglotEncoderFromProtoType(
                 field.typeName,

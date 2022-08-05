@@ -14,9 +14,9 @@
 	limitations under the License.
 */
 
-import protobuf from "protobufjs";
 import path from "path";
-import { getRootAndNamespace, getTypes } from "./ast";
+import protobuf from "protobufjs";
+import { getEnums, getRootAndNamespace, getTypes } from "./ast";
 
 describe("AST", () => {
   it("Can get root and namespace from simple protobuf", () => {
@@ -71,9 +71,12 @@ describe("AST", () => {
       .toJSON().nested!;
 
     const { root } = getRootAndNamespace(proto);
-    const types = getTypes(root);
 
+    const types = getTypes(root);
     expect(types).toMatchSnapshot();
+
+    const enums = getEnums(root);
+    expect(enums).toMatchSnapshot();
   });
 
   it("Can get AST from protobuf with array", () => {
@@ -82,8 +85,39 @@ describe("AST", () => {
       .toJSON().nested!;
 
     const { root } = getRootAndNamespace(proto);
-    const types = getTypes(root);
 
+    const types = getTypes(root);
     expect(types).toMatchSnapshot();
+
+    const enums = getEnums(root);
+    expect(enums).toMatchSnapshot();
+  });
+
+  it("Can get AST from protobuf with map", () => {
+    const proto = protobuf
+      .loadSync(path.join(__dirname, "..", "data", "map.proto"))
+      .toJSON().nested!;
+
+    const { root } = getRootAndNamespace(proto);
+
+    const types = getTypes(root);
+    expect(types).toMatchSnapshot();
+
+    const enums = getEnums(root);
+    expect(enums).toMatchSnapshot();
+  });
+
+  it("Can get AST from protobuf with enum", () => {
+    const proto = protobuf
+      .loadSync(path.join(__dirname, "..", "data", "enum.proto"))
+      .toJSON().nested!;
+
+    const { root } = getRootAndNamespace(proto);
+
+    const types = getTypes(root);
+    expect(types).toMatchSnapshot();
+
+    const enums = getEnums(root);
+    expect(enums).toMatchSnapshot();
   });
 });

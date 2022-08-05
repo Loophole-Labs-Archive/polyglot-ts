@@ -7,76 +7,106 @@ Array [
       Object {
         "fieldName": "a",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "double",
       },
       Object {
         "fieldName": "b",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "float",
       },
       Object {
         "fieldName": "c",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "int32",
       },
       Object {
         "fieldName": "d",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "int64",
       },
       Object {
         "fieldName": "e",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "uint32",
       },
       Object {
         "fieldName": "f",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "uint64",
       },
       Object {
         "fieldName": "g",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "sint32",
       },
       Object {
         "fieldName": "h",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "sint64",
       },
       Object {
         "fieldName": "i",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "fixed32",
       },
       Object {
         "fieldName": "j",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "fixed64",
       },
       Object {
         "fieldName": "k",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "sfixed32",
       },
       Object {
         "fieldName": "l",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "sfixed64",
       },
       Object {
         "fieldName": "m",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "bool",
       },
       Object {
         "fieldName": "n",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "string",
       },
       Object {
         "fieldName": "o",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "bytes",
       },
     ],
@@ -85,6 +115,8 @@ Array [
 ]
 `;
 
+exports[`AST Can get AST from complex, unordered protobuf 2`] = `Array []`;
+
 exports[`AST Can get AST from protobuf with array 1`] = `
 Array [
   Object {
@@ -92,16 +124,22 @@ Array [
       Object {
         "fieldName": "name",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "string",
       },
       Object {
         "fieldName": "addresses",
         "isArray": true,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "string",
       },
       Object {
         "fieldName": "balances",
         "isArray": true,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "int",
       },
     ],
@@ -110,6 +148,71 @@ Array [
 ]
 `;
 
+exports[`AST Can get AST from protobuf with array 2`] = `Array []`;
+
+exports[`AST Can get AST from protobuf with enum 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "type",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "MessageType",
+      },
+    ],
+    "typeName": "ExampleMessage",
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with enum 2`] = `
+Array [
+  Object {
+    "enumName": "MessageType",
+    "values": Array [
+      "MESSAGE_TYPE_A",
+      "MESSAGE_TYPE_B",
+      "MESSAGE_TYPE_C",
+    ],
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with map 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "name",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "balances",
+        "isArray": false,
+        "isMap": true,
+        "keyTypeName": "string",
+        "typeName": "int",
+      },
+      Object {
+        "fieldName": "backlinks",
+        "isArray": false,
+        "isMap": true,
+        "keyTypeName": "string",
+        "typeName": "double",
+      },
+    ],
+    "typeName": "ExampleMessage",
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with map 2`] = `Array []`;
+
 exports[`AST Can get AST from simple protobuf 1`] = `
 Array [
   Object {
@@ -117,16 +220,22 @@ Array [
       Object {
         "fieldName": "name",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "string",
       },
       Object {
         "fieldName": "age",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "int32",
       },
       Object {
         "fieldName": "department",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "Department",
       },
     ],
@@ -137,6 +246,8 @@ Array [
       Object {
         "fieldName": "name",
         "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
         "typeName": "string",
       },
     ],

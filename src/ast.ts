@@ -14,13 +14,16 @@
 	limitations under the License.
 */
 
-interface ISrcTypes {
+interface ISrcAST {
   [k: string]: protobuf.AnyNestedObject;
 }
 
 interface ISrcType {
   fields: {
     [k: string]: ISrcField;
+  };
+  values: {
+    [k: string]: number;
   };
 }
 
@@ -44,31 +47,56 @@ interface IDstField {
   isMap: boolean;
 }
 
-export const getTypes = (root: ISrcTypes): IDstType[] =>
-  Object.keys(root).map((typeName) => {
-    const srcTypeFields = (root[typeName] as ISrcType).fields;
+interface IDstEnum {
+  enumName: string;
+  values: string[];
+}
 
-    return {
-      typeName,
-      fields: Object.keys(srcTypeFields)
-        .map((fieldName) => ({
-          fieldName,
-          typeName: srcTypeFields[fieldName].type,
-          keyTypeName: srcTypeFields[fieldName].keyType,
-          index: srcTypeFields[fieldName].id,
-          isArray: srcTypeFields[fieldName].rule === "repeated",
-          isMap: !!srcTypeFields[fieldName].keyType,
-        }))
-        .sort((curr, prev) => curr.index - prev.index)
-        .map((field) => ({
-          fieldName: field.fieldName,
-          typeName: field.typeName,
-          keyTypeName: field.keyTypeName,
-          isArray: field.isArray,
-          isMap: field.isMap,
-        })),
-    };
-  });
+export const getTypes = (root: ISrcAST): IDstType[] =>
+  Object.keys(root)
+    .filter((typeName) => (root[typeName] as ISrcType).fields)
+    .map((typeName) => {
+      const srcTypeFields = (root[typeName] as ISrcType).fields;
+
+      return {
+        typeName,
+        fields: Object.keys(srcTypeFields)
+          .map((fieldName) => ({
+            fieldName,
+            typeName: srcTypeFields[fieldName].type,
+            keyTypeName: srcTypeFields[fieldName].keyType,
+            index: srcTypeFields[fieldName].id,
+            isArray: srcTypeFields[fieldName].rule === "repeated",
+            isMap: !!srcTypeFields[fieldName].keyType,
+          }))
+          .sort((curr, prev) => curr.index - prev.index)
+          .map((field) => ({
+            fieldName: field.fieldName,
+            typeName: field.typeName,
+            keyTypeName: field.keyTypeName,
+            isArray: field.isArray,
+            isMap: field.isMap,
+          })),
+      };
+    });
+
+export const getEnums = (root: ISrcAST): IDstEnum[] =>
+  Object.keys(root)
+    .filter((typeName) => (root[typeName] as ISrcType).values)
+    .map((typeName) => {
+      const srcTypeFields = (root[typeName] as ISrcType).values;
+
+      return {
+        enumName: typeName,
+        values: Object.keys(srcTypeFields)
+          .map((field) => ({
+            key: field,
+            value: srcTypeFields[field],
+          }))
+          .sort((a, b) => a.value - b.value)
+          .map((value) => value.key),
+      };
+    });
 
 export const getRootAndNamespace = (
   obj: any,
