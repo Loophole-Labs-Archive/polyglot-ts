@@ -57,6 +57,7 @@ const isProtoTypeComposite = (protoTypeName: string) => {
     case "bool":
     case "string":
     case "bytes":
+    case "any":
       return false;
 
     default:
@@ -137,9 +138,24 @@ const getTypeScriptTypeFromProtoType = (
 
       return "Uint8Array";
 
+    case "any":
+      if (isArray) {
+        return "any[]";
+      }
+
+      if (isMap) {
+        return `Map<${protoKeyTypeName}, any>`;
+      }
+
+      return "any";
+
     default:
       if (isArray) {
         return `${protoTypeName}[]`;
+      }
+
+      if (isMap) {
+        return `Map<${protoKeyTypeName}, ${protoTypeName}>`;
       }
 
       return protoTypeName; // Is reference of other type
@@ -188,6 +204,9 @@ const getPolyglotKindFromProtoType = (
     case "bytes":
       return "Uint8Array";
 
+    case "any":
+      return "Any";
+
     default:
       return fieldName; // Is reference of other type
   }
@@ -214,6 +233,7 @@ const getPolyglotEncoderFromProtoType = (
     case "bool":
     case "string":
     case "bytes":
+    case "any":
       return `encode${getPolyglotKindFromProtoType(protoTypeName, fieldName)}`;
 
     default:
@@ -319,24 +339,127 @@ types.forEach((type) => {
       `let encoded = buf`,
       ...type.fields
         .map((field) => {
-          if (isProtoTypeComposite(field.typeName)) {
-            if (field.isArray) {
-              namedImports.set("encodeArray", null);
-              namedImports.set("encodeAny", null);
-              namedImports.set("Kind", null);
+          if (field.isArray) {
+            namedImports.set("encodeArray", null);
+            namedImports.set("Kind", null);
 
-              return [
-                `encoded = encodeArray(encoded, this._${field.fieldName}.length, Kind.Any)`,
-                `this._${field.fieldName}.forEach(field => {
-                  encoded = encodeAny(encoded);
+            if (
+              isProtoTypeComposite(field.typeName) &&
+              enums.find((e) => e.enumName === field.typeName)
+            ) {
+              namedImports.set("encodeUint8", null);
+            }
+
+            return [
+              isProtoTypeComposite(field.typeName)
+                ? `encoded = encodeArray(encoded, this._${field.fieldName}.length, Kind.Any)`
+                : `encoded = encodeArray(encoded, this._${
+                    field.fieldName
+                  }.length, Kind.${getPolyglotKindFromProtoType(
+                    field.typeName,
+                    field.fieldName
+                  )})`,
+              isProtoTypeComposite(field.typeName) || field.typeName === "any"
+                ? field.typeName === "any"
+                  ? `this._${field.fieldName}.forEach(() => {
                   encoded = ${getPolyglotEncoderFromProtoType(
                     field.typeName,
                     `field`
                   )}(encoded);
+                })`
+                  : enums.find((e) => e.enumName === field.typeName)
+                  ? `this._${field.fieldName}.forEach(field => {
+                  encoded = encodeUint8(encoded, field as number);
+                })`
+                  : `this._${field.fieldName}.forEach(field => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `field`
+                  )}(encoded);
+                })`
+                : `this._${field.fieldName}.forEach(field => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `field`
+                  )}(encoded, field);
                 })`,
-              ];
+            ];
+          }
+
+          if (field.isMap) {
+            namedImports.set("encodeMap", null);
+            namedImports.set("Kind", null);
+
+            if (
+              isProtoTypeComposite(field.typeName) &&
+              enums.find((e) => e.enumName === field.typeName)
+            ) {
+              namedImports.set("encodeUint8", null);
             }
 
+            return [
+              isProtoTypeComposite(field.typeName)
+                ? `encoded = encodeMap(encoded, this._${field.fieldName}.size,
+              Kind.${getPolyglotKindFromProtoType(
+                field.keyTypeName,
+                field.fieldName
+              )}, Kind.Any)`
+                : `encoded = encodeMap(encoded, this._${field.fieldName}.size,
+              Kind.${getPolyglotKindFromProtoType(
+                field.keyTypeName,
+                field.fieldName
+              )},
+              Kind.${getPolyglotKindFromProtoType(
+                field.typeName,
+                field.fieldName
+              )})`,
+              isProtoTypeComposite(field.typeName) || field.typeName === "any"
+                ? field.typeName === "any"
+                  ? `this._${field.fieldName}.forEach((_, key) => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.keyTypeName,
+                    `key`
+                  )}(encoded, key);
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `value`
+                  )}(encoded);
+                })`
+                  : enums.find((e) => e.enumName === field.typeName)
+                  ? `this._${field.fieldName}.forEach((value, key) => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.keyTypeName,
+                    `key`
+                  )}(encoded, key);
+                  encoded = encodeUint8(encoded, value as number);
+                })`
+                  : `this._${field.fieldName}.forEach((value, key) => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.keyTypeName,
+                    `key`
+                  )}(encoded, key);
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `value`
+                  )}(encoded);
+                })`
+                : `this._${field.fieldName}.forEach((value, key) => {
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.keyTypeName,
+                    `key`
+                  )}(encoded, key);
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `value`
+                  )}(encoded, value);
+                })`,
+            ];
+          }
+
+          if (
+            isProtoTypeComposite(field.typeName) ||
+            field.typeName === "any"
+          ) {
             if (enums.find((e) => e.enumName === field.typeName)) {
               namedImports.set("encodeUint8", null);
 
@@ -350,53 +473,6 @@ types.forEach((type) => {
                 field.typeName,
                 `this._${field.fieldName}`
               )}(encoded)`,
-            ];
-          }
-
-          if (field.isArray) {
-            namedImports.set("encodeArray", null);
-            namedImports.set("Kind", null);
-
-            return [
-              `encoded = encodeArray(encoded, this._${
-                field.fieldName
-              }.length, Kind.${getPolyglotKindFromProtoType(
-                field.typeName,
-                field.fieldName
-              )})`,
-              `this._${field.fieldName}.forEach(field => {
-                  encoded = ${getPolyglotEncoderFromProtoType(
-                    field.typeName,
-                    `field`
-                  )}(encoded, field);
-                })`,
-            ];
-          }
-
-          if (field.isMap) {
-            namedImports.set("encodeMap", null);
-            namedImports.set("Kind", null);
-
-            return [
-              `encoded = encodeMap(encoded, this._${field.fieldName}.size,
-              Kind.${getPolyglotKindFromProtoType(
-                field.keyTypeName,
-                field.fieldName
-              )},
-              Kind.${getPolyglotKindFromProtoType(
-                field.typeName,
-                field.fieldName
-              )})`,
-              `this._${field.fieldName}.forEach((value, key) => {
-                  encoded = ${getPolyglotEncoderFromProtoType(
-                    field.keyTypeName,
-                    `key`
-                  )}(encoded, key);
-                  encoded = ${getPolyglotEncoderFromProtoType(
-                    field.typeName,
-                    `value`
-                  )}(encoded, value);
-                })`,
             ];
           }
 
