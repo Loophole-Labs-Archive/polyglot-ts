@@ -49,6 +49,9 @@ const append = (s: Uint8Array, ...vs: Uint8Array[]) => {
 export const encodeNull = (buf: Uint8Array) =>
   append(buf, Uint8Array.from([Kind.Null]));
 
+export const encodeAny = (buf: Uint8Array) =>
+  append(buf, Uint8Array.from([Kind.Any]));
+
 export const encodeBoolean = (buf: Uint8Array, value: boolean) =>
   append(
     buf,

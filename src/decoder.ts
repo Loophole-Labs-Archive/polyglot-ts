@@ -144,6 +144,11 @@ export const decodeNull = (buf: Uint8Array) => ({
   buf: buf.slice(1),
 });
 
+export const decodeAny = (buf: Uint8Array) => ({
+  value: buf[0] === Kind.Any,
+  buf: buf.slice(1),
+});
+
 export const decodeBoolean = (buf: Uint8Array) => {
   const kind = buf[0] as Kind;
   if (kind !== Kind.Boolean) {

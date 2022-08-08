@@ -16,6 +16,7 @@
 
 import { TextEncoder } from "util";
 import {
+  encodeAny,
   encodeArray,
   encodeBoolean,
   encodeError,
@@ -42,6 +43,13 @@ describe("Encoder", () => {
 
     expect(encoded.length).toBe(1);
     expect(encoded[0]).toBe(Kind.Null);
+  });
+
+  it("Can encode Any", () => {
+    const encoded = encodeAny(new Uint8Array());
+
+    expect(encoded.length).toBe(1);
+    expect(encoded[0]).toBe(Kind.Any);
   });
 
   it("Can encode true Boolean", () => {

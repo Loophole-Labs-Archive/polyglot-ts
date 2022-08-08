@@ -138,6 +138,10 @@ const getTypeScriptTypeFromProtoType = (
       return "Uint8Array";
 
     default:
+      if (isArray) {
+        return `${protoTypeName}[]`;
+      }
+
       return protoTypeName; // Is reference of other type
   }
 };
@@ -316,6 +320,23 @@ types.forEach((type) => {
       ...type.fields
         .map((field) => {
           if (isProtoTypeComposite(field.typeName)) {
+            if (field.isArray) {
+              namedImports.set("encodeArray", null);
+              namedImports.set("encodeAny", null);
+              namedImports.set("Kind", null);
+
+              return [
+                `encoded = encodeArray(encoded, this._${field.fieldName}.length, Kind.Any)`,
+                `this._${field.fieldName}.forEach(field => {
+                  encoded = encodeAny(encoded);
+                  encoded = ${getPolyglotEncoderFromProtoType(
+                    field.typeName,
+                    `field`
+                  )}(encoded);
+                })`,
+              ];
+            }
+
             if (enums.find((e) => e.enumName === field.typeName)) {
               namedImports.set("encodeUint8", null);
 
