@@ -16,8 +16,7 @@
 
 syntax = "proto3";
 
-package io.loopholelabs.polyglot.test.data.enum
-;
+package io.loopholelabs.polyglot.test.data.enm;
 
 message ExampleMessage { MessageType type = 1; }
 

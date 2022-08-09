@@ -380,16 +380,16 @@ types.forEach((type) => {
       `let encoded = buf`,
       ...type.fields
         .map((field) => {
+          if (
+            isProtoTypeComposite(field.typeName) &&
+            enums.find((e) => e.enumName === field.typeName)
+          ) {
+            namedImports.set("encodeUint8", null);
+          }
+
           if (field.isArray) {
             namedImports.set("encodeArray", null);
             namedImports.set("Kind", null);
-
-            if (
-              isProtoTypeComposite(field.typeName) &&
-              enums.find((e) => e.enumName === field.typeName)
-            ) {
-              namedImports.set("encodeUint8", null);
-            }
 
             return [
               isProtoTypeComposite(field.typeName)
@@ -430,13 +430,6 @@ types.forEach((type) => {
           if (field.isMap) {
             namedImports.set("encodeMap", null);
             namedImports.set("Kind", null);
-
-            if (
-              isProtoTypeComposite(field.typeName) &&
-              enums.find((e) => e.enumName === field.typeName)
-            ) {
-              namedImports.set("encodeUint8", null);
-            }
 
             return [
               isProtoTypeComposite(field.typeName)
@@ -502,8 +495,6 @@ types.forEach((type) => {
             field.typeName === "any"
           ) {
             if (enums.find((e) => e.enumName === field.typeName)) {
-              namedImports.set("encodeUint8", null);
-
               return [
                 `encoded = encodeUint8(encoded, this._${field.fieldName} as number)`,
               ];
@@ -553,6 +544,13 @@ types.forEach((type) => {
       `let decoded = buf`,
       ...type.fields
         .map((field) => {
+          if (
+            isProtoTypeComposite(field.typeName) &&
+            enums.find((e) => e.enumName === field.typeName)
+          ) {
+            namedImports.set("decodeUint8", null);
+          }
+
           if (field.isArray) {
             namedImports.set("decodeArray", null);
 
@@ -569,13 +567,31 @@ types.forEach((type) => {
               )} } = {
                   value: [],
                 }`,
-              `for (let i = 0; i < ${field.fieldName}Array.size; i++) {
+              isProtoTypeComposite(field.typeName) &&
+              enums.find((e) => e.enumName === field.typeName)
+                ? `for (let i = 0; i < ${field.fieldName}Array.size; i++) {
+                  const element = decodeUint8(decoded);
+                  decoded = element.buf;
+                  ${field.fieldName}.value.push(element.value as ${field.typeName});
+                }`
+                : `for (let i = 0; i < ${field.fieldName}Array.size; i++) {
                   const element = ${getPolyglotDecoderFromProtoType(
                     field.typeName
                   )}(decoded);
                   decoded = element.buf;
                   ${field.fieldName}.value.push(element.value);
                 }`,
+            ];
+          }
+
+          if (
+            isProtoTypeComposite(field.typeName) &&
+            enums.find((e) => e.enumName === field.typeName)
+          ) {
+            return [
+              `const ${field.fieldName}Uint8 = decodeUint8(decoded)`,
+              `const ${field.fieldName} = { value: ${field.fieldName}Uint8.value as ${field.typeName} }`,
+              `decoded = ${field.fieldName}Uint8.buf`,
             ];
           }
 
