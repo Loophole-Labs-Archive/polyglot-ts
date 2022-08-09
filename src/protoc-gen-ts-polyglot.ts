@@ -584,6 +584,54 @@ types.forEach((type) => {
             ];
           }
 
+          if (field.isMap) {
+            namedImports.set("decodeMap", null);
+
+            return [
+              `const ${field.fieldName}Map = decodeMap(decoded)`,
+              `decoded = ${field.fieldName}Map.buf`,
+              `const ${
+                field.fieldName
+              }: { value: ${getTypeScriptTypeFromProtoType(
+                field.typeName,
+                field.keyTypeName,
+                field.isArray,
+                field.isMap
+              )} } = {
+                  value: new ${getTypeScriptTypeFromProtoType(
+                    field.typeName,
+                    field.keyTypeName,
+                    field.isArray,
+                    field.isMap
+                  )}(),
+                }`,
+              isProtoTypeComposite(field.typeName) &&
+              enums.find((e) => e.enumName === field.typeName)
+                ? `for (let i = 0; i < ${field.fieldName}Map.size; i++) {
+                  const key = ${getPolyglotDecoderFromProtoType(
+                    field.keyTypeName
+                  )}(decoded);
+                  decoded = key.buf;
+                  const value = decodeUint8(decoded);
+                  decoded = value.buf;
+                  ${field.fieldName}.value.set(key.value, value.value as ${
+                    field.typeName
+                  });
+                }`
+                : `for (let i = 0; i < ${field.fieldName}Map.size; i++) {
+                  const key = ${getPolyglotDecoderFromProtoType(
+                    field.keyTypeName
+                  )}(decoded);
+                  decoded = key.buf;
+                  const value = ${getPolyglotDecoderFromProtoType(
+                    field.typeName
+                  )}(decoded);
+                  decoded = value.buf;
+                  ${field.fieldName}.value.set(key.value, value.value);
+                }`,
+            ];
+          }
+
           if (
             isProtoTypeComposite(field.typeName) &&
             enums.find((e) => e.enumName === field.typeName)
