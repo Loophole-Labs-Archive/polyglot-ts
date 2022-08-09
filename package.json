@@ -12,6 +12,19 @@
     "update-test-data": "curl -Lo data/polyglot-test-data.json https://github.com/loopholelabs/polyglot-test-data/releases/latest/download/polyglot-test-data.json",
     "test": "jest"
   },
+  "bin": {
+    "protoc-gen-ts-polyglot": "dist/protoc-gen-ts-polyglot.js"
+  },
+  "targets": {
+    "default": {
+      "distDir": "./dist"
+    },
+    "cli": {
+      "distDir": "./dist",
+      "source": "src/protoc-gen-ts-polyglot.ts",
+      "context": "node"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pojntfx/polyglot-ts.git"
