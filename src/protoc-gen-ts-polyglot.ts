@@ -241,6 +241,38 @@ const getPolyglotEncoderFromProtoType = (
   }
 };
 
+const getPolyglotDecoderFromProtoType = (protoTypeName: string) => {
+  switch (protoTypeName) {
+    case "double":
+    case "float":
+    case "int":
+    case "int32":
+    case "uint32":
+    case "sint32":
+    case "fixed32":
+    case "sfixed32":
+    case "int64":
+    case "uint64":
+    case "sint64":
+    case "fixed64":
+    case "sfixed64":
+    case "bool":
+    case "string":
+    case "bytes":
+    case "any":
+      return `decode${getPolyglotKindFromProtoType(
+        protoTypeName,
+        protoTypeName
+      )}`;
+
+    default:
+      return `${getPolyglotKindFromProtoType(
+        protoTypeName,
+        protoTypeName
+      )}.decode`; // Is reference of other type
+  }
+};
+
 const namedImports = new Map<string, null>();
 types.forEach((type) =>
   type.fields.forEach((field) => {
@@ -249,11 +281,16 @@ types.forEach((type) =>
         getPolyglotEncoderFromProtoType(field.typeName, ""),
         null
       );
+      namedImports.set(getPolyglotDecoderFromProtoType(field.typeName), null);
     }
 
     if (!isProtoTypeComposite(field.keyTypeName)) {
       namedImports.set(
         getPolyglotEncoderFromProtoType(field.keyTypeName, ""),
+        null
+      );
+      namedImports.set(
+        getPolyglotDecoderFromProtoType(field.keyTypeName),
         null
       );
     }
@@ -271,6 +308,10 @@ enums.forEach((e) => {
 });
 
 types.forEach((type) => {
+  const decodeInterface = rootNamespace.addInterface({
+    name: `IDecoded${type.typeName}`,
+  });
+
   const classDeclaration = rootNamespace.addClass({
     name: type.typeName,
     isExported: true,
@@ -485,6 +526,45 @@ types.forEach((type) => {
         })
         .reduce((prev, curr) => [...prev, ...curr], []),
       `return encoded`,
+    ],
+  });
+
+  decodeInterface.addProperty({
+    name: "buf",
+    type: "Uint8Array",
+  });
+
+  decodeInterface.addProperty({
+    name: "value",
+    type: type.typeName,
+  });
+
+  classDeclaration.addMethod({
+    name: "decode",
+    isStatic: true,
+    returnType: `IDecoded${type.typeName}`,
+    parameters: [
+      {
+        name: "buf",
+        type: "Uint8Array",
+      },
+    ],
+    statements: [
+      `let decoded = buf`,
+      ...type.fields
+        .map((field) => [
+          `const ${field.fieldName} = ${getPolyglotDecoderFromProtoType(
+            field.typeName
+          )}(decoded)`,
+          `decoded = ${field.fieldName}.buf`,
+        ])
+        .reduce((prev, curr) => [...prev, ...curr], []),
+      `return {
+      buf: decoded,
+      value: new ${type.typeName}(${type.fields
+        .map((field) => `${field.fieldName}.value`)
+        .join(",")})
+    }`,
     ],
   });
 });
