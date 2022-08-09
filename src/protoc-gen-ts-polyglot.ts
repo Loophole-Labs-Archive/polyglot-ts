@@ -308,10 +308,6 @@ enums.forEach((e) => {
 });
 
 types.forEach((type) => {
-  const decodeInterface = rootNamespace.addInterface({
-    name: `IDecoded${type.typeName}`,
-  });
-
   const classDeclaration = rootNamespace.addClass({
     name: type.typeName,
     isExported: true,
@@ -520,20 +516,13 @@ types.forEach((type) => {
     ],
   });
 
-  decodeInterface.addProperty({
-    name: "buf",
-    type: "Uint8Array",
-  });
-
-  decodeInterface.addProperty({
-    name: "value",
-    type: type.typeName,
-  });
-
   classDeclaration.addMethod({
     name: "decode",
     isStatic: true,
-    returnType: `IDecoded${type.typeName}`,
+    returnType: `{
+      buf: Uint8Array,
+      value: ${type.typeName}
+    }`,
     parameters: [
       {
         name: "buf",
