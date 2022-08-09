@@ -552,12 +552,40 @@ types.forEach((type) => {
     statements: [
       `let decoded = buf`,
       ...type.fields
-        .map((field) => [
-          `const ${field.fieldName} = ${getPolyglotDecoderFromProtoType(
-            field.typeName
-          )}(decoded)`,
-          `decoded = ${field.fieldName}.buf`,
-        ])
+        .map((field) => {
+          if (field.isArray) {
+            namedImports.set("decodeArray", null);
+
+            return [
+              `const ${field.fieldName}Array = decodeArray(decoded)`,
+              `decoded = ${field.fieldName}Array.buf`,
+              `const ${
+                field.fieldName
+              }: { value: ${getTypeScriptTypeFromProtoType(
+                field.typeName,
+                field.keyTypeName,
+                field.isArray,
+                field.isMap
+              )} } = {
+                  value: [],
+                }`,
+              `for (let i = 0; i < ${field.fieldName}Array.size; i++) {
+                  const element = ${getPolyglotDecoderFromProtoType(
+                    field.typeName
+                  )}(decoded);
+                  decoded = element.buf;
+                  ${field.fieldName}.value.push(element.value);
+                }`,
+            ];
+          }
+
+          return [
+            `const ${field.fieldName} = ${getPolyglotDecoderFromProtoType(
+              field.typeName
+            )}(decoded)`,
+            `decoded = ${field.fieldName}.buf`,
+          ];
+        })
         .reduce((prev, curr) => [...prev, ...curr], []),
       `return {
       buf: decoded,

@@ -19,6 +19,7 @@
     "max-classes-per-file": "off",
     "no-underscore-dangle": "off",
     "no-nested-ternary": "off",
-    "@typescript-eslint/no-use-before-define": "off"
+    "@typescript-eslint/no-use-before-define": "off",
+    "no-plusplus": "off"
   }
 }
