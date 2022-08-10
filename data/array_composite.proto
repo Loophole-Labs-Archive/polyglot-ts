@@ -24,4 +24,4 @@ message ExampleMessage {
   repeated NestedExampleMessage patients = 3;
 }
 
-message NestedExampleMessage { int age = 1; }
+message NestedExampleMessage { int32 age = 1; }

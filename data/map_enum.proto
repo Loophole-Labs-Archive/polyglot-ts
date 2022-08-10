@@ -20,12 +20,12 @@ package io.loopholelabs.polyglot.test.data.map.enm;
 
 message ExampleMessage {
   string name = 1;
-  map<string, int> balances = 2;
+  map<string, int32> balances = 2;
   map<string, MessageType> backlinks = 3;
 }
 
 enum MessageType {
-  MESSAGE_TYPE_A = 1;
-  MESSAGE_TYPE_B = 2;
-  MESSAGE_TYPE_C = 3;
+  MESSAGE_TYPE_A = 0;
+  MESSAGE_TYPE_B = 1;
+  MESSAGE_TYPE_C = 2;
 }

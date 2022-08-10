@@ -20,6 +20,6 @@ package io.loopholelabs.polyglot.test.data.map;
 
 message ExampleMessage {
   string name = 1;
-  map<string, int> balances = 2;
+  map<string, int32> balances = 2;
   map<string, double> backlinks = 3;
 }

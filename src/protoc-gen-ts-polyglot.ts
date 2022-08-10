@@ -30,7 +30,6 @@ const isProtoTypeComposite = (protoTypeName: string) => {
   switch (protoTypeName) {
     case "double":
     case "float":
-    case "int":
     case "int32":
     case "uint32":
     case "sint32":
@@ -44,7 +43,6 @@ const isProtoTypeComposite = (protoTypeName: string) => {
     case "bool":
     case "string":
     case "bytes":
-    case "any":
       return false;
 
     default:
@@ -61,7 +59,6 @@ const getTypeScriptTypeFromProtoType = (
   switch (protoTypeName) {
     case "double":
     case "float":
-    case "int":
     case "int32":
     case "uint32":
     case "sint32":
@@ -125,17 +122,6 @@ const getTypeScriptTypeFromProtoType = (
 
       return "Uint8Array";
 
-    case "any":
-      if (isArray) {
-        return "any[]";
-      }
-
-      if (isMap) {
-        return `Map<${protoKeyTypeName}, any>`;
-      }
-
-      return "any";
-
     default:
       if (isArray) {
         return `${protoTypeName}[]`;
@@ -158,8 +144,6 @@ const getPolyglotKindFromProtoType = (
       return "Float64";
     case "float":
       return "Float32";
-    case "int":
-      return "Int32";
     case "int32":
       return "Int32";
     case "uint32":
@@ -191,9 +175,6 @@ const getPolyglotKindFromProtoType = (
     case "bytes":
       return "Uint8Array";
 
-    case "any":
-      return "Any";
-
     default:
       return fieldName; // Is reference of other type
   }
@@ -206,7 +187,6 @@ const getPolyglotEncoderFromProtoType = (
   switch (protoTypeName) {
     case "double":
     case "float":
-    case "int":
     case "int32":
     case "uint32":
     case "sint32":
@@ -220,7 +200,6 @@ const getPolyglotEncoderFromProtoType = (
     case "bool":
     case "string":
     case "bytes":
-    case "any":
       return `encode${getPolyglotKindFromProtoType(protoTypeName, fieldName)}`;
 
     default:
@@ -232,7 +211,6 @@ const getPolyglotDecoderFromProtoType = (protoTypeName: string) => {
   switch (protoTypeName) {
     case "double":
     case "float":
-    case "int":
     case "int32":
     case "uint32":
     case "sint32":
@@ -246,7 +224,6 @@ const getPolyglotDecoderFromProtoType = (protoTypeName: string) => {
     case "bool":
     case "string":
     case "bytes":
-    case "any":
       return `decode${getPolyglotKindFromProtoType(
         protoTypeName,
         protoTypeName
@@ -284,7 +261,9 @@ codeGenRequest.getFileToGenerateList().forEach((protoFilePath) => {
     protoFilePath.lastIndexOf(".")
   )}.ts`;
 
-  const sourceFile = project.createSourceFile(sourceFilePath);
+  const sourceFile = project.createSourceFile(sourceFilePath, "", {
+    overwrite: true,
+  });
 
   const rootNamespace = namespace.reduce(
     (prev, curr) =>
@@ -418,23 +397,16 @@ codeGenRequest.getFileToGenerateList().forEach((protoFilePath) => {
                       field.typeName,
                       field.fieldName
                     )})`,
-                isProtoTypeComposite(field.typeName) || field.typeName === "any"
-                  ? field.typeName === "any"
-                    ? `this._${field.fieldName}.forEach(() => {
+                isProtoTypeComposite(field.typeName)
+                  ? `this._${field.fieldName}.forEach(() => {
                   encoded = ${getPolyglotEncoderFromProtoType(
                     field.typeName,
                     `field`
                   )}(encoded);
                 })`
-                    : enums.find((e) => e.enumName === field.typeName)
-                    ? `this._${field.fieldName}.forEach(field => {
+                  : enums.find((e) => e.enumName === field.typeName)
+                  ? `this._${field.fieldName}.forEach(field => {
                   encoded = encodeUint8(encoded, field as number);
-                })`
-                    : `this._${field.fieldName}.forEach(field => {
-                  encoded = ${getPolyglotEncoderFromProtoType(
-                    field.typeName,
-                    `field`
-                  )}(encoded);
                 })`
                   : `this._${field.fieldName}.forEach(field => {
                   encoded = ${getPolyglotEncoderFromProtoType(
@@ -465,19 +437,8 @@ codeGenRequest.getFileToGenerateList().forEach((protoFilePath) => {
                 field.typeName,
                 field.fieldName
               )})`,
-                isProtoTypeComposite(field.typeName) || field.typeName === "any"
-                  ? field.typeName === "any"
-                    ? `this._${field.fieldName}.forEach((_, key) => {
-                  encoded = ${getPolyglotEncoderFromProtoType(
-                    field.keyTypeName,
-                    `key`
-                  )}(encoded, key);
-                  encoded = ${getPolyglotEncoderFromProtoType(
-                    field.typeName,
-                    `value`
-                  )}(encoded);
-                })`
-                    : enums.find((e) => e.enumName === field.typeName)
+                isProtoTypeComposite(field.typeName)
+                  ? enums.find((e) => e.enumName === field.typeName)
                     ? `this._${field.fieldName}.forEach((value, key) => {
                   encoded = ${getPolyglotEncoderFromProtoType(
                     field.keyTypeName,
@@ -508,10 +469,7 @@ codeGenRequest.getFileToGenerateList().forEach((protoFilePath) => {
               ];
             }
 
-            if (
-              isProtoTypeComposite(field.typeName) ||
-              field.typeName === "any"
-            ) {
+            if (isProtoTypeComposite(field.typeName)) {
               if (enums.find((e) => e.enumName === field.typeName)) {
                 return [
                   `encoded = encodeUint8(encoded, this._${field.fieldName} as number)`,

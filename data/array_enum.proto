@@ -25,7 +25,7 @@ message ExampleMessage {
 }
 
 enum MessageType {
-  MESSAGE_TYPE_A = 1;
-  MESSAGE_TYPE_B = 2;
-  MESSAGE_TYPE_C = 3;
+  MESSAGE_TYPE_A = 0;
+  MESSAGE_TYPE_B = 1;
+  MESSAGE_TYPE_C = 2;
 }

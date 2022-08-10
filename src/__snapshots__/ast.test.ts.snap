@@ -140,7 +140,7 @@ Array [
         "isArray": true,
         "isMap": false,
         "keyTypeName": undefined,
-        "typeName": "int",
+        "typeName": "int32",
       },
     ],
     "typeName": "ExampleMessage",
@@ -196,7 +196,7 @@ Array [
         "isArray": false,
         "isMap": true,
         "keyTypeName": "string",
-        "typeName": "int",
+        "typeName": "int32",
       },
       Object {
         "fieldName": "backlinks",

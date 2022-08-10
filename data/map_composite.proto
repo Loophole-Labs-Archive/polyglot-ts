@@ -20,8 +20,8 @@ package io.loopholelabs.polyglot.test.data.map.composite;
 
 message ExampleMessage {
   string name = 1;
-  map<string, int> balances = 2;
+  map<string, int32> balances = 2;
   map<string, NestedExampleMessage> backlinks = 3;
 }
 
-message NestedExampleMessage { int age = 1; }
+message NestedExampleMessage { int32 age = 1; }
