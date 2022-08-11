@@ -49,6 +49,9 @@ interface ISrcType {
   values: {
     [k: string]: number;
   };
+  oneofs: {
+    [k: string]: protobuf.OneOf;
+  };
   nested: ISrcAST;
 }
 
@@ -108,31 +111,38 @@ export const getTypes = (
       const ownPrefix = prefix + typeName;
       const parsedType = {
         typeName: ownPrefix,
-        fields: Object.keys(srcTypeFields)
-          .map((fieldName) => {
-            const nestedTypeName =
-              knownTypeNames.find((t) => t === srcTypeFields[fieldName].type) ||
-              knownEnumNames.find((t) => t === srcTypeFields[fieldName].type);
+        fields: type.oneofs // Ignore oneofs
+          ? []
+          : Object.keys(srcTypeFields)
+              .map((fieldName) => {
+                const nestedTypeName =
+                  knownTypeNames.find(
+                    (t) => t === srcTypeFields[fieldName].type
+                  ) ||
+                  knownEnumNames.find(
+                    (t) => t === srcTypeFields[fieldName].type
+                  );
 
-            return {
-              fieldName,
-              typeName: isProtoTypeComposite(srcTypeFields[fieldName].type)
-                ? nestedTypeName || ownPrefix + srcTypeFields[fieldName].type
-                : srcTypeFields[fieldName].type,
-              keyTypeName: srcTypeFields[fieldName].keyType,
-              index: srcTypeFields[fieldName].id,
-              isArray: srcTypeFields[fieldName].rule === "repeated",
-              isMap: !!srcTypeFields[fieldName].keyType,
-            };
-          })
-          .sort((curr, prev) => curr.index - prev.index)
-          .map((field) => ({
-            fieldName: field.fieldName,
-            typeName: field.typeName.replace(".", ""),
-            keyTypeName: field.keyTypeName?.replace(".", ""),
-            isArray: field.isArray,
-            isMap: field.isMap,
-          })),
+                return {
+                  fieldName,
+                  typeName: isProtoTypeComposite(srcTypeFields[fieldName].type)
+                    ? nestedTypeName ||
+                      ownPrefix + srcTypeFields[fieldName].type
+                    : srcTypeFields[fieldName].type,
+                  keyTypeName: srcTypeFields[fieldName].keyType,
+                  index: srcTypeFields[fieldName].id,
+                  isArray: srcTypeFields[fieldName].rule === "repeated",
+                  isMap: !!srcTypeFields[fieldName].keyType,
+                };
+              })
+              .sort((curr, prev) => curr.index - prev.index)
+              .map((field) => ({
+                fieldName: field.fieldName,
+                typeName: field.typeName.replace(".", ""),
+                keyTypeName: field.keyTypeName?.replace(".", ""),
+                isArray: field.isArray,
+                isMap: field.isMap,
+              })),
       };
 
       if (type.nested) {
