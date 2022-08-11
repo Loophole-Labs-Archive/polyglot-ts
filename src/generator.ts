@@ -384,15 +384,15 @@ export const getTypeScriptForProtobuf = (
                       field.fieldName
                     )})`,
                 isProtoTypeComposite(field.typeName)
-                  ? `this._${field.fieldName}.forEach(() => {
+                  ? enums.find((e) => e.enumName === field.typeName)
+                    ? `this._${field.fieldName}.forEach(field => {
+                  encoded = encodeUint8(encoded, field as number);
+                })`
+                    : `this._${field.fieldName}.forEach(() => {
                   encoded = ${getPolyglotEncoderFromProtoType(
                     field.typeName,
                     `field`
                   )}(encoded);
-                })`
-                  : enums.find((e) => e.enumName === field.typeName)
-                  ? `this._${field.fieldName}.forEach(field => {
-                  encoded = encodeUint8(encoded, field as number);
                 })`
                   : `this._${field.fieldName}.forEach(field => {
                   encoded = ${getPolyglotEncoderFromProtoType(
