@@ -16,32 +16,13 @@
 
 import protobuf from "protobufjs";
 import { ModuleDeclaration, Project } from "ts-morph";
-import { getEnums, getRootAndNamespace, getTypes } from "./ast";
 import { version } from "../package.json";
-
-const isProtoTypeComposite = (protoTypeName: string) => {
-  switch (protoTypeName) {
-    case "double":
-    case "float":
-    case "int32":
-    case "uint32":
-    case "sint32":
-    case "fixed32":
-    case "sfixed32":
-    case "int64":
-    case "uint64":
-    case "sint64":
-    case "fixed64":
-    case "sfixed64":
-    case "bool":
-    case "string":
-    case "bytes":
-      return false;
-
-    default:
-      return true;
-  }
-};
+import {
+  getEnums,
+  getRootAndNamespace,
+  getTypes,
+  isProtoTypeComposite,
+} from "./ast";
 
 const getTypeScriptTypeFromProtoType = (
   protoTypeName: string,
@@ -388,7 +369,7 @@ export const getTypeScriptForProtobuf = (
                     ? `this._${field.fieldName}.forEach(field => {
                   encoded = encodeUint8(encoded, field as number);
                 })`
-                    : `this._${field.fieldName}.forEach(() => {
+                    : `this._${field.fieldName}.forEach((field) => {
                   encoded = ${getPolyglotEncoderFromProtoType(
                     field.typeName,
                     `field`

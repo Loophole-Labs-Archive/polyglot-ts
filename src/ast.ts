@@ -14,6 +14,30 @@
 	limitations under the License.
 */
 
+export const isProtoTypeComposite = (protoTypeName: string) => {
+  switch (protoTypeName) {
+    case "double":
+    case "float":
+    case "int32":
+    case "uint32":
+    case "sint32":
+    case "fixed32":
+    case "sfixed32":
+    case "int64":
+    case "uint64":
+    case "sint64":
+    case "fixed64":
+    case "sfixed64":
+    case "bool":
+    case "string":
+    case "bytes":
+      return false;
+
+    default:
+      return true;
+  }
+};
+
 interface ISrcAST {
   [k: string]: protobuf.AnyNestedObject;
 }
@@ -25,6 +49,7 @@ interface ISrcType {
   values: {
     [k: string]: number;
   };
+  nested: ISrcAST;
 }
 
 interface ISrcField {
@@ -52,23 +77,46 @@ interface IDstEnum {
   values: string[];
 }
 
-export const getTypes = (root: ISrcAST): IDstType[] =>
-  Object.keys(root)
+export const getTypes = (
+  root: ISrcAST,
+  knownTypes: IDstType[] = [],
+  knownTypeNames: string[] = [],
+  prefix = ""
+): IDstType[] => [
+  ...knownTypes,
+  ...Object.keys(root)
     .filter((typeName) => (root[typeName] as ISrcType).fields)
     .map((typeName) => {
-      const srcTypeFields = (root[typeName] as ISrcType).fields;
+      // Hoist known type names
+      knownTypeNames.push(prefix + typeName);
 
-      return {
-        typeName,
+      return typeName;
+    })
+    .map((typeName) => {
+      const type = root[typeName] as ISrcType;
+
+      const srcTypeFields = type.fields;
+
+      const ownPrefix = prefix + typeName;
+      const parsedType = {
+        typeName: ownPrefix,
         fields: Object.keys(srcTypeFields)
-          .map((fieldName) => ({
-            fieldName,
-            typeName: srcTypeFields[fieldName].type,
-            keyTypeName: srcTypeFields[fieldName].keyType,
-            index: srcTypeFields[fieldName].id,
-            isArray: srcTypeFields[fieldName].rule === "repeated",
-            isMap: !!srcTypeFields[fieldName].keyType,
-          }))
+          .map((fieldName) => {
+            const nestedTypeName = knownTypeNames.find(
+              (t) => t === srcTypeFields[fieldName].type
+            );
+
+            return {
+              fieldName,
+              typeName: isProtoTypeComposite(srcTypeFields[fieldName].type)
+                ? nestedTypeName || ownPrefix + srcTypeFields[fieldName].type
+                : srcTypeFields[fieldName].type,
+              keyTypeName: srcTypeFields[fieldName].keyType,
+              index: srcTypeFields[fieldName].id,
+              isArray: srcTypeFields[fieldName].rule === "repeated",
+              isMap: !!srcTypeFields[fieldName].keyType,
+            };
+          })
           .sort((curr, prev) => curr.index - prev.index)
           .map((field) => ({
             fieldName: field.fieldName,
@@ -78,7 +126,23 @@ export const getTypes = (root: ISrcAST): IDstType[] =>
             isMap: field.isMap,
           })),
       };
-    });
+
+      if (type.nested) {
+        return getTypes(
+          type.nested,
+          [parsedType],
+          [parsedType.typeName],
+          parsedType.typeName
+        );
+      }
+
+      knownTypes.push(parsedType);
+      knownTypeNames.push(parsedType.typeName);
+
+      return [parsedType];
+    })
+    .reduce((prev, curr) => [...prev, ...curr], []),
+];
 
 export const getEnums = (root: ISrcAST): IDstEnum[] =>
   Object.keys(root)
