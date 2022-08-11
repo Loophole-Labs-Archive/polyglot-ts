@@ -16,8 +16,6 @@
 
 syntax = "proto3";
 
-package io.loopholelabs.polyglot.test.data.simple;
-
 message User {
   string name = 1;
   int32 age = 2;

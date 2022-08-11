@@ -16,12 +16,26 @@
 
 syntax = "proto3";
 
-package io.loopholelabs.polyglot.test.data.simple;
+package io.loopholelabs.polyglot.test.data.http;
 
-message User {
-  string name = 1;
-  int32 age = 2;
-  Department department = 3;
+option go_package = "/webserver";
+
+service WebServer { rpc receive(Request) returns (Response); }
+
+message Request {
+  string method = 1;
+  string url = 2;
+  map<string, string> headers = 3;
+  uint64 length = 4;
+  string origin = 5;
+  map<string, string> query = 6;
+  string protocol = 7;
+  string ip = 8;
+  bytes body = 9;
 }
 
-message Department { string name = 1; }
+message Response {
+  map<string, string> headers = 1;
+  uint32 status = 2;
+  bytes body = 3;
+}
