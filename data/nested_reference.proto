@@ -16,7 +16,7 @@
 
 syntax = "proto3";
 
-package io.loopholelabs.polyglot.test.data.nested.array;
+package io.loopholelabs.polyglot.test.data.nested.reference;
 
 message Outer {      // Level 0
   message MiddleAA { // Level 1
@@ -34,5 +34,5 @@ message Outer {      // Level 0
     Inner a = 1;
   }
   MiddleAA a = 1;
-  map<string, MiddleBB> b = 2;
+  MiddleBB.Inner b = 2;
 }

@@ -120,8 +120,8 @@ export const getTypes = (
           .sort((curr, prev) => curr.index - prev.index)
           .map((field) => ({
             fieldName: field.fieldName,
-            typeName: field.typeName,
-            keyTypeName: field.keyTypeName,
+            typeName: field.typeName.replace(".", ""),
+            keyTypeName: field.keyTypeName?.replace(".", ""),
             isArray: field.isArray,
             isMap: field.isMap,
           })),
