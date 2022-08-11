@@ -103,14 +103,18 @@ export const getRootAndNamespace = (
   objPath: string[] = [],
   lastObj: any = undefined
 ): { root: any; namespace: string[] } => {
-  if (obj.fields) {
+  if (!obj || obj.fields || obj.methods) {
     return {
       root: lastObj,
       namespace: objPath.slice(0, -1),
     };
   }
 
-  const nextKey = Object.keys(obj)[0];
+  let nextKey = Object.keys(obj)[0];
+  if (nextKey === "options") {
+    nextKey = Object.keys(obj)[1];
+  }
+
   if (nextKey === "nested") {
     return getRootAndNamespace(obj[nextKey], objPath, obj);
   }

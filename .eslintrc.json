@@ -20,6 +20,7 @@
     "no-underscore-dangle": "off",
     "no-nested-ternary": "off",
     "@typescript-eslint/no-use-before-define": "off",
-    "no-plusplus": "off"
+    "no-plusplus": "off",
+    "prefer-destructuring": "off"
   }
 }
