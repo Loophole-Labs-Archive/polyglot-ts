@@ -32,6 +32,7 @@ describe("AST", () => {
       "polyglot",
       "test",
       "data",
+      "simple",
     ]);
     expect(root).toMatchSnapshot();
   });

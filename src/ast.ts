@@ -81,17 +81,25 @@ export const getTypes = (
   root: ISrcAST,
   knownTypes: IDstType[] = [],
   knownTypeNames: string[] = [],
+  knownEnumNames: string[] = [],
   prefix = ""
 ): IDstType[] => [
   ...knownTypes,
   ...Object.keys(root)
-    .filter((typeName) => (root[typeName] as ISrcType).fields)
-    .map((typeName) => {
-      // Hoist known type names
-      knownTypeNames.push(prefix + typeName);
+    .map((enumOrTypeName) => {
+      if ((root[enumOrTypeName] as ISrcType).fields) {
+        // Hoist known type names
+        knownTypeNames.push(prefix + enumOrTypeName);
 
-      return typeName;
+        return enumOrTypeName;
+      }
+
+      // Hoist known enum names
+      knownEnumNames.push(prefix + enumOrTypeName);
+
+      return enumOrTypeName;
     })
+    .filter((typeName) => (root[typeName] as ISrcType).fields)
     .map((typeName) => {
       const type = root[typeName] as ISrcType;
 
@@ -102,9 +110,9 @@ export const getTypes = (
         typeName: ownPrefix,
         fields: Object.keys(srcTypeFields)
           .map((fieldName) => {
-            const nestedTypeName = knownTypeNames.find(
-              (t) => t === srcTypeFields[fieldName].type
-            );
+            const nestedTypeName =
+              knownTypeNames.find((t) => t === srcTypeFields[fieldName].type) ||
+              knownEnumNames.find((t) => t === srcTypeFields[fieldName].type);
 
             return {
               fieldName,
@@ -132,6 +140,7 @@ export const getTypes = (
           type.nested,
           [parsedType],
           [parsedType.typeName],
+          [],
           parsedType.typeName
         );
       }
@@ -144,23 +153,51 @@ export const getTypes = (
     .reduce((prev, curr) => [...prev, ...curr], []),
 ];
 
-export const getEnums = (root: ISrcAST): IDstEnum[] =>
-  Object.keys(root)
-    .filter((typeName) => (root[typeName] as ISrcType).values)
-    .map((typeName) => {
-      const srcTypeFields = (root[typeName] as ISrcType).values;
+export const getEnums = (
+  root: ISrcAST,
+  knownEnums: IDstEnum[] = [],
+  knownEnumNames: string[] = [],
+  prefix = ""
+): IDstEnum[] => [
+  ...knownEnums,
+  ...Object.keys(root)
+    .map((enumName) => {
+      // Hoist known enum names
+      knownEnumNames.push(prefix + enumName);
 
-      return {
-        enumName: typeName,
-        values: Object.keys(srcTypeFields)
+      return enumName;
+    })
+    .map((enumName) => {
+      const type = root[enumName] as ISrcType;
+
+      const srcEnumValues = (root[enumName] as ISrcType).values;
+      const ownPrefix = prefix + enumName;
+      if (!srcEnumValues) {
+        if (type.nested) {
+          return getEnums(type.nested, [], [ownPrefix], ownPrefix);
+        }
+
+        return [];
+      }
+
+      const parsedEnum = {
+        enumName: ownPrefix,
+        values: Object.keys(srcEnumValues)
           .map((field) => ({
             key: field,
-            value: srcTypeFields[field],
+            value: srcEnumValues[field],
           }))
           .sort((a, b) => a.value - b.value)
           .map((value) => value.key),
       };
-    });
+
+      knownEnums.push(parsedEnum);
+      knownEnumNames.push(parsedEnum.enumName);
+
+      return [parsedEnum];
+    })
+    .reduce((prev, curr) => [...prev, ...curr], []),
+];
 
 export const getRootAndNamespace = (
   obj: any,
