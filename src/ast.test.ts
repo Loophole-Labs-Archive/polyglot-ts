@@ -16,7 +16,12 @@
 
 import path from "path";
 import protobuf from "protobufjs";
-import { getEnums, getRootAndNamespace, getTypes } from "./ast";
+import {
+  getEnums,
+  getKnownTypeAndEnumNames,
+  getRootAndNamespace,
+  getTypes,
+} from "./ast";
 
 describe("AST", () => {
   it("Can get root and namespace from simple protobuf", () => {
@@ -43,7 +48,7 @@ describe("AST", () => {
       .toJSON().nested!;
 
     const { root } = getRootAndNamespace(proto);
-    const types = getTypes(root);
+    const types = getTypes(root, getKnownTypeAndEnumNames(root));
 
     expect(types).toMatchSnapshot();
   });
@@ -73,7 +78,7 @@ describe("AST", () => {
 
     const { root } = getRootAndNamespace(proto);
 
-    const types = getTypes(root);
+    const types = getTypes(root, getKnownTypeAndEnumNames(root));
     expect(types).toMatchSnapshot();
 
     const enums = getEnums(root);
@@ -87,7 +92,7 @@ describe("AST", () => {
 
     const { root } = getRootAndNamespace(proto);
 
-    const types = getTypes(root);
+    const types = getTypes(root, getKnownTypeAndEnumNames(root));
     expect(types).toMatchSnapshot();
 
     const enums = getEnums(root);
@@ -101,7 +106,7 @@ describe("AST", () => {
 
     const { root } = getRootAndNamespace(proto);
 
-    const types = getTypes(root);
+    const types = getTypes(root, getKnownTypeAndEnumNames(root));
     expect(types).toMatchSnapshot();
 
     const enums = getEnums(root);
@@ -115,7 +120,7 @@ describe("AST", () => {
 
     const { root } = getRootAndNamespace(proto);
 
-    const types = getTypes(root);
+    const types = getTypes(root, getKnownTypeAndEnumNames(root));
     expect(types).toMatchSnapshot();
 
     const enums = getEnums(root);

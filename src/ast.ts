@@ -80,28 +80,53 @@ interface IDstEnum {
   values: string[];
 }
 
+export const getKnownTypeAndEnumNames = (
+  root: ISrcAST,
+  knownTypeNames: string[] = [],
+  prefix = ""
+): string[] => [
+  ...knownTypeNames,
+  ...Object.keys(root)
+    .filter((typeName) => (root[typeName] as ISrcType).fields)
+    .map((typeName) => {
+      const type = root[typeName] as ISrcType;
+
+      if (type.nested) {
+        return getKnownTypeAndEnumNames(
+          type.nested,
+          [prefix + typeName],
+          prefix + typeName
+        );
+      }
+
+      return [prefix + typeName];
+    })
+    .reduce((prev, curr) => [...prev, ...curr], []),
+  ...Object.keys(root)
+    .map((enumName) => {
+      const enm = root[enumName] as ISrcType;
+
+      if (!enm.values) {
+        if (enm.nested) {
+          return getKnownTypeAndEnumNames(enm.nested, [], prefix + enumName);
+        }
+
+        return [];
+      }
+
+      return [prefix + enumName];
+    })
+    .reduce((prev, curr) => [...prev, ...curr], []),
+];
+
 export const getTypes = (
   root: ISrcAST,
+  knownTypeAndEnumNames: string[],
   knownTypes: IDstType[] = [],
-  knownTypeNames: string[] = [],
-  knownEnumNames: string[] = [],
   prefix = ""
 ): IDstType[] => [
   ...knownTypes,
   ...Object.keys(root)
-    .map((enumOrTypeName) => {
-      if ((root[enumOrTypeName] as ISrcType).fields) {
-        // Hoist known type names
-        knownTypeNames.push(prefix + enumOrTypeName);
-
-        return enumOrTypeName;
-      }
-
-      // Hoist known enum names
-      knownEnumNames.push(prefix + enumOrTypeName);
-
-      return enumOrTypeName;
-    })
     .filter((typeName) => (root[typeName] as ISrcType).fields)
     .map((typeName) => {
       const type = root[typeName] as ISrcType;
@@ -115,13 +140,9 @@ export const getTypes = (
           ? []
           : Object.keys(srcTypeFields)
               .map((fieldName) => {
-                const nestedTypeName =
-                  knownTypeNames.find(
-                    (t) => t === srcTypeFields[fieldName].type
-                  ) ||
-                  knownEnumNames.find(
-                    (t) => t === srcTypeFields[fieldName].type
-                  );
+                const nestedTypeName = knownTypeAndEnumNames.find(
+                  (t) => t === srcTypeFields[fieldName].type.replace(".", "")
+                );
 
                 return {
                   fieldName,
@@ -148,15 +169,13 @@ export const getTypes = (
       if (type.nested) {
         return getTypes(
           type.nested,
+          knownTypeAndEnumNames,
           [parsedType],
-          [parsedType.typeName],
-          [],
           parsedType.typeName
         );
       }
 
       knownTypes.push(parsedType);
-      knownTypeNames.push(parsedType.typeName);
 
       return [parsedType];
     })
