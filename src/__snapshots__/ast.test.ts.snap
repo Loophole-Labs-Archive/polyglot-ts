@@ -19,18 +19,25 @@ Array [
         "typeName": "float",
       },
       Object {
-        "fieldName": "c",
-        "isArray": false,
-        "isMap": false,
-        "keyTypeName": undefined,
-        "typeName": "int32",
-      },
-      Object {
         "fieldName": "d",
         "isArray": false,
         "isMap": false,
         "keyTypeName": undefined,
         "typeName": "int64",
+      },
+      Object {
+        "fieldName": "g",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "sint32",
+      },
+      Object {
+        "fieldName": "c",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "int32",
       },
       Object {
         "fieldName": "e",
@@ -47,20 +54,6 @@ Array [
         "typeName": "uint64",
       },
       Object {
-        "fieldName": "g",
-        "isArray": false,
-        "isMap": false,
-        "keyTypeName": undefined,
-        "typeName": "sint32",
-      },
-      Object {
-        "fieldName": "h",
-        "isArray": false,
-        "isMap": false,
-        "keyTypeName": undefined,
-        "typeName": "sint64",
-      },
-      Object {
         "fieldName": "i",
         "isArray": false,
         "isMap": false,
@@ -73,6 +66,13 @@ Array [
         "isMap": false,
         "keyTypeName": undefined,
         "typeName": "fixed64",
+      },
+      Object {
+        "fieldName": "m",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "bool",
       },
       Object {
         "fieldName": "k",
@@ -89,11 +89,11 @@ Array [
         "typeName": "sfixed64",
       },
       Object {
-        "fieldName": "m",
+        "fieldName": "h",
         "isArray": false,
         "isMap": false,
         "keyTypeName": undefined,
-        "typeName": "bool",
+        "typeName": "sint64",
       },
       Object {
         "fieldName": "n",

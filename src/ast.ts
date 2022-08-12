@@ -80,7 +80,7 @@ interface IDstEnum {
   values: string[];
 }
 
-export const getKnownTypeAndEnumNames = (
+export const getKnownTypeNames = (
   root: ISrcAST,
   knownTypeNames: string[] = [],
   prefix = ""
@@ -92,7 +92,7 @@ export const getKnownTypeAndEnumNames = (
       const type = root[typeName] as ISrcType;
 
       if (type.nested) {
-        return getKnownTypeAndEnumNames(
+        return getKnownTypeNames(
           type.nested,
           [prefix + typeName],
           prefix + typeName
@@ -102,13 +102,21 @@ export const getKnownTypeAndEnumNames = (
       return [prefix + typeName];
     })
     .reduce((prev, curr) => [...prev, ...curr], []),
+];
+
+export const getKnownEnumNames = (
+  root: ISrcAST,
+  knownEnumNames: string[] = [],
+  prefix = ""
+): string[] => [
+  ...knownEnumNames,
   ...Object.keys(root)
     .map((enumName) => {
       const enm = root[enumName] as ISrcType;
 
       if (!enm.values) {
         if (enm.nested) {
-          return getKnownTypeAndEnumNames(enm.nested, [], prefix + enumName);
+          return getKnownEnumNames(enm.nested, [], prefix + enumName);
         }
 
         return [];
@@ -121,7 +129,8 @@ export const getKnownTypeAndEnumNames = (
 
 export const getTypes = (
   curr: ISrcAST,
-  knownTypeAndEnumNames: string[],
+  knownTypeNames: string[],
+  knownEnumNames: string[],
   all: IDstType[] = [],
   prefix = ""
 ): IDstType[] => [
@@ -140,9 +149,13 @@ export const getTypes = (
           ? []
           : Object.keys(srcTypeFields)
               .map((fieldName) => {
-                const nestedTypeName = knownTypeAndEnumNames.find(
-                  (t) => t === srcTypeFields[fieldName].type.replace(".", "")
-                );
+                const nestedTypeName =
+                  knownTypeNames.find(
+                    (t) => t === srcTypeFields[fieldName].type.replace(".", "")
+                  ) ||
+                  knownEnumNames.find(
+                    (t) => t === srcTypeFields[fieldName].type.replace(".", "")
+                  );
 
                 return {
                   fieldName,
@@ -156,20 +169,44 @@ export const getTypes = (
                   isMap: !!srcTypeFields[fieldName].keyType,
                 };
               })
-              .sort((a, b) => a.index - b.index)
               .map((field) => ({
                 fieldName: field.fieldName,
                 typeName: field.typeName.replace(".", ""),
                 keyTypeName: field.keyTypeName?.replace(".", ""),
                 isArray: field.isArray,
                 isMap: field.isMap,
-              })),
+              }))
+              .reduce(
+                (a, b) => {
+                  if (b.isArray) {
+                    return [[...a[0]], [...a[1], b], [...a[2]]];
+                  }
+
+                  if (
+                    b.isMap ||
+                    // Enums are treated as primitive types
+                    (isProtoTypeComposite(b.typeName) &&
+                      !knownEnumNames.find((t) => t === b.typeName))
+                  ) {
+                    return [[...a[0]], [...a[1]], [...a[2], b]];
+                  }
+
+                  return [[...a[0], b], [...a[1]], [...a[2]]];
+                },
+                [
+                  [] as IDstField[], // Primitive types and enums
+                  [] as IDstField[], // Arrays
+                  [] as IDstField[], // Maps and messages
+                ]
+              )
+              .reduce((a, b) => [...a, ...b], []),
       };
 
       if (type.nested) {
         return getTypes(
           type.nested,
-          knownTypeAndEnumNames,
+          knownTypeNames,
+          knownEnumNames,
           [parsedType],
           parsedType.typeName
         );
@@ -207,7 +244,6 @@ export const getEnums = (
             key: field,
             value: srcEnumValues[field],
           }))
-          .sort((a, b) => a.value - b.value)
           .map((value) => value.key),
       };
 

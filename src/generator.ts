@@ -19,7 +19,8 @@ import { ModuleDeclaration, Project } from "ts-morph";
 import { version } from "../package.json";
 import {
   getEnums,
-  getKnownTypeAndEnumNames,
+  getKnownEnumNames,
+  getKnownTypeNames,
   getRootAndNamespace,
   getTypes,
   isProtoTypeComposite,
@@ -219,7 +220,11 @@ export const getTypeScriptForProtobuf = (
   const proto = protobuf.parse(protoSource).root.toJSON().nested!;
 
   const { root, namespace } = getRootAndNamespace(proto);
-  const types = getTypes(root, getKnownTypeAndEnumNames(root));
+  const types = getTypes(
+    root,
+    getKnownTypeNames(root),
+    getKnownEnumNames(root)
+  );
   const enums = getEnums(root);
 
   const project = new Project();

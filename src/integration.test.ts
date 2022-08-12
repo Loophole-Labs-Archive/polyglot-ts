@@ -14,7 +14,9 @@
 	limitations under the License.
 */
 
+import fs from "fs/promises";
 import JSONBigint from "json-bigint";
+import path from "path";
 import { TextDecoder, TextEncoder } from "util";
 import {
   decodeArray,
@@ -51,8 +53,6 @@ import {
   encodeUint8Array,
 } from "./encoder";
 import { Kind } from "./kind";
-import fs from "fs/promises";
-import path from "path";
 
 window.TextEncoder = TextEncoder;
 window.TextDecoder = TextDecoder as typeof window["TextDecoder"];
@@ -83,11 +83,10 @@ describe("Integration test", () => {
       )
     );
 
-    testData = (rawTestData as any[]).map((el: any) => {
-      el.encodedValue = base64ToUint8Array(el.encodedValue);
-
-      return el;
-    });
+    testData = (rawTestData as any[]).map((el: any) => ({
+      ...el,
+      encodedValue: base64ToUint8Array(el.encodedValue),
+    }));
   });
 
   it("Can run the decode tests from the test data", () => {
@@ -238,7 +237,7 @@ describe("Integration test", () => {
 
         default:
           throw new Error(
-            "Unimplemented decoder for kind " + v.kind + " and test " + v.name
+            `Unimplemented decoder for kind ${v.kind} and test ${v.name}`
           );
       }
     });
@@ -393,7 +392,7 @@ describe("Integration test", () => {
 
         default:
           throw new Error(
-            "Unimplemented encoder for kind " + v.kind + " and test " + v.name
+            `Unimplemented encoder for kind ${v.kind} and test ${v.name}`
           );
       }
     });
