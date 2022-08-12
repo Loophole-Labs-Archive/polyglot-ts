@@ -80,6 +80,13 @@ interface IDstEnum {
   values: string[];
 }
 
+/**
+ * Get known type names from an AST
+ * @param root AST to get type names from
+ * @param knownTypeNames Type names that are already known
+ * @param prefix Path to the type
+ * @returns Known type names
+ */
 export const getKnownTypeNames = (
   root: ISrcAST,
   knownTypeNames: string[] = [],
@@ -104,6 +111,13 @@ export const getKnownTypeNames = (
     .reduce((prev, curr) => [...prev, ...curr], []),
 ];
 
+/**
+ * Get known enum names from an AST
+ * @param root AST to get enum names from
+ * @param knownEnumNames Enum names that are already known
+ * @param prefix Path to the enum
+ * @returns Known enum names
+ */
 export const getKnownEnumNames = (
   root: ISrcAST,
   knownEnumNames: string[] = [],
@@ -127,6 +141,15 @@ export const getKnownEnumNames = (
     .reduce((prev, curr) => [...prev, ...curr], []),
 ];
 
+/**
+ * Get types from an AST
+ * @param curr AST to get types from
+ * @param knownTypeNames Type names that already known
+ * @param knownEnumNames Enum names that are already known
+ * @param all Types that are already known
+ * @param prefix Path to the types
+ * @returns Types from the AST
+ */
 export const getTypes = (
   curr: ISrcAST,
   knownTypeNames: string[],
@@ -217,6 +240,13 @@ export const getTypes = (
     .reduce((a, b) => [...a, ...b], []),
 ];
 
+/**
+ * Get enums from an AST
+ * @param curr AST to get enums from
+ * @param all Enums that are already known
+ * @param prefix Path to the enums
+ * @returns Enums from the AST
+ */
 export const getEnums = (
   curr: ISrcAST,
   all: IDstEnum[] = [],
@@ -252,6 +282,13 @@ export const getEnums = (
     .reduce((a, b) => [...a, ...b], []),
 ];
 
+/**
+ * Get root and namespace from an object
+ * @param obj Object to get root from
+ * @param objPath Current path
+ * @param lastObj Last traversed object
+ * @returns Root and namespace of an object
+ */
 export const getRootAndNamespace = (
   obj: any,
   objPath: string[] = [],

@@ -62,6 +62,7 @@
     "json-bigint": "^1.0.0",
     "parcel": "^2.6.2",
     "prettier": "^2.7.1",
+    "process": "^0.11.10",
     "ts-jest": "^28.0.6",
     "typedoc": "^0.23.8",
     "typescript": "^4.7.4"

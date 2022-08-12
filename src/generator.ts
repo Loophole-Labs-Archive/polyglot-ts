@@ -213,7 +213,13 @@ const getPolyglotDecoderFromProtoType = (protoTypeName: string) => {
   }
 };
 
-export const getTypeScriptForProtobuf = (
+/**
+ * Generate TypeScript for Protobuf source code
+ * @param protoSource Protobuf source code in `proto3` format
+ * @param protoFilePath File path of the Protobuf source code to base generated file path on
+ * @returns TypeScript source and source file path
+ */
+export const generateTypeScriptForProtobuf = (
   protoSource: string,
   protoFilePath: string
 ): { typescriptSource: string; typescriptFilePath: string } => {

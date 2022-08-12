@@ -16,7 +16,7 @@
 
 import fs from "fs";
 import path from "path";
-import { getTypeScriptForProtobuf } from "./generator";
+import { generateTypeScriptForProtobuf } from "./generator";
 
 describe("Generator", () => {
   const dataDir = path.join(__dirname, "..", "data");
@@ -28,10 +28,11 @@ describe("Generator", () => {
     }
 
     it(`Can generate TypeScript for ${protoFilePath}`, () => {
-      const { typescriptSource, typescriptFilePath } = getTypeScriptForProtobuf(
-        fs.readFileSync(path.join(dataDir, protoFilePath), "utf8"),
-        path.join(dataDir, protoFilePath)
-      );
+      const { typescriptSource, typescriptFilePath } =
+        generateTypeScriptForProtobuf(
+          fs.readFileSync(path.join(dataDir, protoFilePath), "utf8"),
+          path.join(dataDir, protoFilePath)
+        );
 
       expect(typescriptFilePath).toBe(
         `${path

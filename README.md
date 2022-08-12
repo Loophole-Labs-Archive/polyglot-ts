@@ -4,9 +4,31 @@
 [![npm: @loopholelabs/polyglot-ts](https://img.shields.io/npm/v/@loopholelabs/polyglot-ts)](https://www.npmjs.com/package/@loopholelabs/polyglot-ts)
 [![Docs](https://img.shields.io/badge/Docs-TypeDoc-blue.svg)][docs]
 
-TypeScript version of the Polyglot data encoding library.
+TypeScript library and `protoc` plugin used for encoding and decoding data types from a portable byte buffer, used in [FRPC](https://github.com/loopholelabs/frisbee)
 
 ## Installation
+
+## `protoc` Plugin
+
+Using npm:
+
+```shell
+$ npm install --global @loopholelabs/polyglot-ts
+```
+
+Using Yarn:
+
+```shell
+$ yarn global add @loopholelabs/polyglot-ts
+```
+
+You can use the plugin like so:
+
+```shell
+$ protoc --ts-polyglot_out=. definition.proto
+```
+
+## Library
 
 Using npm:
 

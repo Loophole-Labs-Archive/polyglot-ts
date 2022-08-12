@@ -21,7 +21,7 @@ import {
   CodeGeneratorRequest,
   CodeGeneratorResponse,
 } from "google-protobuf/google/protobuf/compiler/plugin_pb";
-import { getTypeScriptForProtobuf } from "./generator";
+import { generateTypeScriptForProtobuf } from "./generator";
 
 const codeGenRequest = CodeGeneratorRequest.deserializeBinary(
   fs.readFileSync(0, null)
@@ -32,10 +32,11 @@ codeGenResponse.setSupportedFeatures(
 );
 
 codeGenRequest.getFileToGenerateList().forEach((protoFilePath) => {
-  const { typescriptSource, typescriptFilePath } = getTypeScriptForProtobuf(
-    fs.readFileSync(protoFilePath, "utf8"),
-    protoFilePath
-  );
+  const { typescriptSource, typescriptFilePath } =
+    generateTypeScriptForProtobuf(
+      fs.readFileSync(protoFilePath, "utf8"),
+      protoFilePath
+    );
 
   const generatedFile = new CodeGeneratorResponse.File();
   generatedFile.setName(typescriptFilePath);
