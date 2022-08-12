@@ -170,61 +170,58 @@ export const getTypes = (
       const ownPrefix = prefix + typeName; // Generate nested message type
       const parsedType = {
         typeName: ownPrefix,
-        fields: type.oneofs // Ignore oneofs
-          ? []
-          : Object.keys(srcTypeFields)
-              .map((fieldName) => {
-                const nestedTypeName =
-                  knownTypeNames.find(
-                    (t) => t === srcTypeFields[fieldName].type.replace(".", "") // We can't use . in generated class names
-                  ) ||
-                  knownEnumNames.find(
-                    (t) => t === srcTypeFields[fieldName].type.replace(".", "") // We can't use . in generated class names
-                  );
+        fields: Object.keys(srcTypeFields)
+          .map((fieldName) => {
+            const nestedTypeName =
+              knownTypeNames.find(
+                (t) => t === srcTypeFields[fieldName].type.replace(".", "") // We can't use . in generated class names
+              ) ||
+              knownEnumNames.find(
+                (t) => t === srcTypeFields[fieldName].type.replace(".", "") // We can't use . in generated class names
+              );
 
-                return {
-                  fieldName,
-                  typeName: isProtoTypeComposite(srcTypeFields[fieldName].type) // Nest composite type names
-                    ? nestedTypeName ||
-                      ownPrefix + srcTypeFields[fieldName].type
-                    : srcTypeFields[fieldName].type,
-                  keyTypeName: srcTypeFields[fieldName].keyType,
-                  index: srcTypeFields[fieldName].id,
-                  isArray: srcTypeFields[fieldName].rule === "repeated",
-                  isMap: !!srcTypeFields[fieldName].keyType,
-                };
-              })
-              .map((field) => ({
-                fieldName: field.fieldName,
-                typeName: field.typeName.replace(".", ""), // We can't use . in generated class names
-                keyTypeName: field.keyTypeName?.replace(".", ""), // We can't use . in generated class names
-                isArray: field.isArray,
-                isMap: field.isMap,
-              }))
-              .reduce(
-                (a, b) => {
-                  if (b.isArray) {
-                    return [[...a[0]], [...a[1], b], [...a[2]]];
-                  }
+            return {
+              fieldName,
+              typeName: isProtoTypeComposite(srcTypeFields[fieldName].type) // Nest composite type names
+                ? nestedTypeName || ownPrefix + srcTypeFields[fieldName].type
+                : srcTypeFields[fieldName].type,
+              keyTypeName: srcTypeFields[fieldName].keyType,
+              index: srcTypeFields[fieldName].id,
+              isArray: srcTypeFields[fieldName].rule === "repeated",
+              isMap: !!srcTypeFields[fieldName].keyType,
+            };
+          })
+          .map((field) => ({
+            fieldName: field.fieldName,
+            typeName: field.typeName.replace(".", ""), // We can't use . in generated class names
+            keyTypeName: field.keyTypeName?.replace(".", ""), // We can't use . in generated class names
+            isArray: field.isArray,
+            isMap: field.isMap,
+          }))
+          .reduce(
+            (a, b) => {
+              if (b.isArray) {
+                return [[...a[0]], [...a[1], b], [...a[2]]];
+              }
 
-                  if (
-                    b.isMap ||
-                    // Enums are treated as primitive types
-                    (isProtoTypeComposite(b.typeName) &&
-                      !knownEnumNames.find((t) => t === b.typeName))
-                  ) {
-                    return [[...a[0]], [...a[1]], [...a[2], b]];
-                  }
+              if (
+                b.isMap ||
+                // Enums are treated as primitive types
+                (isProtoTypeComposite(b.typeName) &&
+                  !knownEnumNames.find((t) => t === b.typeName))
+              ) {
+                return [[...a[0]], [...a[1]], [...a[2], b]];
+              }
 
-                  return [[...a[0], b], [...a[1]], [...a[2]]];
-                },
-                [
-                  [] as IDstField[], // Primitive types and enums
-                  [] as IDstField[], // Arrays
-                  [] as IDstField[], // Maps and messages
-                ]
-              )
-              .reduce((a, b) => [...a, ...b], []),
+              return [[...a[0], b], [...a[1]], [...a[2]]];
+            },
+            [
+              [] as IDstField[], // Primitive types and enums
+              [] as IDstField[], // Arrays
+              [] as IDstField[], // Maps and messages
+            ]
+          )
+          .reduce((a, b) => [...a, ...b], []),
       };
 
       if (type.nested) {
