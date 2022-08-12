@@ -94,6 +94,7 @@ export const getKnownTypeNames = (
 ): string[] => [
   ...knownTypeNames,
   ...Object.keys(root)
+    // Only process types
     .filter((typeName) => (root[typeName] as ISrcType).fields)
     .map((typeName) => {
       const type = root[typeName] as ISrcType;
@@ -159,13 +160,14 @@ export const getTypes = (
 ): IDstType[] => [
   ...all,
   ...Object.keys(curr)
+    // Only process types
     .filter((typeName) => (curr[typeName] as ISrcType).fields)
     .map((typeName) => {
       const type = curr[typeName] as ISrcType;
 
       const srcTypeFields = type.fields;
 
-      const ownPrefix = prefix + typeName;
+      const ownPrefix = prefix + typeName; // Generate nested message type
       const parsedType = {
         typeName: ownPrefix,
         fields: type.oneofs // Ignore oneofs
@@ -174,15 +176,15 @@ export const getTypes = (
               .map((fieldName) => {
                 const nestedTypeName =
                   knownTypeNames.find(
-                    (t) => t === srcTypeFields[fieldName].type.replace(".", "")
+                    (t) => t === srcTypeFields[fieldName].type.replace(".", "") // We can't use . in generated class names
                   ) ||
                   knownEnumNames.find(
-                    (t) => t === srcTypeFields[fieldName].type.replace(".", "")
+                    (t) => t === srcTypeFields[fieldName].type.replace(".", "") // We can't use . in generated class names
                   );
 
                 return {
                   fieldName,
-                  typeName: isProtoTypeComposite(srcTypeFields[fieldName].type)
+                  typeName: isProtoTypeComposite(srcTypeFields[fieldName].type) // Nest composite type names
                     ? nestedTypeName ||
                       ownPrefix + srcTypeFields[fieldName].type
                     : srcTypeFields[fieldName].type,
@@ -194,8 +196,8 @@ export const getTypes = (
               })
               .map((field) => ({
                 fieldName: field.fieldName,
-                typeName: field.typeName.replace(".", ""),
-                keyTypeName: field.keyTypeName?.replace(".", ""),
+                typeName: field.typeName.replace(".", ""), // We can't use . in generated class names
+                keyTypeName: field.keyTypeName?.replace(".", ""), // We can't use . in generated class names
                 isArray: field.isArray,
                 isMap: field.isMap,
               }))

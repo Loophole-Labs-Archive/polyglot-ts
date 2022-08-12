@@ -23,6 +23,7 @@ import {
 } from "google-protobuf/google/protobuf/compiler/plugin_pb";
 import { generateTypeScriptForProtobuf } from "./generator";
 
+// Read request from `protoc`
 const codeGenRequest = CodeGeneratorRequest.deserializeBinary(
   fs.readFileSync(0, null)
 );
@@ -31,6 +32,7 @@ codeGenResponse.setSupportedFeatures(
   CodeGeneratorResponse.Feature.FEATURE_PROTO3_OPTIONAL
 );
 
+// Respond with generated files
 codeGenRequest.getFileToGenerateList().forEach((protoFilePath) => {
   const { typescriptSource, typescriptFilePath } =
     generateTypeScriptForProtobuf(
