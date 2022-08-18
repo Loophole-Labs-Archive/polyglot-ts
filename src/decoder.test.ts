@@ -16,6 +16,7 @@
 
 import { TextDecoder, TextEncoder } from "util";
 import {
+  decodeAny,
   decodeArray,
   decodeBoolean,
   decodeError,
@@ -47,8 +48,9 @@ import {
   InvalidUint8Error,
 } from "./decoder";
 import {
+  encodeAny,
   encodeArray,
-  encodeBool,
+  encodeBoolean,
   encodeError,
   encodeFloat32,
   encodeFloat64,
@@ -81,10 +83,22 @@ describe("Decoder", () => {
     expect(decodedNext.value).toBe(false);
   });
 
+  it("Can decode Any", () => {
+    const encoded = encodeAny(new Uint8Array());
+
+    const { value, buf } = decodeAny(encoded);
+
+    expect(value).toBe(true);
+    expect(buf.length).toBe(0);
+
+    const decodedNext = decodeAny(buf);
+    expect(decodedNext.value).toBe(false);
+  });
+
   it("Can decode true Boolean", () => {
     const expected = true;
 
-    const encoded = encodeBool(new Uint8Array(), expected);
+    const encoded = encodeBoolean(new Uint8Array(), expected);
 
     const { value, buf } = decodeBoolean(encoded);
 
@@ -97,7 +111,7 @@ describe("Decoder", () => {
   it("Can decode false Boolean", () => {
     const expected = false;
 
-    const encoded = encodeBool(new Uint8Array(), expected);
+    const encoded = encodeBoolean(new Uint8Array(), expected);
 
     const { value, buf } = decodeBoolean(encoded);
 

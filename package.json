@@ -12,6 +12,19 @@
     "update-test-data": "curl -Lo data/polyglot-test-data.json https://github.com/loopholelabs/polyglot-test-data/releases/latest/download/polyglot-test-data.json",
     "test": "jest"
   },
+  "bin": {
+    "protoc-gen-ts-polyglot": "dist/protoc-gen-ts-polyglot.js"
+  },
+  "targets": {
+    "default": {
+      "distDir": "./dist"
+    },
+    "cli": {
+      "distDir": "./dist",
+      "source": "src/protoc-gen-ts-polyglot.ts",
+      "context": "node"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pojntfx/polyglot-ts.git"
@@ -32,8 +45,10 @@
     "@parcel/transformer-typescript-types": "^2.6.2",
     "@parcel/validator-eslint": "^2.6.2",
     "@parcel/validator-typescript": "^2.6.2",
+    "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^28.1.5",
     "@types/json-bigint": "^1.0.1",
+    "@types/node": "^18.6.3",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "eslint": "^7.32.0",
@@ -47,8 +62,14 @@
     "json-bigint": "^1.0.0",
     "parcel": "^2.6.2",
     "prettier": "^2.7.1",
+    "process": "^0.11.10",
     "ts-jest": "^28.0.6",
     "typedoc": "^0.23.8",
     "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "google-protobuf": "^3.21.0",
+    "protobufjs": "^7.0.0",
+    "ts-morph": "^15.1.0"
   }
 }

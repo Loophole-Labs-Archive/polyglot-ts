@@ -16,6 +16,11 @@
     "prettier/prettier": "error",
     "import/export": "off",
     "import/prefer-default-export": "off",
-    "max-classes-per-file": "off"
+    "max-classes-per-file": "off",
+    "no-underscore-dangle": "off",
+    "no-nested-ternary": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "no-plusplus": "off",
+    "prefer-destructuring": "off"
   }
 }

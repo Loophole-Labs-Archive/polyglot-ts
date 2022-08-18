@@ -1,0 +1,355 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AST Can get AST from complex, unordered protobuf 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "a",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "double",
+      },
+      Object {
+        "fieldName": "b",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "float",
+      },
+      Object {
+        "fieldName": "d",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "int64",
+      },
+      Object {
+        "fieldName": "g",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "sint32",
+      },
+      Object {
+        "fieldName": "c",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "int32",
+      },
+      Object {
+        "fieldName": "e",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "uint32",
+      },
+      Object {
+        "fieldName": "f",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "uint64",
+      },
+      Object {
+        "fieldName": "i",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "fixed32",
+      },
+      Object {
+        "fieldName": "j",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "fixed64",
+      },
+      Object {
+        "fieldName": "m",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "bool",
+      },
+      Object {
+        "fieldName": "k",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "sfixed32",
+      },
+      Object {
+        "fieldName": "l",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "sfixed64",
+      },
+      Object {
+        "fieldName": "h",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "sint64",
+      },
+      Object {
+        "fieldName": "n",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "o",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "bytes",
+      },
+    ],
+    "typeName": "ExampleMessage",
+  },
+]
+`;
+
+exports[`AST Can get AST from complex, unordered protobuf 2`] = `Array []`;
+
+exports[`AST Can get AST from protobuf with array 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "name",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "addresses",
+        "isArray": true,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "balances",
+        "isArray": true,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "int32",
+      },
+    ],
+    "typeName": "ExampleMessage",
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with array 2`] = `Array []`;
+
+exports[`AST Can get AST from protobuf with enum 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "type",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "MessageType",
+      },
+    ],
+    "typeName": "ExampleMessage",
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with enum 2`] = `
+Array [
+  Object {
+    "enumName": "MessageType",
+    "values": Array [
+      "MESSAGE_TYPE_A",
+      "MESSAGE_TYPE_B",
+      "MESSAGE_TYPE_C",
+    ],
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with map 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "name",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "balances",
+        "isArray": false,
+        "isMap": true,
+        "keyTypeName": "string",
+        "typeName": "int32",
+      },
+      Object {
+        "fieldName": "backlinks",
+        "isArray": false,
+        "isMap": true,
+        "keyTypeName": "string",
+        "typeName": "double",
+      },
+    ],
+    "typeName": "ExampleMessage",
+  },
+]
+`;
+
+exports[`AST Can get AST from protobuf with map 2`] = `Array []`;
+
+exports[`AST Can get AST from simple protobuf 1`] = `
+Array [
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "name",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "string",
+      },
+      Object {
+        "fieldName": "age",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "int32",
+      },
+      Object {
+        "fieldName": "department",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "Department",
+      },
+    ],
+    "typeName": "User",
+  },
+  Object {
+    "fields": Array [
+      Object {
+        "fieldName": "name",
+        "isArray": false,
+        "isMap": false,
+        "keyTypeName": undefined,
+        "typeName": "string",
+      },
+    ],
+    "typeName": "Department",
+  },
+]
+`;
+
+exports[`AST Can get root and namespace from complex, unordered protobuf 1`] = `
+Object {
+  "ExampleMessage": Object {
+    "fields": Object {
+      "a": Object {
+        "id": 1,
+        "type": "double",
+      },
+      "b": Object {
+        "id": 2,
+        "type": "float",
+      },
+      "c": Object {
+        "id": 3,
+        "type": "int32",
+      },
+      "d": Object {
+        "id": 4,
+        "type": "int64",
+      },
+      "e": Object {
+        "id": 5,
+        "type": "uint32",
+      },
+      "f": Object {
+        "id": 6,
+        "type": "uint64",
+      },
+      "g": Object {
+        "id": 7,
+        "type": "sint32",
+      },
+      "h": Object {
+        "id": 8,
+        "type": "sint64",
+      },
+      "i": Object {
+        "id": 9,
+        "type": "fixed32",
+      },
+      "j": Object {
+        "id": 10,
+        "type": "fixed64",
+      },
+      "k": Object {
+        "id": 11,
+        "type": "sfixed32",
+      },
+      "l": Object {
+        "id": 12,
+        "type": "sfixed64",
+      },
+      "m": Object {
+        "id": 13,
+        "type": "bool",
+      },
+      "n": Object {
+        "id": 14,
+        "type": "string",
+      },
+      "o": Object {
+        "id": 15,
+        "type": "bytes",
+      },
+    },
+  },
+}
+`;
+
+exports[`AST Can get root and namespace from simple protobuf 1`] = `
+Object {
+  "Department": Object {
+    "fields": Object {
+      "name": Object {
+        "id": 1,
+        "type": "string",
+      },
+    },
+  },
+  "User": Object {
+    "fields": Object {
+      "age": Object {
+        "id": 2,
+        "type": "int32",
+      },
+      "department": Object {
+        "id": 3,
+        "type": "Department",
+      },
+      "name": Object {
+        "id": 1,
+        "type": "string",
+      },
+    },
+  },
+}
+`;
