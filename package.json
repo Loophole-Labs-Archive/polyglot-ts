@@ -1,6 +1,6 @@
 {
   "name": "@loopholelabs/polyglot-ts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript version of the Polyglot data encoding library.",
   "source": "src/index.ts",
   "main": "dist/main.js",
