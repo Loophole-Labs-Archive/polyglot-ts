@@ -81,60 +81,66 @@ describe("Encoder", () => {
 
     expect(encoded.length).toBe(3);
     expect(encoded[0]).toBe(Kind.Uint16);
-    expect(encoded[1]).toBe(0x4);
-    expect(encoded[2]).toBe(0x0);
+    expect(encoded[1]).toBe(128);
+    expect(encoded[2]).toBe(8);
   });
 
   it("Can encode Uint32", () => {
     const encoded = encodeUint32(new Uint8Array(), 4294967290);
 
-    expect(encoded.length).toBe(5);
+    expect(encoded.length).toBe(6);
     expect(encoded[0]).toBe(Kind.Uint32);
-    expect(encoded[1]).toBe(0xff);
-    expect(encoded[2]).toBe(0xff);
-    expect(encoded[3]).toBe(0xff);
-    expect(encoded[4]).toBe(0xfa);
+    expect(encoded[1]).toBe(250);
+    expect(encoded[2]).toBe(255);
+    expect(encoded[3]).toBe(255);
+    expect(encoded[4]).toBe(255);
+    expect(encoded[5]).toBe(15);
   });
 
   it("Can encode Uint64", () => {
     const encoded = encodeUint64(new Uint8Array(), 18446744073709551610n);
 
-    expect(encoded.length).toBe(9);
+    expect(encoded.length).toBe(11);
     expect(encoded[0]).toBe(Kind.Uint64);
-    expect(encoded[1]).toBe(0xff);
-    expect(encoded[2]).toBe(0xff);
-    expect(encoded[3]).toBe(0xff);
-    expect(encoded[4]).toBe(0xff);
-    expect(encoded[5]).toBe(0xff);
-    expect(encoded[6]).toBe(0xff);
-    expect(encoded[7]).toBe(0xff);
-    expect(encoded[8]).toBe(0xfa);
+    expect(encoded[1]).toBe(250);
+    expect(encoded[2]).toBe(255);
+    expect(encoded[3]).toBe(255);
+    expect(encoded[4]).toBe(255);
+    expect(encoded[5]).toBe(255);
+    expect(encoded[6]).toBe(255);
+    expect(encoded[7]).toBe(255);
+    expect(encoded[8]).toBe(255);
+    expect(encoded[9]).toBe(255);
+    expect(encoded[10]).toBe(1);
   });
 
   it("Can encode Int32", () => {
     const encoded = encodeInt32(new Uint8Array(), -2147483648);
 
-    expect(encoded.length).toBe(5);
+    expect(encoded.length).toBe(6);
     expect(encoded[0]).toBe(Kind.Int32);
-    expect(encoded[1]).toBe(0x80);
-    expect(encoded[2]).toBe(0x00);
-    expect(encoded[3]).toBe(0x00);
-    expect(encoded[4]).toBe(0x00);
+    expect(encoded[1]).toBe(255);
+    expect(encoded[2]).toBe(255);
+    expect(encoded[3]).toBe(255);
+    expect(encoded[4]).toBe(255);
+    expect(encoded[5]).toBe(15);
   });
 
   it("Can encode Int64", () => {
     const encoded = encodeInt64(new Uint8Array(), -9223372036854775808n);
 
-    expect(encoded.length).toBe(9);
+    expect(encoded.length).toBe(11);
     expect(encoded[0]).toBe(Kind.Int64);
-    expect(encoded[1]).toBe(0x80);
-    expect(encoded[2]).toBe(0x00);
-    expect(encoded[3]).toBe(0x00);
-    expect(encoded[4]).toBe(0x00);
-    expect(encoded[5]).toBe(0x00);
-    expect(encoded[6]).toBe(0x00);
-    expect(encoded[7]).toBe(0x00);
-    expect(encoded[8]).toBe(0x00);
+    expect(encoded[1]).toBe(255);
+    expect(encoded[2]).toBe(255);
+    expect(encoded[3]).toBe(255);
+    expect(encoded[4]).toBe(255);
+    expect(encoded[5]).toBe(255);
+    expect(encoded[6]).toBe(255);
+    expect(encoded[7]).toBe(255);
+    expect(encoded[8]).toBe(255);
+    expect(encoded[9]).toBe(255);
+    expect(encoded[10]).toBe(1);
   });
 
   it("Can encode Float32", () => {
@@ -166,7 +172,7 @@ describe("Encoder", () => {
   it("Can encode Array", () => {
     const encoded = encodeArray(new Uint8Array(), 32, Kind.String);
 
-    expect(encoded.length).toBe(1 + 1 + 1 + 4);
+    expect(encoded.length).toBe(1 + 1 + 1 + 1);
     expect(encoded[0]).toBe(Kind.Array);
     expect(encoded[1]).toBe(Kind.String);
     expect(encoded[2]).toBe(Kind.Uint32);
@@ -175,7 +181,7 @@ describe("Encoder", () => {
   it("Can encode Map", () => {
     const encoded = encodeMap(new Uint8Array(), 32, Kind.String, Kind.Uint32);
 
-    expect(encoded.length).toBe(1 + 1 + 1 + 1 + 4);
+    expect(encoded.length).toBe(1 + 1 + 1 + 1 + 1);
     expect(encoded[0]).toBe(Kind.Map);
     expect(encoded[1]).toBe(Kind.String);
     expect(encoded[2]).toBe(Kind.Uint32);
@@ -187,7 +193,7 @@ describe("Encoder", () => {
 
     const encoded = encodeUint8Array(new Uint8Array(), expected);
 
-    expect(encoded.length).toBe(1 + 1 + 4 + expected.length);
+    expect(encoded.length).toBe(1 + 1 + 1 + expected.length);
     expect(encoded[0]).toBe(Kind.Uint8Array);
     expect(encoded.slice(6).buffer).toEqual(expected.buffer);
   });
@@ -197,7 +203,7 @@ describe("Encoder", () => {
 
     const encoded = encodeString(new Uint8Array(), expected);
 
-    expect(encoded.length).toBe(1 + 1 + 4 + expected.length);
+    expect(encoded.length).toBe(1 + 1 + 1 + expected.length);
     expect(encoded[0]).toBe(Kind.String);
     expect(encoded.slice(6).buffer).toEqual(
       new TextEncoder().encode(expected).buffer
@@ -209,7 +215,7 @@ describe("Encoder", () => {
 
     const encoded = encodeError(new Uint8Array(), expected);
 
-    expect(encoded.length).toBe(1 + 1 + 1 + 4 + expected.message.length);
+    expect(encoded.length).toBe(1 + 1 + 1 + 1 + expected.message.length);
     expect(encoded[0]).toBe(Kind.Error);
     expect(encoded.slice(6).buffer).toEqual(
       new TextEncoder().encode(expected.message).buffer

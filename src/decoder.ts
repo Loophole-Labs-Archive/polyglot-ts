@@ -179,10 +179,7 @@ export const decodeUint16 = (buf: Uint8Array) => {
     throw new InvalidUint16Error();
   }
 
-  return {
-    value: uint16BigEndianToNum(buf.slice(1, 4)),
-    buf: buf.slice(4),
-  };
+  return uint16BigEndianToNum(buf);
 };
 
 export const decodeUint32 = (buf: Uint8Array) => {
@@ -191,10 +188,7 @@ export const decodeUint32 = (buf: Uint8Array) => {
     throw new InvalidUint32Error();
   }
 
-  return {
-    value: uint32BigEndianToNum(buf.slice(1, 5)),
-    buf: buf.slice(5),
-  };
+  return uint32BigEndianToNum(buf);
 };
 
 export const decodeUint64 = (buf: Uint8Array) => {
@@ -203,10 +197,7 @@ export const decodeUint64 = (buf: Uint8Array) => {
     throw new InvalidUint64Error();
   }
 
-  return {
-    value: uint64BigEndianToNum(buf.slice(1, 9)),
-    buf: buf.slice(9),
-  };
+  return uint64BigEndianToNum(buf);
 };
 
 export const decodeInt32 = (buf: Uint8Array) => {
@@ -215,10 +206,7 @@ export const decodeInt32 = (buf: Uint8Array) => {
     throw new InvalidInt32Error();
   }
 
-  return {
-    value: int32BigEndianToNum(buf.slice(1, 5)),
-    buf: buf.slice(5),
-  };
+  return int32BigEndianToNum(buf);
 };
 
 export const decodeInt64 = (buf: Uint8Array) => {
@@ -227,10 +215,7 @@ export const decodeInt64 = (buf: Uint8Array) => {
     throw new InvalidInt64Error();
   }
 
-  return {
-    value: int64BigEndianToNum(buf.slice(1, 9)),
-    buf: buf.slice(9),
-  };
+  return int64BigEndianToNum(buf);
 };
 
 export const decodeFloat32 = (buf: Uint8Array) => {

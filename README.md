@@ -4,7 +4,7 @@
 [![npm: @loopholelabs/polyglot-ts](https://img.shields.io/npm/v/@loopholelabs/polyglot-ts)](https://www.npmjs.com/package/@loopholelabs/polyglot-ts)
 [![Docs](https://img.shields.io/badge/Docs-TypeDoc-blue.svg)][docs]
 
-TypeScript library and `protoc` plugin used for encoding and decoding data types from a portable byte buffer, used in [FRPC](https://github.com/loopholelabs/frisbee)
+TypeScript library and `protoc` plugin used for encoding and decoding data types from a portable byte buffer, used in [fRPC](https://frpc.io)
 
 ## Installation
 
