@@ -507,7 +507,7 @@ export const generateTypeScriptForProtobuf = (
                 `decoded = ${field.fieldName}Array.buf`,
                 `const ${
                   field.fieldName
-                }: { value: ${getTypeScriptTypeFromProtoType(
+                }Temp: { value: ${getTypeScriptTypeFromProtoType(
                   field.typeName,
                   field.keyTypeName,
                   field.isArray,
@@ -520,14 +520,14 @@ export const generateTypeScriptForProtobuf = (
                   ? `for (let i = 0; i < ${field.fieldName}Array.size; i++) {
                   const element = decodeUint8(decoded);
                   decoded = element.buf;
-                  ${field.fieldName}.value.push(element.value as ${field.typeName});
+                  ${field.fieldName}Temp.value.push(element.value as ${field.typeName});
                 }`
                   : `for (let i = 0; i < ${field.fieldName}Array.size; i++) {
                   const element = ${getPolyglotDecoderFromProtoType(
                     field.typeName
                   )}(decoded);
                   decoded = element.buf;
-                  ${field.fieldName}.value.push(element.value);
+                  ${field.fieldName}Temp.value.push(element.value);
                 }`,
               ];
             }
@@ -562,7 +562,7 @@ export const generateTypeScriptForProtobuf = (
                   decoded = key.buf;
                   const value = decodeUint8(decoded);
                   decoded = value.buf;
-                  ${field.fieldName}.value.set(key.value, value.value as ${
+                  ${field.fieldName}Temp.value.set(key.value, value.value as ${
                       field.typeName
                     });
                 }`
@@ -575,7 +575,7 @@ export const generateTypeScriptForProtobuf = (
                     field.typeName
                   )}(decoded);
                   decoded = value.buf;
-                  ${field.fieldName}.value.set(key.value, value.value);
+                  ${field.fieldName}Temp.value.set(key.value, value.value);
                 }`,
               ];
             }
@@ -586,23 +586,23 @@ export const generateTypeScriptForProtobuf = (
             ) {
               return [
                 `const ${field.fieldName}Uint8 = decodeUint8(decoded)`,
-                `const ${field.fieldName} = { value: ${field.fieldName}Uint8.value as ${field.typeName} }`,
+                `const ${field.fieldName}Temp = { value: ${field.fieldName}Uint8.value as ${field.typeName} }`,
                 `decoded = ${field.fieldName}Uint8.buf`,
               ];
             }
 
             return [
-              `const ${field.fieldName} = ${getPolyglotDecoderFromProtoType(
+              `const ${field.fieldName}Temp = ${getPolyglotDecoderFromProtoType(
                 field.typeName
               )}(decoded)`,
-              `decoded = ${field.fieldName}.buf`,
+              `decoded = ${field.fieldName}Temp.buf`,
             ];
           })
           .reduce((prev, curr) => [...prev, ...curr], []),
         `return {
       buf: decoded,
       value: new ${type.typeName}(${type.fields
-          .map((field) => `${field.fieldName}.value`)
+          .map((field) => `${field.fieldName}Temp.value`)
           .join(",")})
     }`,
       ],

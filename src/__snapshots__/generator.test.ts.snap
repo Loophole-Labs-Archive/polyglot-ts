@@ -66,35 +66,35 @@ export namespace io {
                                       value: ExampleMessage
                                     } {
                                 let decoded = buf
-                                const name = decodeString(decoded)
-                                decoded = name.buf
+                                const nameTemp = decodeString(decoded)
+                                decoded = nameTemp.buf
                                 const addressesArray = decodeArray(decoded)
                                 decoded = addressesArray.buf
-                                const addresses: { value: string[] } = {
+                                const addressesTemp: { value: string[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < addressesArray.size; i++) {
                                                   const element = decodeString(decoded);
                                                   decoded = element.buf;
-                                                  addresses.value.push(element.value);
+                                                  addressesTemp.value.push(element.value);
                                                 }
 
                                 const balancesArray = decodeArray(decoded)
                                 decoded = balancesArray.buf
-                                const balances: { value: number[] } = {
+                                const balancesTemp: { value: number[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < balancesArray.size; i++) {
                                                   const element = decodeInt32(decoded);
                                                   decoded = element.buf;
-                                                  balances.value.push(element.value);
+                                                  balancesTemp.value.push(element.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new ExampleMessage(name.value,addresses.value,balances.value)
+                                      value: new ExampleMessage(nameTemp.value,addressesTemp.value,balancesTemp.value)
                                     }
                             }
                         }
@@ -174,35 +174,35 @@ export namespace io {
                                           value: ExampleMessage
                                         } {
                                     let decoded = buf
-                                    const name = decodeString(decoded)
-                                    decoded = name.buf
+                                    const nameTemp = decodeString(decoded)
+                                    decoded = nameTemp.buf
                                     const addressesArray = decodeArray(decoded)
                                     decoded = addressesArray.buf
-                                    const addresses: { value: string[] } = {
+                                    const addressesTemp: { value: string[] } = {
                                                       value: [],
                                                     }
 
                                     for (let i = 0; i < addressesArray.size; i++) {
                                                       const element = decodeString(decoded);
                                                       decoded = element.buf;
-                                                      addresses.value.push(element.value);
+                                                      addressesTemp.value.push(element.value);
                                                     }
 
                                     const patientsArray = decodeArray(decoded)
                                     decoded = patientsArray.buf
-                                    const patients: { value: NestedExampleMessage[] } = {
+                                    const patientsTemp: { value: NestedExampleMessage[] } = {
                                                       value: [],
                                                     }
 
                                     for (let i = 0; i < patientsArray.size; i++) {
                                                       const element = NestedExampleMessage.decode(decoded);
                                                       decoded = element.buf;
-                                                      patients.value.push(element.value);
+                                                      patientsTemp.value.push(element.value);
                                                     }
 
                                     return {
                                           buf: decoded,
-                                          value: new ExampleMessage(name.value,addresses.value,patients.value)
+                                          value: new ExampleMessage(nameTemp.value,addressesTemp.value,patientsTemp.value)
                                         }
                                 }
                             }
@@ -233,11 +233,11 @@ export namespace io {
                                           value: NestedExampleMessage
                                         } {
                                     let decoded = buf
-                                    const age = decodeInt32(decoded)
-                                    decoded = age.buf
+                                    const ageTemp = decodeInt32(decoded)
+                                    decoded = ageTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new NestedExampleMessage(age.value)
+                                          value: new NestedExampleMessage(ageTemp.value)
                                         }
                                 }
                             }
@@ -324,35 +324,35 @@ export namespace io {
                                           value: ExampleMessage
                                         } {
                                     let decoded = buf
-                                    const name = decodeString(decoded)
-                                    decoded = name.buf
+                                    const nameTemp = decodeString(decoded)
+                                    decoded = nameTemp.buf
                                     const addressesArray = decodeArray(decoded)
                                     decoded = addressesArray.buf
-                                    const addresses: { value: string[] } = {
+                                    const addressesTemp: { value: string[] } = {
                                                       value: [],
                                                     }
 
                                     for (let i = 0; i < addressesArray.size; i++) {
                                                       const element = decodeString(decoded);
                                                       decoded = element.buf;
-                                                      addresses.value.push(element.value);
+                                                      addressesTemp.value.push(element.value);
                                                     }
 
                                     const patientsArray = decodeArray(decoded)
                                     decoded = patientsArray.buf
-                                    const patients: { value: MessageType[] } = {
+                                    const patientsTemp: { value: MessageType[] } = {
                                                       value: [],
                                                     }
 
                                     for (let i = 0; i < patientsArray.size; i++) {
                                                       const element = decodeUint8(decoded);
                                                       decoded = element.buf;
-                                                      patients.value.push(element.value as MessageType);
+                                                      patientsTemp.value.push(element.value as MessageType);
                                                     }
 
                                     return {
                                           buf: decoded,
-                                          value: new ExampleMessage(name.value,addresses.value,patients.value)
+                                          value: new ExampleMessage(nameTemp.value,addressesTemp.value,patientsTemp.value)
                                         }
                                 }
                             }
@@ -439,15 +439,15 @@ export namespace io {
                                   value: Request
                                 } {
                             let decoded = buf
-                            const Message = decodeString(decoded)
-                            decoded = Message.buf
+                            const MessageTemp = decodeString(decoded)
+                            decoded = MessageTemp.buf
                             const corpusUint8 = decodeUint8(decoded)
-                            const corpus = { value: corpusUint8.value as RequestCorpus }
+                            const corpusTemp = { value: corpusUint8.value as RequestCorpus }
 
                             decoded = corpusUint8.buf
                             return {
                                   buf: decoded,
-                                  value: new Request(Message.value,corpus.value)
+                                  value: new Request(MessageTemp.value,corpusTemp.value)
                                 }
                         }
                     }
@@ -490,13 +490,13 @@ export namespace io {
                                   value: Response
                                 } {
                             let decoded = buf
-                            const Message = decodeString(decoded)
-                            decoded = Message.buf
-                            const Test = Data.decode(decoded)
-                            decoded = Test.buf
+                            const MessageTemp = decodeString(decoded)
+                            decoded = MessageTemp.buf
+                            const TestTemp = Data.decode(decoded)
+                            decoded = TestTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new Response(Message.value,Test.value)
+                                  value: new Response(MessageTemp.value,TestTemp.value)
                                 }
                         }
                     }
@@ -539,15 +539,15 @@ export namespace io {
                                   value: Data
                                 } {
                             let decoded = buf
-                            const Message = decodeString(decoded)
-                            decoded = Message.buf
+                            const MessageTemp = decodeString(decoded)
+                            decoded = MessageTemp.buf
                             const CheckerUint8 = decodeUint8(decoded)
-                            const Checker = { value: CheckerUint8.value as Test }
+                            const CheckerTemp = { value: CheckerUint8.value as Test }
 
                             decoded = CheckerUint8.buf
                             return {
                                   buf: decoded,
-                                  value: new Data(Message.value,Checker.value)
+                                  value: new Data(MessageTemp.value,CheckerTemp.value)
                                 }
                         }
                     }
@@ -670,55 +670,55 @@ export namespace io {
                             let decoded = buf
                             const resultsArray = decodeArray(decoded)
                             decoded = resultsArray.buf
-                            const results: { value: SearchResponseResult[] } = {
+                            const resultsTemp: { value: SearchResponseResult[] } = {
                                               value: [],
                                             }
 
                             for (let i = 0; i < resultsArray.size; i++) {
                                               const element = SearchResponseResult.decode(decoded);
                                               decoded = element.buf;
-                                              results.value.push(element.value);
+                                              resultsTemp.value.push(element.value);
                                             }
 
                             const results2Array = decodeArray(decoded)
                             decoded = results2Array.buf
-                            const results2: { value: SearchResponseResult[] } = {
+                            const results2Temp: { value: SearchResponseResult[] } = {
                                               value: [],
                                             }
 
                             for (let i = 0; i < results2Array.size; i++) {
                                               const element = SearchResponseResult.decode(decoded);
                                               decoded = element.buf;
-                                              results2.value.push(element.value);
+                                              results2Temp.value.push(element.value);
                                             }
 
                             const snippetsArray = decodeArray(decoded)
                             decoded = snippetsArray.buf
-                            const snippets: { value: string[] } = {
+                            const snippetsTemp: { value: string[] } = {
                                               value: [],
                                             }
 
                             for (let i = 0; i < snippetsArray.size; i++) {
                                               const element = decodeString(decoded);
                                               decoded = element.buf;
-                                              snippets.value.push(element.value);
+                                              snippetsTemp.value.push(element.value);
                                             }
 
                             const snippets2Array = decodeArray(decoded)
                             decoded = snippets2Array.buf
-                            const snippets2: { value: string[] } = {
+                            const snippets2Temp: { value: string[] } = {
                                               value: [],
                                             }
 
                             for (let i = 0; i < snippets2Array.size; i++) {
                                               const element = decodeString(decoded);
                                               decoded = element.buf;
-                                              snippets2.value.push(element.value);
+                                              snippets2Temp.value.push(element.value);
                                             }
 
                             return {
                                   buf: decoded,
-                                  value: new SearchResponse(results.value,results2.value,snippets.value,snippets2.value)
+                                  value: new SearchResponse(resultsTemp.value,results2Temp.value,snippetsTemp.value,snippets2Temp.value)
                                 }
                         }
                     }
@@ -776,25 +776,25 @@ export namespace io {
                                   value: SearchResponseResult
                                 } {
                             let decoded = buf
-                            const url = decodeString(decoded)
-                            decoded = url.buf
-                            const title = decodeString(decoded)
-                            decoded = title.buf
+                            const urlTemp = decodeString(decoded)
+                            decoded = urlTemp.buf
+                            const titleTemp = decodeString(decoded)
+                            decoded = titleTemp.buf
                             const snippetsArray = decodeArray(decoded)
                             decoded = snippetsArray.buf
-                            const snippets: { value: string[] } = {
+                            const snippetsTemp: { value: string[] } = {
                                               value: [],
                                             }
 
                             for (let i = 0; i < snippetsArray.size; i++) {
                                               const element = decodeString(decoded);
                                               decoded = element.buf;
-                                              snippets.value.push(element.value);
+                                              snippetsTemp.value.push(element.value);
                                             }
 
                             return {
                                   buf: decoded,
-                                  value: new SearchResponseResult(url.value,title.value,snippets.value)
+                                  value: new SearchResponseResult(urlTemp.value,titleTemp.value,snippetsTemp.value)
                                 }
                         }
                     }
@@ -852,25 +852,25 @@ export namespace io {
                                   value: Resulting
                                 } {
                             let decoded = buf
-                            const url = decodeString(decoded)
-                            decoded = url.buf
-                            const title = decodeString(decoded)
-                            decoded = title.buf
+                            const urlTemp = decodeString(decoded)
+                            decoded = urlTemp.buf
+                            const titleTemp = decodeString(decoded)
+                            decoded = titleTemp.buf
                             const snippetsArray = decodeArray(decoded)
                             decoded = snippetsArray.buf
-                            const snippets: { value: string[] } = {
+                            const snippetsTemp: { value: string[] } = {
                                               value: [],
                                             }
 
                             for (let i = 0; i < snippetsArray.size; i++) {
                                               const element = decodeString(decoded);
                                               decoded = element.buf;
-                                              snippets.value.push(element.value);
+                                              snippetsTemp.value.push(element.value);
                                             }
 
                             return {
                                   buf: decoded,
-                                  value: new Resulting(url.value,title.value,snippets.value)
+                                  value: new Resulting(urlTemp.value,titleTemp.value,snippetsTemp.value)
                                 }
                         }
                     }
@@ -901,11 +901,11 @@ export namespace io {
                                   value: SomeOtherMessage
                                 } {
                             let decoded = buf
-                            const result = SearchResponseResult.decode(decoded)
-                            decoded = result.buf
+                            const resultTemp = SearchResponseResult.decode(decoded)
+                            decoded = resultTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new SomeOtherMessage(result.value)
+                                  value: new SomeOtherMessage(resultTemp.value)
                                 }
                         }
                     }
@@ -948,13 +948,13 @@ export namespace io {
                                   value: Outer
                                 } {
                             let decoded = buf
-                            const a = OuterMiddleAA.decode(decoded)
-                            decoded = a.buf
-                            const b = OuterMiddleBB.decode(decoded)
-                            decoded = b.buf
+                            const aTemp = OuterMiddleAA.decode(decoded)
+                            decoded = aTemp.buf
+                            const bTemp = OuterMiddleBB.decode(decoded)
+                            decoded = bTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new Outer(a.value,b.value)
+                                  value: new Outer(aTemp.value,bTemp.value)
                                 }
                         }
                     }
@@ -985,11 +985,11 @@ export namespace io {
                                   value: OuterMiddleAA
                                 } {
                             let decoded = buf
-                            const inner = OuterMiddleAAInner.decode(decoded)
-                            decoded = inner.buf
+                            const innerTemp = OuterMiddleAAInner.decode(decoded)
+                            decoded = innerTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleAA(inner.value)
+                                  value: new OuterMiddleAA(innerTemp.value)
                                 }
                         }
                     }
@@ -1032,13 +1032,13 @@ export namespace io {
                                   value: OuterMiddleAAInner
                                 } {
                             let decoded = buf
-                            const ival = decodeInt64(decoded)
-                            decoded = ival.buf
-                            const booly = decodeBoolean(decoded)
-                            decoded = booly.buf
+                            const ivalTemp = decodeInt64(decoded)
+                            decoded = ivalTemp.buf
+                            const boolyTemp = decodeBoolean(decoded)
+                            decoded = boolyTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleAAInner(ival.value,booly.value)
+                                  value: new OuterMiddleAAInner(ivalTemp.value,boolyTemp.value)
                                 }
                         }
                     }
@@ -1069,11 +1069,11 @@ export namespace io {
                                   value: OuterMiddleBB
                                 } {
                             let decoded = buf
-                            const inner = OuterMiddleBBInner.decode(decoded)
-                            decoded = inner.buf
+                            const innerTemp = OuterMiddleBBInner.decode(decoded)
+                            decoded = innerTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleBB(inner.value)
+                                  value: new OuterMiddleBB(innerTemp.value)
                                 }
                         }
                     }
@@ -1116,13 +1116,13 @@ export namespace io {
                                   value: OuterMiddleBBInner
                                 } {
                             let decoded = buf
-                            const ival = decodeInt32(decoded)
-                            decoded = ival.buf
-                            const booly = decodeBoolean(decoded)
-                            decoded = booly.buf
+                            const ivalTemp = decodeInt32(decoded)
+                            decoded = ivalTemp.buf
+                            const boolyTemp = decodeBoolean(decoded)
+                            decoded = boolyTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleBBInner(ival.value,booly.value)
+                                  value: new OuterMiddleBBInner(ivalTemp.value,boolyTemp.value)
                                 }
                         }
                     }
@@ -1165,13 +1165,13 @@ export namespace io {
                                   value: SampleMessage
                                 } {
                             let decoded = buf
-                            const name = decodeString(decoded)
-                            decoded = name.buf
-                            const potato = decodeString(decoded)
-                            decoded = potato.buf
+                            const nameTemp = decodeString(decoded)
+                            decoded = nameTemp.buf
+                            const potatoTemp = decodeString(decoded)
+                            decoded = potatoTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new SampleMessage(name.value,potato.value)
+                                  value: new SampleMessage(nameTemp.value,potatoTemp.value)
                                 }
                         }
                     }
@@ -1218,12 +1218,12 @@ export namespace io {
                                               decoded = key.buf;
                                               const value = decodeUint8(decoded);
                                               decoded = value.buf;
-                                              prices.value.set(key.value, value.value as Test);
+                                              pricesTemp.value.set(key.value, value.value as Test);
                                             }
 
                             return {
                                   buf: decoded,
-                                  value: new TestPotato(prices.value)
+                                  value: new TestPotato(pricesTemp.value)
                                 }
                         }
                     }
@@ -1271,12 +1271,12 @@ export namespace io {
                                               decoded = key.buf;
                                               const value = decodeFloat64(decoded);
                                               decoded = value.buf;
-                                              prices.value.set(key.value, value.value);
+                                              pricesTemp.value.set(key.value, value.value);
                                             }
 
                             return {
                                   buf: decoded,
-                                  value: new StockPrices(prices.value)
+                                  value: new StockPrices(pricesTemp.value)
                                 }
                         }
                     }
@@ -1312,19 +1312,19 @@ export namespace io {
                             let decoded = buf
                             const sPricesArray = decodeArray(decoded)
                             decoded = sPricesArray.buf
-                            const sPrices: { value: StockPrices[] } = {
+                            const sPricesTemp: { value: StockPrices[] } = {
                                               value: [],
                                             }
 
                             for (let i = 0; i < sPricesArray.size; i++) {
                                               const element = StockPrices.decode(decoded);
                                               decoded = element.buf;
-                                              sPrices.value.push(element.value);
+                                              sPricesTemp.value.push(element.value);
                                             }
 
                             return {
                                   buf: decoded,
-                                  value: new StockPricesWrapper(sPrices.value)
+                                  value: new StockPricesWrapper(sPricesTemp.value)
                                 }
                         }
                     }
@@ -1371,12 +1371,12 @@ export namespace io {
                                               decoded = key.buf;
                                               const value = StockPricesWrapper.decode(decoded);
                                               decoded = value.buf;
-                                              prices.value.set(key.value, value.value);
+                                              pricesTemp.value.set(key.value, value.value);
                                             }
 
                             return {
                                   buf: decoded,
-                                  value: new StockPricesSuperWrap(prices.value)
+                                  value: new StockPricesSuperWrap(pricesTemp.value)
                                 }
                         }
                     }
@@ -1592,39 +1592,39 @@ export namespace io {
                                       value: ExampleMessage
                                     } {
                                 let decoded = buf
-                                const a = decodeFloat64(decoded)
-                                decoded = a.buf
-                                const b = decodeFloat32(decoded)
-                                decoded = b.buf
-                                const d = decodeInt64(decoded)
-                                decoded = d.buf
-                                const g = decodeInt32(decoded)
-                                decoded = g.buf
-                                const c = decodeInt32(decoded)
-                                decoded = c.buf
-                                const e = decodeUint32(decoded)
-                                decoded = e.buf
-                                const f = decodeUint64(decoded)
-                                decoded = f.buf
-                                const i = decodeUint32(decoded)
-                                decoded = i.buf
-                                const j = decodeUint64(decoded)
-                                decoded = j.buf
-                                const m = decodeBoolean(decoded)
-                                decoded = m.buf
-                                const k = decodeInt32(decoded)
-                                decoded = k.buf
-                                const l = decodeInt64(decoded)
-                                decoded = l.buf
-                                const h = decodeInt64(decoded)
-                                decoded = h.buf
-                                const n = decodeString(decoded)
-                                decoded = n.buf
-                                const o = decodeUint8Array(decoded)
-                                decoded = o.buf
+                                const aTemp = decodeFloat64(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = decodeFloat32(decoded)
+                                decoded = bTemp.buf
+                                const dTemp = decodeInt64(decoded)
+                                decoded = dTemp.buf
+                                const gTemp = decodeInt32(decoded)
+                                decoded = gTemp.buf
+                                const cTemp = decodeInt32(decoded)
+                                decoded = cTemp.buf
+                                const eTemp = decodeUint32(decoded)
+                                decoded = eTemp.buf
+                                const fTemp = decodeUint64(decoded)
+                                decoded = fTemp.buf
+                                const iTemp = decodeUint32(decoded)
+                                decoded = iTemp.buf
+                                const jTemp = decodeUint64(decoded)
+                                decoded = jTemp.buf
+                                const mTemp = decodeBoolean(decoded)
+                                decoded = mTemp.buf
+                                const kTemp = decodeInt32(decoded)
+                                decoded = kTemp.buf
+                                const lTemp = decodeInt64(decoded)
+                                decoded = lTemp.buf
+                                const hTemp = decodeInt64(decoded)
+                                decoded = hTemp.buf
+                                const nTemp = decodeString(decoded)
+                                decoded = nTemp.buf
+                                const oTemp = decodeUint8Array(decoded)
+                                decoded = oTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new ExampleMessage(a.value,b.value,d.value,g.value,c.value,e.value,f.value,i.value,j.value,m.value,k.value,l.value,h.value,n.value,o.value)
+                                      value: new ExampleMessage(aTemp.value,bTemp.value,dTemp.value,gTemp.value,cTemp.value,eTemp.value,fTemp.value,iTemp.value,jTemp.value,mTemp.value,kTemp.value,lTemp.value,hTemp.value,nTemp.value,oTemp.value)
                                     }
                             }
                         }
@@ -1780,38 +1780,38 @@ export namespace io {
                                 let decoded = buf
                                 const aArray = decodeArray(decoded)
                                 decoded = aArray.buf
-                                const a: { value: bigint[] } = {
+                                const aTemp: { value: bigint[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < aArray.size; i++) {
                                                   const element = decodeInt64(decoded);
                                                   decoded = element.buf;
-                                                  a.value.push(element.value);
+                                                  aTemp.value.push(element.value);
                                                 }
 
                                 const bArray = decodeArray(decoded)
                                 decoded = bArray.buf
-                                const b: { value: boolean[] } = {
+                                const bTemp: { value: boolean[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < bArray.size; i++) {
                                                   const element = decodeBoolean(decoded);
                                                   decoded = element.buf;
-                                                  b.value.push(element.value);
+                                                  bTemp.value.push(element.value);
                                                 }
 
                                 const cArray = decodeArray(decoded)
                                 decoded = cArray.buf
-                                const c: { value: Uint8Array[] } = {
+                                const cTemp: { value: Uint8Array[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < cArray.size; i++) {
                                                   const element = decodeUint8Array(decoded);
                                                   decoded = element.buf;
-                                                  c.value.push(element.value);
+                                                  cTemp.value.push(element.value);
                                                 }
 
                                 const dMap = decodeMap(decoded)
@@ -1825,7 +1825,7 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeInt64(decoded);
                                                   decoded = value.buf;
-                                                  d.value.set(key.value, value.value);
+                                                  dTemp.value.set(key.value, value.value);
                                                 }
 
                                 const eMap = decodeMap(decoded)
@@ -1839,7 +1839,7 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeBoolean(decoded);
                                                   decoded = value.buf;
-                                                  e.value.set(key.value, value.value);
+                                                  eTemp.value.set(key.value, value.value);
                                                 }
 
                                 const fMap = decodeMap(decoded)
@@ -1853,7 +1853,7 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeString(decoded);
                                                   decoded = value.buf;
-                                                  f.value.set(key.value, value.value);
+                                                  fTemp.value.set(key.value, value.value);
                                                 }
 
                                 const gMap = decodeMap(decoded)
@@ -1867,12 +1867,12 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeUint8Array(decoded);
                                                   decoded = value.buf;
-                                                  g.value.set(key.value, value.value);
+                                                  gTemp.value.set(key.value, value.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new ExampleMessage(a.value,b.value,c.value,d.value,e.value,f.value,g.value)
+                                      value: new ExampleMessage(aTemp.value,bTemp.value,cTemp.value,dTemp.value,eTemp.value,fTemp.value,gTemp.value)
                                     }
                             }
                         }
@@ -1966,12 +1966,12 @@ export namespace io {
                                     } {
                                 let decoded = buf
                                 const typeUint8 = decodeUint8(decoded)
-                                const type = { value: typeUint8.value as MessageType }
+                                const typeTemp = { value: typeUint8.value as MessageType }
 
                                 decoded = typeUint8.buf
                                 return {
                                       buf: decoded,
-                                      value: new ExampleMessage(type.value)
+                                      value: new ExampleMessage(typeTemp.value)
                                     }
                             }
                         }
@@ -2128,20 +2128,20 @@ export namespace io {
                                       value: Request
                                     } {
                                 let decoded = buf
-                                const method = decodeString(decoded)
-                                decoded = method.buf
-                                const url = decodeString(decoded)
-                                decoded = url.buf
-                                const length = decodeUint64(decoded)
-                                decoded = length.buf
-                                const origin = decodeString(decoded)
-                                decoded = origin.buf
-                                const protocol = decodeString(decoded)
-                                decoded = protocol.buf
-                                const ip = decodeString(decoded)
-                                decoded = ip.buf
-                                const body = decodeUint8Array(decoded)
-                                decoded = body.buf
+                                const methodTemp = decodeString(decoded)
+                                decoded = methodTemp.buf
+                                const urlTemp = decodeString(decoded)
+                                decoded = urlTemp.buf
+                                const lengthTemp = decodeUint64(decoded)
+                                decoded = lengthTemp.buf
+                                const originTemp = decodeString(decoded)
+                                decoded = originTemp.buf
+                                const protocolTemp = decodeString(decoded)
+                                decoded = protocolTemp.buf
+                                const ipTemp = decodeString(decoded)
+                                decoded = ipTemp.buf
+                                const bodyTemp = decodeUint8Array(decoded)
+                                decoded = bodyTemp.buf
                                 const headersMap = decodeMap(decoded)
                                 decoded = headersMap.buf
                                 const headers: { value: Map<string, string> } = {
@@ -2153,7 +2153,7 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeString(decoded);
                                                   decoded = value.buf;
-                                                  headers.value.set(key.value, value.value);
+                                                  headersTemp.value.set(key.value, value.value);
                                                 }
 
                                 const queryMap = decodeMap(decoded)
@@ -2167,12 +2167,12 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeString(decoded);
                                                   decoded = value.buf;
-                                                  query.value.set(key.value, value.value);
+                                                  queryTemp.value.set(key.value, value.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new Request(method.value,url.value,length.value,origin.value,protocol.value,ip.value,body.value,headers.value,query.value)
+                                      value: new Request(methodTemp.value,urlTemp.value,lengthTemp.value,originTemp.value,protocolTemp.value,ipTemp.value,bodyTemp.value,headersTemp.value,queryTemp.value)
                                     }
                             }
                         }
@@ -2233,10 +2233,10 @@ export namespace io {
                                       value: Response
                                     } {
                                 let decoded = buf
-                                const status = decodeUint32(decoded)
-                                decoded = status.buf
-                                const body = decodeUint8Array(decoded)
-                                decoded = body.buf
+                                const statusTemp = decodeUint32(decoded)
+                                decoded = statusTemp.buf
+                                const bodyTemp = decodeUint8Array(decoded)
+                                decoded = bodyTemp.buf
                                 const headersMap = decodeMap(decoded)
                                 decoded = headersMap.buf
                                 const headers: { value: Map<string, string> } = {
@@ -2248,12 +2248,12 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeString(decoded);
                                                   decoded = value.buf;
-                                                  headers.value.set(key.value, value.value);
+                                                  headersTemp.value.set(key.value, value.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new Response(status.value,body.value,headers.value)
+                                      value: new Response(statusTemp.value,bodyTemp.value,headersTemp.value)
                                     }
                             }
                         }
@@ -2338,8 +2338,8 @@ export namespace io {
                                       value: ExampleMessage
                                     } {
                                 let decoded = buf
-                                const name = decodeString(decoded)
-                                decoded = name.buf
+                                const nameTemp = decodeString(decoded)
+                                decoded = nameTemp.buf
                                 const balancesMap = decodeMap(decoded)
                                 decoded = balancesMap.buf
                                 const balances: { value: Map<string, number> } = {
@@ -2351,7 +2351,7 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeInt32(decoded);
                                                   decoded = value.buf;
-                                                  balances.value.set(key.value, value.value);
+                                                  balancesTemp.value.set(key.value, value.value);
                                                 }
 
                                 const backlinksMap = decodeMap(decoded)
@@ -2365,12 +2365,12 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeFloat64(decoded);
                                                   decoded = value.buf;
-                                                  backlinks.value.set(key.value, value.value);
+                                                  backlinksTemp.value.set(key.value, value.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new ExampleMessage(name.value,balances.value,backlinks.value)
+                                      value: new ExampleMessage(nameTemp.value,balancesTemp.value,backlinksTemp.value)
                                     }
                             }
                         }
@@ -2455,8 +2455,8 @@ export namespace io {
                                           value: ExampleMessage
                                         } {
                                     let decoded = buf
-                                    const name = decodeString(decoded)
-                                    decoded = name.buf
+                                    const nameTemp = decodeString(decoded)
+                                    decoded = nameTemp.buf
                                     const balancesMap = decodeMap(decoded)
                                     decoded = balancesMap.buf
                                     const balances: { value: Map<string, number> } = {
@@ -2468,7 +2468,7 @@ export namespace io {
                                                       decoded = key.buf;
                                                       const value = decodeInt32(decoded);
                                                       decoded = value.buf;
-                                                      balances.value.set(key.value, value.value);
+                                                      balancesTemp.value.set(key.value, value.value);
                                                     }
 
                                     const backlinksMap = decodeMap(decoded)
@@ -2482,12 +2482,12 @@ export namespace io {
                                                       decoded = key.buf;
                                                       const value = NestedExampleMessage.decode(decoded);
                                                       decoded = value.buf;
-                                                      backlinks.value.set(key.value, value.value);
+                                                      backlinksTemp.value.set(key.value, value.value);
                                                     }
 
                                     return {
                                           buf: decoded,
-                                          value: new ExampleMessage(name.value,balances.value,backlinks.value)
+                                          value: new ExampleMessage(nameTemp.value,balancesTemp.value,backlinksTemp.value)
                                         }
                                 }
                             }
@@ -2518,11 +2518,11 @@ export namespace io {
                                           value: NestedExampleMessage
                                         } {
                                     let decoded = buf
-                                    const age = decodeInt32(decoded)
-                                    decoded = age.buf
+                                    const ageTemp = decodeInt32(decoded)
+                                    decoded = ageTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new NestedExampleMessage(age.value)
+                                          value: new NestedExampleMessage(ageTemp.value)
                                         }
                                 }
                             }
@@ -2614,8 +2614,8 @@ export namespace io {
                                           value: ExampleMessage
                                         } {
                                     let decoded = buf
-                                    const name = decodeString(decoded)
-                                    decoded = name.buf
+                                    const nameTemp = decodeString(decoded)
+                                    decoded = nameTemp.buf
                                     const balancesMap = decodeMap(decoded)
                                     decoded = balancesMap.buf
                                     const balances: { value: Map<string, number> } = {
@@ -2627,7 +2627,7 @@ export namespace io {
                                                       decoded = key.buf;
                                                       const value = decodeInt32(decoded);
                                                       decoded = value.buf;
-                                                      balances.value.set(key.value, value.value);
+                                                      balancesTemp.value.set(key.value, value.value);
                                                     }
 
                                     const backlinksMap = decodeMap(decoded)
@@ -2641,12 +2641,12 @@ export namespace io {
                                                       decoded = key.buf;
                                                       const value = decodeUint8(decoded);
                                                       decoded = value.buf;
-                                                      backlinks.value.set(key.value, value.value as MessageType);
+                                                      backlinksTemp.value.set(key.value, value.value as MessageType);
                                                     }
 
                                     return {
                                           buf: decoded,
-                                          value: new ExampleMessage(name.value,balances.value,backlinks.value)
+                                          value: new ExampleMessage(nameTemp.value,balancesTemp.value,backlinksTemp.value)
                                         }
                                 }
                             }
@@ -2707,13 +2707,13 @@ export namespace io {
                                   value: Outer
                                 } {
                             let decoded = buf
-                            const a = OuterMiddleAA.decode(decoded)
-                            decoded = a.buf
-                            const b = OuterMiddleBB.decode(decoded)
-                            decoded = b.buf
+                            const aTemp = OuterMiddleAA.decode(decoded)
+                            decoded = aTemp.buf
+                            const bTemp = OuterMiddleBB.decode(decoded)
+                            decoded = bTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new Outer(a.value,b.value)
+                                  value: new Outer(aTemp.value,bTemp.value)
                                 }
                         }
                     }
@@ -2744,11 +2744,11 @@ export namespace io {
                                   value: OuterMiddleAA
                                 } {
                             let decoded = buf
-                            const a = OuterMiddleAAInner.decode(decoded)
-                            decoded = a.buf
+                            const aTemp = OuterMiddleAAInner.decode(decoded)
+                            decoded = aTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleAA(a.value)
+                                  value: new OuterMiddleAA(aTemp.value)
                                 }
                         }
                     }
@@ -2791,13 +2791,13 @@ export namespace io {
                                   value: OuterMiddleAAInner
                                 } {
                             let decoded = buf
-                            const a = decodeInt64(decoded)
-                            decoded = a.buf
-                            const b = decodeBoolean(decoded)
-                            decoded = b.buf
+                            const aTemp = decodeInt64(decoded)
+                            decoded = aTemp.buf
+                            const bTemp = decodeBoolean(decoded)
+                            decoded = bTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleAAInner(a.value,b.value)
+                                  value: new OuterMiddleAAInner(aTemp.value,bTemp.value)
                                 }
                         }
                     }
@@ -2828,11 +2828,11 @@ export namespace io {
                                   value: OuterMiddleBB
                                 } {
                             let decoded = buf
-                            const a = OuterMiddleBBInner.decode(decoded)
-                            decoded = a.buf
+                            const aTemp = OuterMiddleBBInner.decode(decoded)
+                            decoded = aTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleBB(a.value)
+                                  value: new OuterMiddleBB(aTemp.value)
                                 }
                         }
                     }
@@ -2875,13 +2875,13 @@ export namespace io {
                                   value: OuterMiddleBBInner
                                 } {
                             let decoded = buf
-                            const a = decodeInt32(decoded)
-                            decoded = a.buf
-                            const b = decodeBoolean(decoded)
-                            decoded = b.buf
+                            const aTemp = decodeInt32(decoded)
+                            decoded = aTemp.buf
+                            const bTemp = decodeBoolean(decoded)
+                            decoded = bTemp.buf
                             return {
                                   buf: decoded,
-                                  value: new OuterMiddleBBInner(a.value,b.value)
+                                  value: new OuterMiddleBBInner(aTemp.value,bTemp.value)
                                 }
                         }
                     }
@@ -2946,21 +2946,21 @@ export namespace io {
                                 let decoded = buf
                                 const bArray = decodeArray(decoded)
                                 decoded = bArray.buf
-                                const b: { value: OuterMiddleBB[] } = {
+                                const bTemp: { value: OuterMiddleBB[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < bArray.size; i++) {
                                                   const element = OuterMiddleBB.decode(decoded);
                                                   decoded = element.buf;
-                                                  b.value.push(element.value);
+                                                  bTemp.value.push(element.value);
                                                 }
 
-                                const a = OuterMiddleAA.decode(decoded)
-                                decoded = a.buf
+                                const aTemp = OuterMiddleAA.decode(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new Outer(b.value,a.value)
+                                      value: new Outer(bTemp.value,aTemp.value)
                                     }
                             }
                         }
@@ -2996,19 +2996,19 @@ export namespace io {
                                 let decoded = buf
                                 const aArray = decodeArray(decoded)
                                 decoded = aArray.buf
-                                const a: { value: OuterMiddleAAInner[] } = {
+                                const aTemp: { value: OuterMiddleAAInner[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < aArray.size; i++) {
                                                   const element = OuterMiddleAAInner.decode(decoded);
                                                   decoded = element.buf;
-                                                  a.value.push(element.value);
+                                                  aTemp.value.push(element.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleAA(a.value)
+                                      value: new OuterMiddleAA(aTemp.value)
                                     }
                             }
                         }
@@ -3051,13 +3051,13 @@ export namespace io {
                                       value: OuterMiddleAAInner
                                     } {
                                 let decoded = buf
-                                const a = decodeInt64(decoded)
-                                decoded = a.buf
-                                const b = decodeBoolean(decoded)
-                                decoded = b.buf
+                                const aTemp = decodeInt64(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = decodeBoolean(decoded)
+                                decoded = bTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleAAInner(a.value,b.value)
+                                      value: new OuterMiddleAAInner(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -3088,11 +3088,11 @@ export namespace io {
                                       value: OuterMiddleBB
                                     } {
                                 let decoded = buf
-                                const a = OuterMiddleBBInner.decode(decoded)
-                                decoded = a.buf
+                                const aTemp = OuterMiddleBBInner.decode(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleBB(a.value)
+                                      value: new OuterMiddleBB(aTemp.value)
                                     }
                             }
                         }
@@ -3135,13 +3135,13 @@ export namespace io {
                                       value: OuterMiddleBBInner
                                     } {
                                 let decoded = buf
-                                const a = decodeInt32(decoded)
-                                decoded = a.buf
-                                const b = decodeBoolean(decoded)
-                                decoded = b.buf
+                                const aTemp = decodeInt32(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = decodeBoolean(decoded)
+                                decoded = bTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleBBInner(a.value,b.value)
+                                      value: new OuterMiddleBBInner(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -3212,15 +3212,15 @@ export namespace io {
                                       value: Request
                                     } {
                                 let decoded = buf
-                                const Message = decodeString(decoded)
-                                decoded = Message.buf
+                                const MessageTemp = decodeString(decoded)
+                                decoded = MessageTemp.buf
                                 const corpusUint8 = decodeUint8(decoded)
-                                const corpus = { value: corpusUint8.value as RequestCorpus }
+                                const corpusTemp = { value: corpusUint8.value as RequestCorpus }
 
                                 decoded = corpusUint8.buf
                                 return {
                                       buf: decoded,
-                                      value: new Request(Message.value,corpus.value)
+                                      value: new Request(MessageTemp.value,corpusTemp.value)
                                     }
                             }
                         }
@@ -3295,23 +3295,23 @@ export namespace io {
                                           value: Request
                                         } {
                                     let decoded = buf
-                                    const Message = decodeString(decoded)
-                                    decoded = Message.buf
+                                    const MessageTemp = decodeString(decoded)
+                                    decoded = MessageTemp.buf
                                     const corpusArray = decodeArray(decoded)
                                     decoded = corpusArray.buf
-                                    const corpus: { value: RequestCorpus[] } = {
+                                    const corpusTemp: { value: RequestCorpus[] } = {
                                                       value: [],
                                                     }
 
                                     for (let i = 0; i < corpusArray.size; i++) {
                                                       const element = decodeUint8(decoded);
                                                       decoded = element.buf;
-                                                      corpus.value.push(element.value as RequestCorpus);
+                                                      corpusTemp.value.push(element.value as RequestCorpus);
                                                     }
 
                                     return {
                                           buf: decoded,
-                                          value: new Request(Message.value,corpus.value)
+                                          value: new Request(MessageTemp.value,corpusTemp.value)
                                         }
                                 }
                             }
@@ -3383,15 +3383,15 @@ export namespace io {
                                       value: Request
                                     } {
                                 let decoded = buf
-                                const Message = decodeString(decoded)
-                                decoded = Message.buf
+                                const MessageTemp = decodeString(decoded)
+                                decoded = MessageTemp.buf
                                 const corpusUint8 = decodeUint8(decoded)
-                                const corpus = { value: corpusUint8.value as RequestNestedRequestCorpus }
+                                const corpusTemp = { value: corpusUint8.value as RequestNestedRequestCorpus }
 
                                 decoded = corpusUint8.buf
                                 return {
                                       buf: decoded,
-                                      value: new Request(Message.value,corpus.value)
+                                      value: new Request(MessageTemp.value,corpusTemp.value)
                                     }
                             }
                         }
@@ -3489,8 +3489,8 @@ export namespace io {
                                           value: Request
                                         } {
                                     let decoded = buf
-                                    const Message = decodeString(decoded)
-                                    decoded = Message.buf
+                                    const MessageTemp = decodeString(decoded)
+                                    decoded = MessageTemp.buf
                                     const corpusMap = decodeMap(decoded)
                                     decoded = corpusMap.buf
                                     const corpus: { value: Map<string, RequestCorpus> } = {
@@ -3502,12 +3502,12 @@ export namespace io {
                                                       decoded = key.buf;
                                                       const value = decodeUint8(decoded);
                                                       decoded = value.buf;
-                                                      corpus.value.set(key.value, value.value as RequestCorpus);
+                                                      corpusTemp.value.set(key.value, value.value as RequestCorpus);
                                                     }
 
                                     return {
                                           buf: decoded,
-                                          value: new Request(Message.value,corpus.value)
+                                          value: new Request(MessageTemp.value,corpusTemp.value)
                                         }
                                 }
                             }
@@ -3593,16 +3593,16 @@ export namespace io {
                                         } {
                                     let decoded = buf
                                     const cUint8 = decodeUint8(decoded)
-                                    const c = { value: cUint8.value as OuterMiddleBBCorpus }
+                                    const cTemp = { value: cUint8.value as OuterMiddleBBCorpus }
 
                                     decoded = cUint8.buf
-                                    const a = OuterMiddleAA.decode(decoded)
-                                    decoded = a.buf
-                                    const b = OuterMiddleBBInner.decode(decoded)
-                                    decoded = b.buf
+                                    const aTemp = OuterMiddleAA.decode(decoded)
+                                    decoded = aTemp.buf
+                                    const bTemp = OuterMiddleBBInner.decode(decoded)
+                                    decoded = bTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new Outer(c.value,a.value,b.value)
+                                          value: new Outer(cTemp.value,aTemp.value,bTemp.value)
                                         }
                                 }
                             }
@@ -3633,11 +3633,11 @@ export namespace io {
                                           value: OuterMiddleAA
                                         } {
                                     let decoded = buf
-                                    const a = OuterMiddleAAInner.decode(decoded)
-                                    decoded = a.buf
+                                    const aTemp = OuterMiddleAAInner.decode(decoded)
+                                    decoded = aTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new OuterMiddleAA(a.value)
+                                          value: new OuterMiddleAA(aTemp.value)
                                         }
                                 }
                             }
@@ -3680,13 +3680,13 @@ export namespace io {
                                           value: OuterMiddleAAInner
                                         } {
                                     let decoded = buf
-                                    const a = decodeInt64(decoded)
-                                    decoded = a.buf
-                                    const b = decodeBoolean(decoded)
-                                    decoded = b.buf
+                                    const aTemp = decodeInt64(decoded)
+                                    decoded = aTemp.buf
+                                    const bTemp = decodeBoolean(decoded)
+                                    decoded = bTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new OuterMiddleAAInner(a.value,b.value)
+                                          value: new OuterMiddleAAInner(aTemp.value,bTemp.value)
                                         }
                                 }
                             }
@@ -3717,11 +3717,11 @@ export namespace io {
                                           value: OuterMiddleBB
                                         } {
                                     let decoded = buf
-                                    const a = OuterMiddleBBInner.decode(decoded)
-                                    decoded = a.buf
+                                    const aTemp = OuterMiddleBBInner.decode(decoded)
+                                    decoded = aTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new OuterMiddleBB(a.value)
+                                          value: new OuterMiddleBB(aTemp.value)
                                         }
                                 }
                             }
@@ -3764,13 +3764,13 @@ export namespace io {
                                           value: OuterMiddleBBInner
                                         } {
                                     let decoded = buf
-                                    const a = decodeInt32(decoded)
-                                    decoded = a.buf
-                                    const b = decodeBoolean(decoded)
-                                    decoded = b.buf
+                                    const aTemp = decodeInt32(decoded)
+                                    decoded = aTemp.buf
+                                    const bTemp = decodeBoolean(decoded)
+                                    decoded = bTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new OuterMiddleBBInner(a.value,b.value)
+                                          value: new OuterMiddleBBInner(aTemp.value,bTemp.value)
                                         }
                                 }
                             }
@@ -3837,8 +3837,8 @@ export namespace io {
                                       value: Outer
                                     } {
                                 let decoded = buf
-                                const a = OuterMiddleAA.decode(decoded)
-                                decoded = a.buf
+                                const aTemp = OuterMiddleAA.decode(decoded)
+                                decoded = aTemp.buf
                                 const bMap = decodeMap(decoded)
                                 decoded = bMap.buf
                                 const b: { value: Map<string, OuterMiddleBB> } = {
@@ -3850,12 +3850,12 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = OuterMiddleBB.decode(decoded);
                                                   decoded = value.buf;
-                                                  b.value.set(key.value, value.value);
+                                                  bTemp.value.set(key.value, value.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new Outer(a.value,b.value)
+                                      value: new Outer(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -3886,11 +3886,11 @@ export namespace io {
                                       value: OuterMiddleAA
                                     } {
                                 let decoded = buf
-                                const a = OuterMiddleAAInner.decode(decoded)
-                                decoded = a.buf
+                                const aTemp = OuterMiddleAAInner.decode(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleAA(a.value)
+                                      value: new OuterMiddleAA(aTemp.value)
                                     }
                             }
                         }
@@ -3933,13 +3933,13 @@ export namespace io {
                                       value: OuterMiddleAAInner
                                     } {
                                 let decoded = buf
-                                const a = decodeInt64(decoded)
-                                decoded = a.buf
-                                const b = decodeBoolean(decoded)
-                                decoded = b.buf
+                                const aTemp = decodeInt64(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = decodeBoolean(decoded)
+                                decoded = bTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleAAInner(a.value,b.value)
+                                      value: new OuterMiddleAAInner(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -3970,11 +3970,11 @@ export namespace io {
                                       value: OuterMiddleBB
                                     } {
                                 let decoded = buf
-                                const a = OuterMiddleBBInner.decode(decoded)
-                                decoded = a.buf
+                                const aTemp = OuterMiddleBBInner.decode(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleBB(a.value)
+                                      value: new OuterMiddleBB(aTemp.value)
                                     }
                             }
                         }
@@ -4017,13 +4017,13 @@ export namespace io {
                                       value: OuterMiddleBBInner
                                     } {
                                 let decoded = buf
-                                const a = decodeInt32(decoded)
-                                decoded = a.buf
-                                const b = decodeBoolean(decoded)
-                                decoded = b.buf
+                                const aTemp = decodeInt32(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = decodeBoolean(decoded)
+                                decoded = bTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleBBInner(a.value,b.value)
+                                      value: new OuterMiddleBBInner(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -4084,13 +4084,13 @@ export namespace io {
                                       value: Outer
                                     } {
                                 let decoded = buf
-                                const a = OuterMiddleAA.decode(decoded)
-                                decoded = a.buf
-                                const b = OuterMiddleBBInner.decode(decoded)
-                                decoded = b.buf
+                                const aTemp = OuterMiddleAA.decode(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = OuterMiddleBBInner.decode(decoded)
+                                decoded = bTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new Outer(a.value,b.value)
+                                      value: new Outer(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -4121,11 +4121,11 @@ export namespace io {
                                       value: OuterMiddleAA
                                     } {
                                 let decoded = buf
-                                const a = OuterMiddleAAInner.decode(decoded)
-                                decoded = a.buf
+                                const aTemp = OuterMiddleAAInner.decode(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleAA(a.value)
+                                      value: new OuterMiddleAA(aTemp.value)
                                     }
                             }
                         }
@@ -4168,13 +4168,13 @@ export namespace io {
                                       value: OuterMiddleAAInner
                                     } {
                                 let decoded = buf
-                                const a = decodeInt64(decoded)
-                                decoded = a.buf
-                                const b = decodeBoolean(decoded)
-                                decoded = b.buf
+                                const aTemp = decodeInt64(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = decodeBoolean(decoded)
+                                decoded = bTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleAAInner(a.value,b.value)
+                                      value: new OuterMiddleAAInner(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -4205,11 +4205,11 @@ export namespace io {
                                       value: OuterMiddleBB
                                     } {
                                 let decoded = buf
-                                const a = OuterMiddleBBInner.decode(decoded)
-                                decoded = a.buf
+                                const aTemp = OuterMiddleBBInner.decode(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleBB(a.value)
+                                      value: new OuterMiddleBB(aTemp.value)
                                     }
                             }
                         }
@@ -4252,13 +4252,13 @@ export namespace io {
                                       value: OuterMiddleBBInner
                                     } {
                                 let decoded = buf
-                                const a = decodeInt32(decoded)
-                                decoded = a.buf
-                                const b = decodeBoolean(decoded)
-                                decoded = b.buf
+                                const aTemp = decodeInt32(decoded)
+                                decoded = aTemp.buf
+                                const bTemp = decodeBoolean(decoded)
+                                decoded = bTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new OuterMiddleBBInner(a.value,b.value)
+                                      value: new OuterMiddleBBInner(aTemp.value,bTemp.value)
                                     }
                             }
                         }
@@ -4308,11 +4308,11 @@ export namespace io {
                                           value: Second
                                         } {
                                     let decoded = buf
-                                    const a = OuterInner.decode(decoded)
-                                    decoded = a.buf
+                                    const aTemp = OuterInner.decode(decoded)
+                                    decoded = aTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new Second(a.value)
+                                          value: new Second(aTemp.value)
                                         }
                                 }
                             }
@@ -4364,11 +4364,11 @@ export namespace io {
                                           value: OuterInner
                                         } {
                                     let decoded = buf
-                                    const a = decodeString(decoded)
-                                    decoded = a.buf
+                                    const aTemp = decodeString(decoded)
+                                    decoded = aTemp.buf
                                     return {
                                           buf: decoded,
-                                          value: new OuterInner(a.value)
+                                          value: new OuterInner(aTemp.value)
                                         }
                                 }
                             }
@@ -4431,12 +4431,12 @@ export namespace io {
                                             } {
                                         let decoded = buf
                                         const aUint8 = decodeUint8(decoded)
-                                        const a = { value: aUint8.value as OuterCorpus }
+                                        const aTemp = { value: aUint8.value as OuterCorpus }
 
                                         decoded = aUint8.buf
                                         return {
                                               buf: decoded,
-                                              value: new Second(a.value)
+                                              value: new Second(aTemp.value)
                                             }
                                     }
                                 }
@@ -4531,11 +4531,11 @@ export namespace io {
                                               value: OuterInner
                                             } {
                                         let decoded = buf
-                                        const a = decodeString(decoded)
-                                        decoded = a.buf
+                                        const aTemp = decodeString(decoded)
+                                        decoded = aTemp.buf
                                         return {
                                               buf: decoded,
-                                              value: new OuterInner(a.value)
+                                              value: new OuterInner(aTemp.value)
                                             }
                                     }
                                 }
@@ -4566,11 +4566,11 @@ export namespace io {
                                               value: Second
                                             } {
                                         let decoded = buf
-                                        const a = OuterInner.decode(decoded)
-                                        decoded = a.buf
+                                        const aTemp = OuterInner.decode(decoded)
+                                        decoded = aTemp.buf
                                         return {
                                               buf: decoded,
-                                              value: new Second(a.value)
+                                              value: new Second(aTemp.value)
                                             }
                                     }
                                 }
@@ -4639,15 +4639,15 @@ export class User {
               value: User
             } {
         let decoded = buf
-        const name = decodeString(decoded)
-        decoded = name.buf
-        const age = decodeInt32(decoded)
-        decoded = age.buf
-        const department = Department.decode(decoded)
-        decoded = department.buf
+        const nameTemp = decodeString(decoded)
+        decoded = nameTemp.buf
+        const ageTemp = decodeInt32(decoded)
+        decoded = ageTemp.buf
+        const departmentTemp = Department.decode(decoded)
+        decoded = departmentTemp.buf
         return {
               buf: decoded,
-              value: new User(name.value,age.value,department.value)
+              value: new User(nameTemp.value,ageTemp.value,departmentTemp.value)
             }
     }
 }
@@ -4678,11 +4678,11 @@ export class Department {
               value: Department
             } {
         let decoded = buf
-        const name = decodeString(decoded)
-        decoded = name.buf
+        const nameTemp = decodeString(decoded)
+        decoded = nameTemp.buf
         return {
               buf: decoded,
-              value: new Department(name.value)
+              value: new Department(nameTemp.value)
             }
     }
 }
@@ -4737,13 +4737,13 @@ export namespace io {
                                       value: SampleMessage
                                     } {
                                 let decoded = buf
-                                const name = decodeString(decoded)
-                                decoded = name.buf
-                                const potato = decodeString(decoded)
-                                decoded = potato.buf
+                                const nameTemp = decodeString(decoded)
+                                decoded = nameTemp.buf
+                                const potatoTemp = decodeString(decoded)
+                                decoded = potatoTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new SampleMessage(name.value,potato.value)
+                                      value: new SampleMessage(nameTemp.value,potatoTemp.value)
                                     }
                             }
                         }
@@ -4855,26 +4855,26 @@ export namespace io {
                                       value: ExampleMessage
                                     } {
                                 let decoded = buf
-                                const a = decodeString(decoded)
-                                decoded = a.buf
+                                const aTemp = decodeString(decoded)
+                                decoded = aTemp.buf
                                 const bUint8 = decodeUint8(decoded)
-                                const b = { value: bUint8.value as MessageType }
+                                const bTemp = { value: bUint8.value as MessageType }
 
                                 decoded = bUint8.buf
                                 const cArray = decodeArray(decoded)
                                 decoded = cArray.buf
-                                const c: { value: string[] } = {
+                                const cTemp: { value: string[] } = {
                                                   value: [],
                                                 }
 
                                 for (let i = 0; i < cArray.size; i++) {
                                                   const element = decodeString(decoded);
                                                   decoded = element.buf;
-                                                  c.value.push(element.value);
+                                                  cTemp.value.push(element.value);
                                                 }
 
-                                const e = SecondExampleMessage.decode(decoded)
-                                decoded = e.buf
+                                const eTemp = SecondExampleMessage.decode(decoded)
+                                decoded = eTemp.buf
                                 const dMap = decodeMap(decoded)
                                 decoded = dMap.buf
                                 const d: { value: Map<string, string> } = {
@@ -4886,12 +4886,12 @@ export namespace io {
                                                   decoded = key.buf;
                                                   const value = decodeString(decoded);
                                                   decoded = value.buf;
-                                                  d.value.set(key.value, value.value);
+                                                  dTemp.value.set(key.value, value.value);
                                                 }
 
                                 return {
                                       buf: decoded,
-                                      value: new ExampleMessage(a.value,b.value,c.value,e.value,d.value)
+                                      value: new ExampleMessage(aTemp.value,bTemp.value,cTemp.value,eTemp.value,dTemp.value)
                                     }
                             }
                         }
@@ -4922,11 +4922,11 @@ export namespace io {
                                       value: SecondExampleMessage
                                     } {
                                 let decoded = buf
-                                const a = decodeString(decoded)
-                                decoded = a.buf
+                                const aTemp = decodeString(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new SecondExampleMessage(a.value)
+                                      value: new SecondExampleMessage(aTemp.value)
                                     }
                             }
                         }
@@ -4975,11 +4975,11 @@ export namespace io {
                                       value: ExampleMessage
                                     } {
                                 let decoded = buf
-                                const a = decodeString(decoded)
-                                decoded = a.buf
+                                const aTemp = decodeString(decoded)
+                                decoded = aTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new ExampleMessage(a.value)
+                                      value: new ExampleMessage(aTemp.value)
                                     }
                             }
                         }
@@ -5052,15 +5052,15 @@ export namespace io {
                                       value: User
                                     } {
                                 let decoded = buf
-                                const name = decodeString(decoded)
-                                decoded = name.buf
-                                const age = decodeInt32(decoded)
-                                decoded = age.buf
-                                const department = Department.decode(decoded)
-                                decoded = department.buf
+                                const nameTemp = decodeString(decoded)
+                                decoded = nameTemp.buf
+                                const ageTemp = decodeInt32(decoded)
+                                decoded = ageTemp.buf
+                                const departmentTemp = Department.decode(decoded)
+                                decoded = departmentTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new User(name.value,age.value,department.value)
+                                      value: new User(nameTemp.value,ageTemp.value,departmentTemp.value)
                                     }
                             }
                         }
@@ -5091,11 +5091,11 @@ export namespace io {
                                       value: Department
                                     } {
                                 let decoded = buf
-                                const name = decodeString(decoded)
-                                decoded = name.buf
+                                const nameTemp = decodeString(decoded)
+                                decoded = nameTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new Department(name.value)
+                                      value: new Department(nameTemp.value)
                                     }
                             }
                         }
@@ -5144,11 +5144,11 @@ export namespace io {
                                       value: Department
                                     } {
                                 let decoded = buf
-                                const name = decodeString(decoded)
-                                decoded = name.buf
+                                const nameTemp = decodeString(decoded)
+                                decoded = nameTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new Department(name.value)
+                                      value: new Department(nameTemp.value)
                                     }
                             }
                         }
@@ -5203,15 +5203,15 @@ export namespace io {
                                       value: User
                                     } {
                                 let decoded = buf
-                                const name = decodeString(decoded)
-                                decoded = name.buf
-                                const age = decodeInt32(decoded)
-                                decoded = age.buf
-                                const department = Department.decode(decoded)
-                                decoded = department.buf
+                                const nameTemp = decodeString(decoded)
+                                decoded = nameTemp.buf
+                                const ageTemp = decodeInt32(decoded)
+                                decoded = ageTemp.buf
+                                const departmentTemp = Department.decode(decoded)
+                                decoded = departmentTemp.buf
                                 return {
                                       buf: decoded,
-                                      value: new User(name.value,age.value,department.value)
+                                      value: new User(nameTemp.value,ageTemp.value,departmentTemp.value)
                                     }
                             }
                         }
