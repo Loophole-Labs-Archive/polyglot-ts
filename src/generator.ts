@@ -379,7 +379,7 @@ export const generateTypeScriptForProtobuf = (
                 isProtoTypeComposite(field.typeName)
                   ? enums.find((e) => e.enumName === field.typeName)
                     ? `this._${field.fieldName}.forEach(field => {
-                  encoded = encodeUint8(encoded, field as number);
+                  encoded = encodeUint32(encoded, field as number);
                 })`
                     : `this._${field.fieldName}.forEach((field) => {
                   encoded = ${getPolyglotEncoderFromProtoType(
@@ -423,7 +423,7 @@ export const generateTypeScriptForProtobuf = (
                     field.keyTypeName,
                     `key`
                   )}(encoded, key);
-                  encoded = encodeUint8(encoded, value as number);
+                  encoded = encodeUint32(encoded, value as number);
                 })`
                     : `this._${field.fieldName}.forEach((value, key) => {
                   encoded = ${getPolyglotEncoderFromProtoType(
@@ -451,7 +451,7 @@ export const generateTypeScriptForProtobuf = (
             if (isProtoTypeComposite(field.typeName)) {
               if (enums.find((e) => e.enumName === field.typeName)) {
                 return [
-                  `encoded = encodeUint8(encoded, this._${field.fieldName} as number)`,
+                  `encoded = encodeUint32(encoded, this._${field.fieldName} as number)`,
                 ];
               }
 
@@ -496,7 +496,7 @@ export const generateTypeScriptForProtobuf = (
               isProtoTypeComposite(field.typeName) &&
               enums.find((e) => e.enumName === field.typeName)
             ) {
-              namedImports.set("decodeUint8", null);
+              namedImports.set("decodeUint32", null);
             }
 
             if (field.isArray) {
@@ -518,7 +518,7 @@ export const generateTypeScriptForProtobuf = (
                 isProtoTypeComposite(field.typeName) &&
                 enums.find((e) => e.enumName === field.typeName)
                   ? `for (let i = 0; i < ${field.fieldName}Array.size; i++) {
-                  const element = decodeUint8(decoded);
+                  const element = decodeUint32(decoded);
                   decoded = element.buf;
                   ${field.fieldName}Temp.value.push(element.value as ${field.typeName});
                 }`
@@ -585,7 +585,7 @@ export const generateTypeScriptForProtobuf = (
               enums.find((e) => e.enumName === field.typeName)
             ) {
               return [
-                `const ${field.fieldName}Uint8 = decodeUint8(decoded)`,
+                `const ${field.fieldName}Uint8 = decodeUint32(decoded)`,
                 `const ${field.fieldName}Temp = { value: ${field.fieldName}Uint8.value as ${field.typeName} }`,
                 `decoded = ${field.fieldName}Uint8.buf`,
               ];
