@@ -16,23 +16,9 @@
 
 package generator
 
-import (
-	"google.golang.org/protobuf/compiler/protogen"
-)
-
 var (
 	requiredImports = []string{
 		"github.com/loopholelabs/polyglot-go",
 		"errors",
 	}
 )
-
-type Dependencies struct{}
-
-func DependencyAnalysis(file *protogen.File) *Dependencies {
-	dependencies := &Dependencies{}
-
-	// TODO: Get encoder/decoder imports
-
-	return dependencies
-}

@@ -4,12 +4,12 @@
 {{ $keyDecoder := GetLUTDecoder .MapKey.Kind -}}
 {{ $valDecoder := GetLUTDecoder .MapValue.Kind -}}
 
-let {{ LowercaseCamelCaseName .Name }} = decodeMap(decoded)
+let {{ LowercaseCamelCaseName .Name }} = {{ TrackDependency "decodeMap" }}(decoded)
 decoded = {{ LowercaseCamelCaseName .Name }}.buf
 const {{ LowercaseCamelCaseName .Name }}Temp: { value: Map<{{ $mapKeyValue }},{{ $mapValueValue }}> } = { value: new Map() }
 for (let i = 0; i < {{ LowercaseCamelCaseName .Name }}.size; i++) {
     {{ if eq .MapKey.Kind 14 -}}  {{/* protoreflect.EnumKind */ -}}
-        let keyEnum = decodeUint32(decoded)
+        let keyEnum = {{ TrackDependency "decodeUint32" }}(decoded)
         const key = { value: keyEnum as {{ $mapKeyValue }} }
         decoded = keyEnum.buf
     {{ else if eq .MapKey.Kind 11 -}}  {{/* protoreflect.MessageKind */ -}}
@@ -21,7 +21,7 @@ for (let i = 0; i < {{ LowercaseCamelCaseName .Name }}.size; i++) {
     {{end}}
 
     {{ if eq .MapValue.Kind 14 -}}  {{/* protoreflect.EnumKind */ -}}
-        let valueEnum = decodeUint32(decoded)
+        let valueEnum = {{ TrackDependency "decodeUint32" }}(decoded)
         const value = { value: valueEnum as {{ $mapValueValue }} }
         decoded = valueEnum.buf
     {{ else if eq .MapValue.Kind 11 -}}  {{/* protoreflect.MessageKind */ -}}

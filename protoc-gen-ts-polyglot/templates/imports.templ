@@ -1,1 +1,3 @@
-{{define "imports"}}{{end}}
+{{define "imports"}}
+import { {{ range $key, $_ := .dependencies -}}{{ $key }},{{ end -}} } from "polyglot-ts"
+{{end}}

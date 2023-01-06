@@ -28,6 +28,7 @@ import (
 	"github.com/loopholelabs/polyglot-ts/protoc-gen-polyglot-ts/templates"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/pluginpb"
 )
 
@@ -37,25 +38,39 @@ type Generator struct {
 	CustomFields func() string
 	CustomEncode func() string
 	CustomDecode func() string
+
+	dependencies map[string]struct{}
 }
 
 func New() *Generator {
 	var g *Generator
 	templ := template.Must(template.New("main").Funcs(template.FuncMap{
-		"CamelCase":              utils.CamelCaseFullName,
-		"CamelCaseName":          utils.CamelCaseName,
-		"CamelCaseFullName":      utils.CamelCaseFullName,
-		"MakeIterable":           utils.MakeIterable,
-		"Counter":                utils.Counter,
-		"FirstLowerCase":         utils.FirstLowerCase,
-		"FirstLowerCaseName":     utils.FirstLowerCaseName,
-		"FindValue":              findValue,
-		"GetKind":                getKind,
-		"GetLUTEncoder":          getLUTEncoder,
-		"GetLUTDecoder":          getLUTDecoder,
-		"GetEncodingFields":      getEncodingFields,
-		"GetDecodingFields":      getDecodingFields,
-		"GetKindLUT":             getKindLUT,
+		"CamelCase":          utils.CamelCaseFullName,
+		"CamelCaseName":      utils.CamelCaseName,
+		"CamelCaseFullName":  utils.CamelCaseFullName,
+		"MakeIterable":       utils.MakeIterable,
+		"Counter":            utils.Counter,
+		"FirstLowerCase":     utils.FirstLowerCase,
+		"FirstLowerCaseName": utils.FirstLowerCaseName,
+		"FindValue":          findValue,
+		"GetKind": func(kind protoreflect.Kind) string {
+			return getKind(g.dependencies, kind)
+		},
+		"GetLUTEncoder": func(kind protoreflect.Kind) string {
+			return getLUTEncoder(g.trackDependency, kind)
+		},
+		"GetLUTDecoder": func(kind protoreflect.Kind) string {
+			return getLUTDecoder(g.trackDependency, kind)
+		},
+		"GetEncodingFields": func(fields protoreflect.FieldDescriptors) encodingFields {
+			return getEncodingFields(g.trackDependency, fields)
+		},
+		"GetDecodingFields": func(fields protoreflect.FieldDescriptors) decodingFields {
+			return getDecodingFields(g.trackDependency, fields)
+		},
+		"GetKindLUT": func(kind protoreflect.Kind) string {
+			return getKindLUT(g.trackDependency, kind)
+		},
 		"LowercaseCamelCase":     utils.LowercaseCamelCase,
 		"LowercaseCamelCaseName": utils.LowercaseCamelCaseName,
 		"CustomFields": func() string {
@@ -68,6 +83,9 @@ func New() *Generator {
 			return g.CustomDecode()
 		},
 		"TrimSuffix": strings.TrimSuffix,
+		"TrackDependency": func(dep string) string {
+			return g.trackDependency(dep)
+		},
 	}).ParseFS(templates.FS, "*"))
 	g = &Generator{
 		options: &protogen.Options{
@@ -78,6 +96,8 @@ func New() *Generator {
 		CustomEncode: func() string { return "" },
 		CustomDecode: func() string { return "" },
 		CustomFields: func() string { return "" },
+
+		dependencies: map[string]struct{}{},
 	}
 	return g
 }
@@ -123,25 +143,28 @@ func (g *Generator) ExecuteTemplate(
 	packageName string,
 	header bool,
 ) error {
-	var buf bytes.Buffer
-	deps := DependencyAnalysis(protoFile)
+	var bodyBuf bytes.Buffer
+	if err := g.templ.ExecuteTemplate(&bodyBuf, "body.templ", map[string]interface{}{
+		"enums":    protoFile.Desc.Enums(),
+		"messages": protoFile.Desc.Messages(),
+	}); err != nil {
+		return err
+	}
 
-	err := g.templ.ExecuteTemplate(&buf, "base.templ", map[string]interface{}{
+	var headBuf bytes.Buffer
+	if err := g.templ.ExecuteTemplate(&headBuf, "head.templ", map[string]interface{}{
 		"pluginVersion":   version.Version,
 		"sourcePath":      protoFile.Desc.Path(),
 		"package":         packageName,
 		"requiredImports": requiredImports,
-		"enums":           protoFile.Desc.Enums(),
-		"messages":        protoFile.Desc.Messages(),
 		"header":          header,
-		"dependencies":    deps,
-	})
-	if err != nil {
+		"dependencies":    g.dependencies,
+	}); err != nil {
 		return err
 	}
 
 	cmd := exec.Command("prettier", "--parser", "typescript")
-	cmd.Stdin = bytes.NewReader(buf.Bytes())
+	cmd.Stdin = bytes.NewReader(append(headBuf.Bytes(), bodyBuf.Bytes()...))
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		println(string(output))
@@ -149,4 +172,10 @@ func (g *Generator) ExecuteTemplate(
 	}
 	_, err = genFile.Write(output)
 	return err
+}
+
+func (g *Generator) trackDependency(dep string) string {
+	g.dependencies[dep] = struct{}{}
+
+	return dep
 }

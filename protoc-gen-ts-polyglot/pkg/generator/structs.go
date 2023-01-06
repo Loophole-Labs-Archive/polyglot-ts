@@ -148,7 +148,7 @@ type encodingFields struct {
 	Values        []string
 }
 
-func getEncodingFields(fields protoreflect.FieldDescriptors) encodingFields {
+func getEncodingFields(trackDependency func(dep string) string, fields protoreflect.FieldDescriptors) encodingFields {
 	var messageFields []protoreflect.FieldDescriptor
 	var sliceFields []protoreflect.FieldDescriptor
 	var values []string
@@ -158,7 +158,7 @@ func getEncodingFields(fields protoreflect.FieldDescriptors) encodingFields {
 		if field.Cardinality() == protoreflect.Repeated && !field.IsMap() {
 			sliceFields = append(sliceFields, field)
 		} else {
-			if encoder, ok := encodeLUT[field.Kind()]; !ok {
+			if encoder := getLUTEncoder(trackDependency, field.Kind()); encoder == "" {
 				switch field.Kind() {
 				case protoreflect.MessageKind:
 					messageFields = append(messageFields, field)
@@ -187,7 +187,7 @@ type decodingFields struct {
 	Other         []protoreflect.FieldDescriptor
 }
 
-func getDecodingFields(fields protoreflect.FieldDescriptors) decodingFields {
+func getDecodingFields(trackDependency func(dep string) string, fields protoreflect.FieldDescriptors) decodingFields {
 	var messageFields []protoreflect.FieldDescriptor
 	var sliceFields []protoreflect.FieldDescriptor
 	var other []protoreflect.FieldDescriptor
@@ -197,7 +197,7 @@ func getDecodingFields(fields protoreflect.FieldDescriptors) decodingFields {
 		if field.Cardinality() == protoreflect.Repeated && !field.IsMap() {
 			sliceFields = append(sliceFields, field)
 		} else {
-			if _, ok := decodeLUT[field.Kind()]; !ok {
+			if encoder := getLUTDecoder(trackDependency, field.Kind()); encoder == "" {
 				switch field.Kind() {
 				case protoreflect.MessageKind:
 					messageFields = append(messageFields, field)
@@ -217,7 +217,9 @@ func getDecodingFields(fields protoreflect.FieldDescriptors) decodingFields {
 	}
 }
 
-func getKind(kind protoreflect.Kind) string {
+func getKind(dependencies map[string]struct{}, kind protoreflect.Kind) string {
+	dependencies["Kind"] = struct{}{}
+
 	var outKind string
 	var ok bool
 	if outKind, ok = kindLUT[kind]; !ok {
@@ -231,14 +233,26 @@ func getKind(kind protoreflect.Kind) string {
 	return outKind
 }
 
-func getLUTEncoder(kind protoreflect.Kind) string {
-	return encodeLUT[kind]
+func getLUTEncoder(trackDependency func(dep string) string, kind protoreflect.Kind) string {
+	encoder, ok := encodeLUT[kind]
+	if ok {
+		trackDependency(encoder)
+	}
+
+	return encoder
 }
 
-func getLUTDecoder(kind protoreflect.Kind) string {
-	return decodeLUT[kind]
+func getLUTDecoder(trackDependency func(dep string) string, kind protoreflect.Kind) string {
+	decoder, ok := decodeLUT[kind]
+	if ok {
+		trackDependency(decoder)
+	}
+
+	return decoder
 }
 
-func getKindLUT(kind protoreflect.Kind) string {
+func getKindLUT(trackDependency func(dep string) string, kind protoreflect.Kind) string {
+	trackDependency("Kind")
+
 	return kindLUT[kind]
 }

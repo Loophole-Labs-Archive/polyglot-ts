@@ -24,12 +24,12 @@
         {{ $encoder := GetLUTEncoder $field.Kind -}}
 
         {{ if and (eq $encoder "") (eq $field.Kind 11) -}} {{/* protoreflect.MessageKind */ -}}
-        encoded = encodeArray(encoded, this._{{ LowercaseCamelCaseName $field.Name}}.length, Kind.Any)
+        encoded = {{ TrackDependency "encodeArray" }}(encoded, this._{{ LowercaseCamelCaseName $field.Name}}.length, Kind.Any)
         this._{{ LowercaseCamelCaseName $field.Name}}.forEach((field) => {
             encoded = field.encode(encoded)
         })
         {{else -}}
-        encoded = encodeArray(this._{{ LowercaseCamelCaseName $field.Name}}.length, {{ GetKindLUT $field.Kind }})
+        encoded = {{ TrackDependency "encodeArray" }}(this._{{ LowercaseCamelCaseName $field.Name}}.length, {{ GetKindLUT $field.Kind }})
         this._{{ LowercaseCamelCaseName $field.Name}}.forEach((field) => {
             encoded = {{$encoder}}(encoded, field)
         })
@@ -43,14 +43,14 @@
         {{ if $field.IsMap -}}
             {{ $keyKind := GetKind $field.MapKey.Kind -}}
             {{ $valKind := GetKind $field.MapValue.Kind -}}
-            encoded = encodeMap(encoded, this._{{ LowercaseCamelCaseName $field.Name }}.size, {{ $keyKind }}, {{ $valKind }})
+            encoded = {{ TrackDependency "encodeMap" }}(encoded, this._{{ LowercaseCamelCaseName $field.Name }}.size, {{ $keyKind }}, {{ $valKind }})
             this._{{ LowercaseCamelCaseName $field.Name }}.forEach((v, k) => {
             {{ $keyEncoder := GetLUTEncoder $field.MapKey.Kind -}}
             {{ if and (eq $keyEncoder "") (eq $field.MapKey.Kind 11) -}} {{/* protoreflect.MessageKind */ -}}
             encoded = k.encode(encoded)
             {{else -}}
                 {{ if eq $field.MapKey.Kind 14 -}}  {{/* protoreflect.EnumKind */ -}}
-                    encoded = encodeUint32(encoded, k as number)
+                    encoded = {{ TrackDependency "encodeUint32" }}(encoded, k as number)
                 {{else -}}
                     encoded = {{$keyEncoder}}(encoded, k)
                 {{end -}}
@@ -60,7 +60,7 @@
             encoded = v.encode(encoded)
             {{else -}}
                 {{ if eq $field.MapValue.Kind 14 -}}  {{/* protoreflect.EnumKind */ -}}
-                    encoded = encodeUint32(encoded, v as number)
+                    encoded = {{ TrackDependency "encodeUint32" }}(encoded, v as number)
                 {{else -}}
                     encoded = {{$valEncoder}}(encoded, v)
                 {{end -}}
