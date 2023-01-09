@@ -11,15 +11,8 @@ if [ "$1" = "test" ]; then
     # Generate dependencies
     make depend
 
-    # Install generator
-    make
-    make install
-
     # Run tests
     make test
-
-    # Cleanup (don't release the installed generator)
-    make clean
 
     exit 0
 fi
