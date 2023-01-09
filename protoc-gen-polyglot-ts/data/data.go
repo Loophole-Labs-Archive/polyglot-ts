@@ -14,6 +14,9 @@
 	limitations under the License.
 */
 
-export * from "./decoder";
-export * from "./encoder";
-export * from "./kind";
+package data
+
+import "embed"
+
+//go:embed *
+var FS embed.FS

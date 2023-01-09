@@ -4,8 +4,16 @@ set -e
 
 # Test
 if [ "$1" = "test" ]; then
+    # Install native dependencies
+    apt update
+    apt install -y make protobuf-compiler
+
     # Generate dependencies
     make depend
+
+    # Install generator
+    make
+    make install
 
     # Run tests
     make test

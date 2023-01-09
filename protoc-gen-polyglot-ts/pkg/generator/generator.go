@@ -18,7 +18,6 @@ package generator
 
 import (
 	"bytes"
-	"os/exec"
 	"strings"
 	"text/template"
 
@@ -163,14 +162,7 @@ func (g *Generator) ExecuteTemplate(
 		return err
 	}
 
-	cmd := exec.Command("prettier", "--parser", "typescript")
-	cmd.Stdin = bytes.NewReader(append(headBuf.Bytes(), bodyBuf.Bytes()...))
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		println(string(output))
-		return err
-	}
-	_, err = genFile.Write(output)
+	_, err := genFile.Write(append(headBuf.Bytes(), bodyBuf.Bytes()...))
 	return err
 }
 
