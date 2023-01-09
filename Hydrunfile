@@ -18,6 +18,9 @@ if [ "$1" = "test" ]; then
     # Run tests
     make test
 
+    # Cleanup (don't release the installed generator)
+    make clean
+
     exit 0
 fi
 

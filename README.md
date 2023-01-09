@@ -1,6 +1,10 @@
 # polyglot-ts
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)][license]
+[![hydrun CI](https://github.com/loopholelabs/polyglot-ts/actions/workflows/hydrun.yaml/badge.svg)](https://github.com/loopholelabs/polyglot-ts/actions/workflows/hydrun.yaml)
+[![npm CI](https://github.com/loopholelabs/polyglot-ts/actions/workflows/npm.yaml/badge.svg)](https://github.com/loopholelabs/polyglot-ts/actions/workflows/docker.yaml)
+![Go Version](https://img.shields.io/badge/go%20version-%3E=1.19-61CFDD.svg)
+[![Go Reference](https://pkg.go.dev/badge/github.com/loopholelabs/polyglot-ts.svg)](https://pkg.go.dev/github.com/loopholelabs/polyglot-ts)
 [![npm: @loopholelabs/polyglot-ts](https://img.shields.io/npm/v/@loopholelabs/polyglot-ts)](https://www.npmjs.com/package/@loopholelabs/polyglot-ts)
 [![Docs](https://img.shields.io/badge/Docs-TypeDoc-blue.svg)][docs]
 
@@ -10,23 +14,35 @@ TypeScript library and `protoc` plugin used for encoding and decoding data types
 
 ## `protoc` Plugin
 
-Using npm:
+Static binaries are available on [GitHub releases](https://github.com/loopholelabs/polyglot-ts/releases).
+
+On Linux, you can install them like so:
 
 ```shell
-$ npm install --global @loopholelabs/polyglot-ts
+$ curl -L -o /tmp/protoc-gen-polyglot-ts "https://github.com/loopholelabs/polyglot-ts/releases/latest/download/protoc-gen-polyglot-ts.linux-$(uname -m)"
+$ sudo install /tmp/protoc-gen-polyglot-ts /usr/local/bin
 ```
 
-Using Yarn:
+On macOS, you can use the following:
 
 ```shell
-$ yarn global add @loopholelabs/polyglot-ts
+$ curl -L -o /tmp/protoc-gen-polyglot-ts "https://github.com/loopholelabs/polyglot-ts/releases/latest/download/protoc-gen-polyglot-ts.darwin-$(uname -m)"
+$ sudo install /tmp/protoc-gen-polyglot-ts /usr/local/bin
 ```
 
-You can use the plugin like so:
+On Windows, the following should work (using PowerShell as administrator):
 
 ```shell
-$ protoc --ts-polyglot_out=. definition.proto
+PS> Invoke-WebRequest https://github.com/loopholelabs/polyglot-ts/releases/latest/download/protoc-gen-polyglot-ts.windows-x86_64.exe -OutFile \Windows\System32\protoc-gen-polyglot-ts.exe
 ```
+
+Use the plugin like so:
+
+```shell
+$ protoc --polyglot-ts_out=. definition.proto
+```
+
+You can also find binaries for more operating systems and architectures on [GitHub releases](https://github.com/loopholelabs/polyglot-ts/releases).
 
 ## Library
 
