@@ -36,6 +36,12 @@ On Windows, the following should work (using PowerShell as administrator):
 PS> Invoke-WebRequest https://github.com/loopholelabs/polyglot-ts/releases/latest/download/protoc-gen-polyglot-ts.windows-x86_64.exe -OutFile \Windows\System32\protoc-gen-polyglot-ts.exe
 ```
 
+Alternatively, install it using `go install`:
+
+```shell
+$ go install github.com/loopholelabs/polyglot-ts/protoc-gen-polyglot-ts/protoc-gen-polyglot-ts@latest
+```
+
 Use the plugin like so:
 
 ```shell
