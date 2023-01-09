@@ -14,7 +14,8 @@
 	limitations under the License.
 */
 
-export * from "./decoder";
-export * from "./encoder";
-export * from "./generator";
-export * from "./kind";
+package generator
+
+type File interface {
+	P(v ...interface{})
+}

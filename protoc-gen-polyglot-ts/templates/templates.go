@@ -14,7 +14,9 @@
 	limitations under the License.
 */
 
-export * from "./decoder";
-export * from "./encoder";
-export * from "./generator";
-export * from "./kind";
+package templates
+
+import "embed"
+
+//go:embed *
+var FS embed.FS

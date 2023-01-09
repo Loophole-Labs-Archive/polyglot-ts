@@ -14,7 +14,12 @@
 	limitations under the License.
 */
 
-export * from "./decoder";
-export * from "./encoder";
-export * from "./generator";
-export * from "./kind";
+package generator
+
+import (
+	"github.com/loopholelabs/polyglot-ts/protoc-gen-polyglot-ts/protoc-gen-polyglot-ts/pkg/utils"
+)
+
+func FileName(name string) string {
+	return utils.AppendString(name, extension)
+}
