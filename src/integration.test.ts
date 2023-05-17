@@ -343,8 +343,6 @@ describe("Integration test", () => {
         case Kind.Error: {
           const encoded = new Encoder().error(new Error(v.decodedValue));
 
-          console.log(encoded.bytes);
-          console.log(v.encodedValue);
           expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;

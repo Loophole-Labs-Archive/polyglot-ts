@@ -157,6 +157,25 @@ export class Decoder {
     return this.buf.length - this.#pos;
   }
 
+  private varint(maxLen: number, signed = false): bigint {
+    let num = 0n;
+    let shift = 0n;
+    for (let i = 1; i < maxLen + 1; i += 1) {
+      const b = this.pop();
+      if (b < BigInt(CONTINUATION)) {
+        num += BigInt(b) << shift;
+        if (signed) {
+          // two's complement
+          num = num % 2n === 0n ? num / 2n : -(num + 1n) / 2n;
+        }
+        return num;
+      }
+      num += BigInt(b & (CONTINUATION - 1)) << shift;
+      shift += 7n;
+    }
+    return num;
+  }
+
   null(): boolean {
     const val = (this.peek() as Kind) === Kind.Null;
     if (val) {
@@ -217,18 +236,7 @@ export class Decoder {
       throw new InvalidUint32Error();
     }
 
-    let num = 0n;
-    let shift = 0n;
-    for (let i = 1; i < MAXLEN32 + 1; i += 1) {
-      const b = this.pop();
-      if (b < BigInt(CONTINUATION)) {
-        num += BigInt(b) << shift;
-        return Number(num);
-      }
-      num += BigInt(b & (CONTINUATION - 1)) << shift;
-      shift += 7n;
-    }
-    return Number(num);
+    return Number(this.varint(MAXLEN32));
   }
 
   uint64(): bigint {
@@ -237,18 +245,7 @@ export class Decoder {
       throw new InvalidUint64Error();
     }
 
-    let num = 0n;
-    let shift = 0n;
-    for (let i = 1; i < MAXLEN64 + 1; i += 1) {
-      const b = this.pop();
-      if (b < BigInt(CONTINUATION)) {
-        num += BigInt(b) << shift;
-        return num;
-      }
-      num += BigInt(b & (CONTINUATION - 1)) << shift;
-      shift += 7n;
-    }
-    return num;
+    return this.varint(MAXLEN64);
   }
 
   int32(): number {
@@ -257,20 +254,7 @@ export class Decoder {
       throw new InvalidInt32Error();
     }
 
-    let num = 0n;
-    let shift = 0n;
-    for (let i = 1; i < MAXLEN32 + 1; i += 1) {
-      const b = this.pop();
-      if (b < BigInt(CONTINUATION)) {
-        num += BigInt(b) << shift;
-        // two's complement
-        num = num % 2n === 0n ? num / 2n : -(num + 1n) / 2n;
-        return Number(num);
-      }
-      num += BigInt(b & (CONTINUATION - 1)) << shift;
-      shift += 7n;
-    }
-    return Number(num);
+    return Number(this.varint(MAXLEN32, true));
   }
 
   int64(): bigint {
@@ -279,20 +263,7 @@ export class Decoder {
       throw new InvalidInt64Error();
     }
 
-    let num = 0n;
-    let shift = 0n;
-    for (let i = 1; i < MAXLEN64 + 1; i += 1) {
-      const b = this.pop();
-      if (b < BigInt(CONTINUATION)) {
-        num += BigInt(b) << shift;
-        // two's complement
-        num = num % 2n === 0n ? num / 2n : -(num + 1n) / 2n;
-        return num;
-      }
-      num += BigInt(b & (CONTINUATION - 1)) << shift;
-      shift += 7n;
-    }
-    return num;
+    return this.varint(MAXLEN64, true);
   }
 
   float32(): number {

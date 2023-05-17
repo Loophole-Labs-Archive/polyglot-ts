@@ -50,6 +50,48 @@ export class Encoder {
     return new Uint8Array(this.#buf.buffer, 0, this.#pos);
   }
 
+  private varint(value: number, kind: Kind, maxBytes: number, signed = false) {
+    let val = value;
+    this.resize(maxBytes);
+    this.#buf[this.#pos] = kind;
+    this.#pos += 1;
+
+    if (signed) {
+      // two's complement
+      val = value >= 0 ? value * 2 : value * -2 - 1;
+    }
+    while (val >= CONTINUATION) {
+      this.#buf[this.#pos++] = val | CONTINUATION;
+      val >>>= REST_BYTES;
+    }
+    this.#buf[this.#pos++] = val;
+    return this;
+  }
+
+  private varintBig(
+    value: bigint,
+    kind: Kind,
+    maxBytes: number,
+    signed = false
+  ) {
+    let val = BigInt(value);
+    this.resize(maxBytes);
+    this.#buf[this.#pos] = kind;
+    this.#pos += 1;
+
+    if (signed) {
+      // two's complement
+      val = val >= 0 ? val * 2n : val * -2n - 1n;
+    }
+    while (val >= CONTINUATION) {
+      this.#buf[this.#pos++] =
+        Number(val & BigInt(PRE_CONTINUATION)) | CONTINUATION;
+      val >>= BigInt(REST_BYTES);
+    }
+    this.#buf[this.#pos++] = Number(val);
+    return this;
+  }
+
   null() {
     this.resize(1);
     this.#buf[this.#pos] = Kind.Null;
@@ -86,78 +128,23 @@ export class Encoder {
   }
 
   uint16(value: number) {
-    let val = value;
-    this.resize(4);
-    this.#buf[this.#pos] = Kind.Uint16;
-    this.#pos += 1;
-
-    while (val >= CONTINUATION) {
-      this.#buf[this.#pos++] = val | CONTINUATION;
-      val >>>= REST_BYTES;
-    }
-    this.#buf[this.#pos++] = val;
-    return this;
+    return this.varint(value, Kind.Uint16, 3);
   }
 
   uint32(value: number) {
-    let val = value;
-    this.resize(6);
-    this.#buf[this.#pos] = Kind.Uint32;
-    this.#pos += 1;
-
-    while (val >= CONTINUATION) {
-      this.#buf[this.#pos++] = val | CONTINUATION;
-      val >>>= REST_BYTES;
-    }
-    this.#buf[this.#pos++] = val;
-    return this;
+    return this.varint(value, Kind.Uint32, 5);
   }
 
   uint64(value: bigint) {
-    let val = BigInt(value);
-    this.resize(11);
-    this.#buf[this.#pos] = Kind.Uint64;
-    this.#pos += 1;
-
-    while (val >= CONTINUATION) {
-      this.#buf[this.#pos++] =
-        Number(val & BigInt(PRE_CONTINUATION)) | CONTINUATION;
-      val >>= BigInt(REST_BYTES);
-    }
-    this.#buf[this.#pos++] = Number(val);
-    return this;
+    return this.varintBig(value, Kind.Uint64, 9);
   }
 
   int32(value: number) {
-    this.resize(6);
-    this.#buf[this.#pos] = Kind.Int32;
-    this.#pos += 1;
-
-    // two's complement
-    let val = value >= 0 ? value * 2 : value * -2 - 1;
-    while (val >= CONTINUATION) {
-      this.#buf[this.#pos++] = val | CONTINUATION;
-      val >>>= REST_BYTES;
-    }
-    this.#buf[this.#pos++] = val;
-    return this;
+    return this.varint(value, Kind.Int32, 5, true);
   }
 
   int64(value: bigint) {
-    let val = BigInt(value);
-    this.resize(11);
-    this.#buf[this.#pos] = Kind.Int64;
-    this.#pos += 1;
-
-    // two's complement
-    val = val >= 0 ? val * 2n : val * -2n - 1n;
-    while (val >= CONTINUATION) {
-      this.#buf[this.#pos++] =
-        Number(val & BigInt(PRE_CONTINUATION)) | CONTINUATION;
-      val >>= BigInt(REST_BYTES);
-    }
-    this.#buf[this.#pos++] = Number(val);
-    return this;
+    return this.varintBig(value, Kind.Int64, 9, true);
   }
 
   float32(value: number) {
