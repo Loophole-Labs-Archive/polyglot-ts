@@ -15,17 +15,14 @@
 */
 
 import { BOOLEAN_TRUE } from "./encoder";
-import {
-  float32BigEndianToNum,
-  float64BigEndianToNum,
-  int32BigEndianToNum,
-  int64BigEndianToNum,
-  uint16BigEndianToNum,
-  uint32BigEndianToNum,
-  uint64BigEndianToNum,
-  uint8BigEndianToNum,
-} from "./endian";
 import { Kind } from "./kind";
+
+/* eslint-disable no-bitwise */
+
+const CONTINUATION = 0x80;
+const MAXLEN16 = 3;
+const MAXLEN32 = 5;
+const MAXLEN64 = 10;
 
 export class InvalidBooleanError extends Error {
   constructor() {
@@ -139,201 +136,262 @@ export class InvalidErrorError extends Error {
   }
 }
 
-export const decodeNull = (buf: Uint8Array) => ({
-  value: buf[0] === Kind.Null,
-  buf: buf.slice(1),
-});
+export class Decoder {
+  #pos = 0;
 
-export const decodeAny = (buf: Uint8Array) => ({
-  value: buf[0] === Kind.Any,
-  buf: buf.slice(1),
-});
-
-export const decodeBoolean = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Boolean) {
-    throw new InvalidBooleanError();
+  constructor(private buf: Uint8Array) {
+    this.buf = buf;
   }
 
-  return {
-    value: buf[1] === BOOLEAN_TRUE,
-    buf: buf.slice(2),
-  };
-};
-
-export const decodeUint8 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Uint8) {
-    throw new InvalidUint8Error();
+  private peek(): number {
+    return this.buf[this.#pos];
   }
 
-  return {
-    value: uint8BigEndianToNum(buf.slice(1, 3)),
-    buf: buf.slice(3),
-  };
-};
-
-export const decodeUint16 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Uint16) {
-    throw new InvalidUint16Error();
+  private pop(): number {
+    const val = this.buf[this.#pos];
+    this.#pos += 1;
+    return val;
   }
 
-  return uint16BigEndianToNum(buf);
-};
-
-export const decodeUint32 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Uint32) {
-    throw new InvalidUint32Error();
+  get length(): number {
+    return this.buf.length - this.#pos;
   }
 
-  return uint32BigEndianToNum(buf);
-};
-
-export const decodeUint64 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Uint64) {
-    throw new InvalidUint64Error();
+  null(): boolean {
+    const val = (this.peek() as Kind) === Kind.Null;
+    if (val) {
+      this.#pos += 1;
+    }
+    return val;
   }
 
-  return uint64BigEndianToNum(buf);
-};
-
-export const decodeInt32 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Int32) {
-    throw new InvalidInt32Error();
+  any(): boolean {
+    const val = (this.peek() as Kind) === Kind.Any;
+    if (val) {
+      this.#pos += 1;
+    }
+    return val;
   }
 
-  return int32BigEndianToNum(buf);
-};
-
-export const decodeInt64 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Int64) {
-    throw new InvalidInt64Error();
+  boolean(): boolean {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Boolean) {
+      throw new InvalidBooleanError();
+    }
+    return this.pop() === BOOLEAN_TRUE;
   }
 
-  return int64BigEndianToNum(buf);
-};
-
-export const decodeFloat32 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Float32) {
-    throw new InvalidFloat32Error();
+  uint8(): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Uint8) {
+      throw new InvalidUint8Error();
+    }
+    const dataView = new DataView(this.buf.buffer, this.#pos, 1);
+    const val = dataView.getUint8(0);
+    this.#pos += 1;
+    return val;
   }
 
-  return {
-    value: float32BigEndianToNum(buf.slice(1, 5)),
-    buf: buf.slice(5),
-  };
-};
+  uint16(): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Uint16) {
+      throw new InvalidUint16Error();
+    }
 
-export const decodeFloat64 = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Float64) {
-    throw new InvalidFloat64Error();
+    let num = 0;
+    let shift = 0;
+    for (let i = 1; i < MAXLEN16 + 1; i += 1) {
+      const b = this.pop();
+      if (b < CONTINUATION) {
+        return (num | (b << shift)) >>> 0;
+      }
+      num |= b & ((CONTINUATION - 1) << shift);
+      shift += 7;
+    }
+    return num;
   }
 
-  return {
-    value: float64BigEndianToNum(buf.slice(1, 9)),
-    buf: buf.slice(9),
-  };
-};
+  uint32(): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Uint32) {
+      throw new InvalidUint32Error();
+    }
 
-export const decodeArray = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Array) {
-    throw new InvalidArrayError();
+    let num = 0n;
+    let shift = 0n;
+    for (let i = 1; i < MAXLEN32 + 1; i += 1) {
+      const b = this.pop();
+      if (b < BigInt(CONTINUATION)) {
+        num += BigInt(b) << shift;
+        return Number(num);
+      }
+      num += BigInt(b & (CONTINUATION - 1)) << shift;
+      shift += 7n;
+    }
+    return Number(num);
   }
 
-  const valueKind = buf[1] as Kind;
-  if (!(valueKind in Kind)) {
-    throw new InvalidArrayError();
+  uint64(): bigint {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Uint64) {
+      throw new InvalidUint64Error();
+    }
+
+    let num = 0n;
+    let shift = 0n;
+    for (let i = 1; i < MAXLEN64 + 1; i += 1) {
+      const b = this.pop();
+      if (b < BigInt(CONTINUATION)) {
+        num += BigInt(b) << shift;
+        return num;
+      }
+      num += BigInt(b & (CONTINUATION - 1)) << shift;
+      shift += 7n;
+    }
+    return num;
   }
 
-  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(2));
+  int32(): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Int32) {
+      throw new InvalidInt32Error();
+    }
 
-  return {
-    size,
-    buf: remainingBuf,
-  };
-};
-
-export const decodeMap = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Map) {
-    throw new InvalidMapError();
+    let num = 0n;
+    let shift = 0n;
+    for (let i = 1; i < MAXLEN32 + 1; i += 1) {
+      const b = this.pop();
+      if (b < BigInt(CONTINUATION)) {
+        num += BigInt(b) << shift;
+        // two's complement
+        num = num % 2n === 0n ? num / 2n : -(num + 1n) / 2n;
+        return Number(num);
+      }
+      num += BigInt(b & (CONTINUATION - 1)) << shift;
+      shift += 7n;
+    }
+    return Number(num);
   }
 
-  const keyKind = buf[1] as Kind;
-  if (!(keyKind in Kind)) {
-    throw new InvalidMapError();
+  int64(): bigint {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Int64) {
+      throw new InvalidInt64Error();
+    }
+
+    let num = 0n;
+    let shift = 0n;
+    for (let i = 1; i < MAXLEN64 + 1; i += 1) {
+      const b = this.pop();
+      if (b < BigInt(CONTINUATION)) {
+        num += BigInt(b) << shift;
+        // two's complement
+        num = num % 2n === 0n ? num / 2n : -(num + 1n) / 2n;
+        return num;
+      }
+      num += BigInt(b & (CONTINUATION - 1)) << shift;
+      shift += 7n;
+    }
+    return num;
   }
 
-  const valueKind = buf[2] as Kind;
-  if (!(valueKind in Kind)) {
-    throw new InvalidMapError();
+  float32(): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Float32) {
+      throw new InvalidFloat32Error();
+    }
+    const dataView = new DataView(this.buf.buffer, this.#pos, 4);
+    const val = dataView.getFloat32(0);
+    this.#pos += 4;
+    return val;
   }
 
-  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(3));
-
-  return {
-    size,
-    buf: remainingBuf,
-  };
-};
-
-export const decodeUint8Array = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Uint8Array) {
-    throw new InvalidUint8ArrayError();
+  float64(): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Float64) {
+      throw new InvalidFloat64Error();
+    }
+    const dataView = new DataView(this.buf.buffer, this.#pos, 8);
+    const val = dataView.getFloat64(0);
+    this.#pos += 8;
+    return val;
   }
 
-  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(1));
+  array(valueKind: Kind): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Array) {
+      throw new InvalidArrayError();
+    }
 
-  return {
-    value: remainingBuf.slice(0, size),
-    buf: remainingBuf.slice(size),
-  };
-};
+    const definedValueKind = this.pop() as Kind;
+    if (!(definedValueKind in Kind) || valueKind !== definedValueKind) {
+      throw new InvalidArrayError();
+    }
 
-export const decodeString = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.String) {
-    throw new InvalidStringError();
+    return this.uint32();
   }
 
-  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(1));
+  map(keyKind: Kind, valueKind: Kind): number {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Map) {
+      throw new InvalidMapError();
+    }
 
-  const value = new TextDecoder().decode(remainingBuf.slice(0, size));
+    const definedKeyKind = this.pop() as Kind;
+    if (!(definedKeyKind in Kind) || keyKind !== definedKeyKind) {
+      throw new InvalidMapError();
+    }
 
-  return {
-    value,
-    buf: remainingBuf.slice(size),
-  };
-};
+    const definedValueKind = this.pop() as Kind;
+    if (!(valueKind in Kind) || valueKind !== definedValueKind) {
+      throw new InvalidMapError();
+    }
 
-export const decodeError = (buf: Uint8Array) => {
-  const kind = buf[0] as Kind;
-  if (kind !== Kind.Error) {
-    throw new InvalidErrorError();
+    return this.uint32();
   }
 
-  const nestedType = buf[1] as Kind;
-  if (nestedType !== Kind.String) {
-    throw new InvalidErrorError();
+  uint8Array(): Uint8Array {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Uint8Array) {
+      throw new InvalidUint8ArrayError();
+    }
+
+    const size = this.uint32();
+    const value = this.buf.slice(this.#pos, this.#pos + size);
+    this.#pos += size;
+    return value;
   }
 
-  const { value: size, buf: remainingBuf } = decodeUint32(buf.slice(2));
+  string(): string {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.String) {
+      throw new InvalidStringError();
+    }
 
-  const value = new Error(
-    new TextDecoder().decode(remainingBuf.slice(0, size))
-  );
+    const size = this.uint32();
+    const value = new TextDecoder().decode(
+      this.buf.slice(this.#pos, this.#pos + size)
+    );
+    this.#pos += size;
+    return value;
+  }
 
-  return {
-    value,
-    buf: remainingBuf.slice(size),
-  };
-};
+  error(): Error {
+    const kind = this.pop() as Kind;
+    if (kind !== Kind.Error) {
+      throw new InvalidErrorError();
+    }
+
+    const nestedType = this.pop() as Kind;
+    if (nestedType !== Kind.String) {
+      throw new InvalidErrorError();
+    }
+
+    const size = this.uint32();
+    const value = new Error(
+      new TextDecoder().decode(this.buf.slice(this.#pos, this.#pos + size))
+    );
+    this.#pos += size;
+    return value;
+  }
+}
