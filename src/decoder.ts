@@ -205,7 +205,11 @@ export class Decoder {
     if (kind !== Kind.Uint8) {
       throw new InvalidUint8Error();
     }
-    const dataView = new DataView(this.buf.buffer, this.buf.byteOffset + this.#pos, 1);
+    const dataView = new DataView(
+      this.buf.buffer,
+      this.buf.byteOffset + this.#pos,
+      1
+    );
     const val = dataView.getUint8(0);
     this.#pos += 1;
     return val;
@@ -271,7 +275,11 @@ export class Decoder {
     if (kind !== Kind.Float32) {
       throw new InvalidFloat32Error();
     }
-    const dataView = new DataView(this.buf.buffer, this.buf.byteOffset + this.#pos, 4);
+    const dataView = new DataView(
+      this.buf.buffer,
+      this.buf.byteOffset + this.#pos,
+      4
+    );
     const val = dataView.getFloat32(0);
     this.#pos += 4;
     return val;
@@ -282,7 +290,11 @@ export class Decoder {
     if (kind !== Kind.Float64) {
       throw new InvalidFloat64Error();
     }
-    const dataView = new DataView(this.buf.buffer, this.buf.byteOffset + this.#pos, 8);
+    const dataView = new DataView(
+      this.buf.buffer,
+      this.buf.byteOffset + this.#pos,
+      8
+    );
     const val = dataView.getFloat64(0);
     this.#pos += 8;
     return val;
