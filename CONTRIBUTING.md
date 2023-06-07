@@ -20,3 +20,4 @@ Frisbee uses GitHub to manage reviews of pull requests.
 - Be sure to sign off on the [DCO](https://github.com/probot/dco#how-it-works)
 
 - To update the integration test data, run `npm run update-test-data`
+- To update the Go snapshot test data, run `UPDATE_SNAPSHOTS=true make test`

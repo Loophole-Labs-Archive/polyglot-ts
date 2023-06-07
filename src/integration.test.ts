@@ -1,5 +1,5 @@
 /*
-	Copyright 2022 Loophole Labs
+	Copyright 2023 Loophole Labs
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -18,40 +18,8 @@ import fs from "fs/promises";
 import JSONBigint from "json-bigint";
 import path from "path";
 import { TextDecoder, TextEncoder } from "util";
-import {
-  decodeArray,
-  decodeBoolean,
-  decodeError,
-  decodeFloat32,
-  decodeFloat64,
-  decodeInt32,
-  decodeInt64,
-  decodeMap,
-  decodeNull,
-  decodeString,
-  decodeUint16,
-  decodeUint32,
-  decodeUint64,
-  decodeUint8,
-  decodeUint8Array,
-} from "./decoder";
-import {
-  encodeArray,
-  encodeBoolean,
-  encodeError,
-  encodeFloat32,
-  encodeFloat64,
-  encodeInt32,
-  encodeInt64,
-  encodeMap,
-  encodeNull,
-  encodeString,
-  encodeUint16,
-  encodeUint32,
-  encodeUint64,
-  encodeUint8,
-  encodeUint8Array,
-} from "./encoder";
+import { Decoder } from "./decoder";
+import { Encoder } from "./encoder";
 import { Kind } from "./kind";
 
 window.TextEncoder = TextEncoder;
@@ -93,144 +61,140 @@ describe("Integration test", () => {
     testData.forEach((v) => {
       switch (v.kind) {
         case Kind.Null: {
-          const decoded = decodeNull(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).null();
 
           if (v.decodedValue === null) {
-            expect(decoded.value).toBe(true);
+            expect(decoded).toBe(true);
           } else {
-            expect(decoded.value).toBe(false);
+            expect(decoded).toBe(false);
           }
 
           return;
         }
 
         case Kind.Boolean: {
-          const decoded = decodeBoolean(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).boolean();
 
-          expect(decoded.value).toBe(v.decodedValue);
+          expect(decoded).toBe(v.decodedValue);
 
           return;
         }
 
         case Kind.Uint8: {
-          const decoded = decodeUint8(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).uint8();
 
-          expect(decoded.value).toBe(v.decodedValue);
+          expect(decoded).toBe(v.decodedValue);
 
           return;
         }
 
         case Kind.Uint16: {
-          const decoded = decodeUint16(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).uint16();
 
-          expect(decoded.value).toBe(v.decodedValue);
+          expect(decoded).toBe(v.decodedValue);
 
           return;
         }
 
         case Kind.Uint32: {
-          const decoded = decodeUint32(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).uint32();
 
-          expect(decoded.value).toBe(v.decodedValue);
+          expect(decoded).toBe(v.decodedValue);
 
           return;
         }
 
         case Kind.Uint64: {
-          const decoded = decodeUint64(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).uint64();
 
-          expect(decoded.value).toBe(BigInt(v.decodedValue));
+          expect(decoded).toBe(BigInt(v.decodedValue));
 
           return;
         }
 
         case Kind.Int32: {
-          const decoded = decodeInt32(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).int32();
 
-          expect(decoded.value).toBe(v.decodedValue);
+          expect(decoded).toBe(v.decodedValue);
 
           return;
         }
 
         case Kind.Int64: {
-          const decoded = decodeInt64(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).int64();
 
-          expect(decoded.value).toBe(BigInt(v.decodedValue));
+          expect(decoded).toBe(BigInt(v.decodedValue));
 
           return;
         }
 
         case Kind.Float32: {
-          const decoded = decodeFloat32(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).float32();
 
-          expect(decoded.value).toBeCloseTo(v.decodedValue, 2);
+          expect(decoded).toBeCloseTo(v.decodedValue, 2);
 
           return;
         }
 
         case Kind.Float64: {
-          const decoded = decodeFloat64(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).float64();
 
-          expect(decoded.value).toBe(parseFloat(v.decodedValue));
+          expect(decoded).toBe(parseFloat(v.decodedValue));
 
           return;
         }
 
         case Kind.Array: {
-          const { size, buf } = decodeArray(v.encodedValue);
+          const decoder = new Decoder(v.encodedValue);
+          const size = decoder.array(Kind.String);
 
           expect(size).toBe(v.decodedValue.length);
 
-          let remainingBuf = buf;
           for (let i = 0; i < size; i += 1) {
-            const { value, buf: newRemainingBuf } = decodeString(remainingBuf);
+            const value = decoder.string();
 
             expect(value).toBe(v.decodedValue[i]);
-
-            remainingBuf = newRemainingBuf;
           }
 
           return;
         }
 
         case Kind.Map: {
-          const { size, buf } = decodeMap(v.encodedValue);
+          const decoder = new Decoder(v.encodedValue);
+          const size = decoder.map(Kind.String, Kind.Uint32);
 
           expect(size).toBe(Object.keys(v.decodedValue).length);
 
-          let remainingBuf = buf;
           for (let i = 0; i < size; i += 1) {
-            const { value: key, buf: keyBuf } = decodeString(remainingBuf);
-            const { value, buf: valueBuf } = decodeUint32(keyBuf);
+            const key = decoder.string();
+            const value = decoder.uint32();
 
             expect(v.decodedValue[key.toString()]).toBe(value);
-
-            remainingBuf = valueBuf;
           }
 
           return;
         }
 
         case Kind.Uint8Array: {
-          const decoded = decodeUint8Array(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).uint8Array();
 
-          expect(decoded.value).toEqual(base64ToUint8Array(v.decodedValue));
+          expect(decoded).toEqual(base64ToUint8Array(v.decodedValue));
 
           return;
         }
 
         case Kind.String: {
-          const decoded = decodeString(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).string();
 
-          expect(decoded.value).toBe(v.decodedValue);
+          expect(decoded).toBe(v.decodedValue);
 
           return;
         }
 
         case Kind.Error: {
-          const decoded = decodeError(v.encodedValue);
+          const decoded = new Decoder(v.encodedValue).error();
 
-          expect(decoded.value).toEqual(new Error(v.decodedValue));
+          expect(decoded).toEqual(new Error(v.decodedValue));
 
           return;
         }
@@ -247,103 +211,101 @@ describe("Integration test", () => {
     testData.forEach((v) => {
       switch (v.kind) {
         case Kind.Null: {
-          const encoded = encodeNull(new Uint8Array());
+          const encoded = new Encoder().null();
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Boolean: {
-          const encoded = encodeBoolean(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().boolean(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Uint8: {
-          const encoded = encodeUint8(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().uint8(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Uint16: {
-          const encoded = encodeUint16(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().uint16(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Uint32: {
-          const encoded = encodeUint32(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().uint32(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Uint64: {
-          const encoded = encodeUint64(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().uint64(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Int32: {
-          const encoded = encodeInt32(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().int32(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Int64: {
-          const encoded = encodeInt64(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().int64(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Float32: {
-          const encoded = encodeFloat32(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().float32(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Float64: {
-          const encoded = encodeFloat64(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().float64(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Array: {
-          let encoded = encodeArray(
-            new Uint8Array(),
+          const encoded = new Encoder().array(
             v.decodedValue.length,
             Kind.String
           );
           v.decodedValue.forEach((el: string) => {
-            encoded = encodeString(encoded, el);
+            encoded.string(el);
           });
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Map: {
-          let encoded = encodeMap(
-            new Uint8Array(),
+          const encoded = new Encoder().map(
             Object.keys(v.decodedValue).length,
             Kind.String,
             Kind.Uint32
@@ -351,41 +313,37 @@ describe("Integration test", () => {
           Object.entries(v.decodedValue)
             .sort(([prevKey], [currKey]) => prevKey.localeCompare(currKey))
             .forEach(([key, value]: any[]) => {
-              encoded = encodeString(encoded, key);
-              encoded = encodeUint32(encoded, value);
+              encoded.string(key);
+              encoded.uint32(value);
             });
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Uint8Array: {
-          const encoded = encodeUint8Array(
-            new Uint8Array(),
+          const encoded = new Encoder().uint8Array(
             base64ToUint8Array(v.decodedValue)
           );
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.String: {
-          const encoded = encodeString(new Uint8Array(), v.decodedValue);
+          const encoded = new Encoder().string(v.decodedValue);
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
 
         case Kind.Error: {
-          const encoded = encodeError(
-            new Uint8Array(),
-            new Error(v.decodedValue)
-          );
+          const encoded = new Encoder().error(new Error(v.decodedValue));
 
-          expect(encoded).toEqual(v.encodedValue);
+          expect(encoded.bytes).toEqual(v.encodedValue);
 
           return;
         }
